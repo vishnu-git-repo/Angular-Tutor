@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+.calc-btn {
+  @apply size-10 rounded border border-blue-500 text-blue-500
+         transition-transform duration-150
+         hover:scale-95 active:scale-90 cursor-pointer;
+}
+
+.calc-btn-op {
+  @apply size-10 rounded border border-blue-500 bg-blue-500 text-white
+         transition-transform duration-150
+         hover:scale-95 active:scale-90 cursor-pointer;
+}
+.calc-btn-r {
+    @apply py-2 rounded border border-blue-500 bg-blue-500 text-white
+         transition-transform duration-150
+         hover:scale-98 active:scale-95 cursor-pointer;
+}
+

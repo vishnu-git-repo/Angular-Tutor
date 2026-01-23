@@ -1,0 +1,70 @@
+<main class="main">
+  <div class="h-dvh flex flex-col items-center justify-center">
+
+    <div
+      class="flex flex-col items-center gap-2 px-5 pt-10 pb-5
+             w-fit border border-zinc-400 rounded-md relative"
+    >
+      <!-- Title badge -->
+      <div
+        class="px-3 py-1 absolute -top-4 border border-zinc-500
+               rounded-full bg-white"
+      >
+        <h1 class="text-sm text-blue-500 font-bold text-center">
+          Angular Calculator
+        </h1>
+      </div>
+
+      <!-- Display -->
+      <input
+        class="border px-2 py-2 mb-5 w-[184px] rounded text-right"
+        type="text"
+        [value]="current"
+        readonly
+      />
+
+      <!-- Row 1 -->
+      <div class="flex gap-2">
+        <button class="calc-btn" (click)="append('1')">1</button>
+        <button class="calc-btn" (click)="append('2')">2</button>
+        <button class="calc-btn" (click)="append('3')">3</button>
+        <button class="calc-btn-op" (click)="setOperator('+')">+</button>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="flex gap-2">
+        <button class="calc-btn" (click)="append('4')">4</button>
+        <button class="calc-btn" (click)="append('5')">5</button>
+        <button class="calc-btn" (click)="append('6')">6</button>
+        <button class="calc-btn-op" (click)="setOperator('-')">-</button>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="flex gap-2">
+        <button class="calc-btn" (click)="append('7')">7</button>
+        <button class="calc-btn" (click)="append('8')">8</button>
+        <button class="calc-btn" (click)="append('9')">9</button>
+        <button class="calc-btn-op" (click)="setOperator('×')">×</button>
+      </div>
+
+      <!-- Row 4 -->
+      <div class="flex gap-2">
+        <button class="calc-btn" (click)="clearAll()">AC</button>
+        <button class="calc-btn" (click)="append('0')">0</button>
+        <button class="calc-btn" (click)="clearLast()">C</button>
+        <button class="calc-btn-op" (click)="setOperator('%')">%</button>
+      </div>
+
+      <!-- Calculate -->
+      <button
+        class="calc-btn-r w-[184px] mt-1"
+        (click)="calculate()"
+      >
+        Calculate
+      </button>
+
+    </div>
+  </div>
+</main>
+
+<router-outlet></router-outlet>
