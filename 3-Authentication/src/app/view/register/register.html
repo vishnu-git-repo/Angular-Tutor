@@ -1,0 +1,71 @@
+<div class='flex justify-center items-center h-dvh'>
+    <div class='flex flex-col border border-gray-400 rounded-xl p-5'>
+        <div class='relative flex justify-center'>
+            <h1 class='text-md text-center text-emerald-600 font-bold border border-gray-400 rounded-4xl w-fit px-4 py-2 z-100 bg-white absolute top-[-53px]'>
+                Welcome to our <br/>Organization!
+            </h1>
+        </div>
+        <div class='pt-10'>
+            <form class="flex flex-col w-fit gap-2" (ngSubmit)="register()">
+                <input 
+                    class="min-w-[300px] outline-none p-2 border-2 border-gray-400 rounded focus:outline-blue-500 focus:border-blue-500"
+                    placeholder="Name"  
+                    [value]='registerData.name'
+                    (input)="registerData.name = $any($event.target).value"
+                />
+
+                <input 
+                    class="min-w-[300px] outline-none p-2 border-2 border-gray-400 rounded focus:outline-blue-500 focus:border-blue-500"
+                    placeholder="Email"  
+                    [value]='registerData.email'
+                    (input)="registerData.email = $any($event.target).value"
+                />
+                <input 
+                    type='password'
+                    class="min-w-[300px] outline-none p-2 border-2 border-gray-400 rounded focus:outline-blue-500 focus:border-blue-500"
+                    placeholder="Password" 
+                    (input)="registerData.password = $any($event.target).value"
+                />
+                <input 
+                    type='password'
+                    class="min-w-[300px] outline-none p-2 border-2 border-gray-400 rounded focus:outline-blue-500 focus:border-blue-500"
+                    placeholder="Re-Rassword" 
+                    (input)="re_password = $any($event.target).value"
+                />
+
+                <input 
+                    class="min-w-[300px] outline-none p-2 border-2 border-gray-400 rounded focus:outline-blue-500 focus:border-blue-500"
+                    placeholder="Phone (+00 00000 00000)" 
+                    (input)="registerData.phone = $any($event.target).value"
+                />
+
+                <input 
+                    type='date'
+                    class="min-w-[300px] outline-none p-2 border-2 border-gray-400 rounded focus:outline-blue-500 focus:border-blue-500"
+                    placeholder="Birth Date" 
+                    (input)="registerData.dob = $any($event.target).value"
+                />
+                
+                <button
+                    type='submit'
+                    class="mt-5 min-w-[300px] bg-blue-500 text-white p-2 rounded-md transition-transform duration-200 ease-out hover:scale-[0.98] active:scale-[0.95} cursor-pointer"
+                >
+                    Register
+                </button>
+    
+                <a 
+                    class='text-blue-500 text-sm font-bold hover:underline transition-transform duration-200 ease-out active:scale-[0.98] cursor-pointer'
+                    routerLink="/login"
+                >
+                    Already have account!
+                </a>
+    
+                <div *ngIf='error.status'>
+                    <p class='text-red-700 text-sm font-bold'>
+                        Error : <span class='font-normal'>{{error.msg}}</span>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
