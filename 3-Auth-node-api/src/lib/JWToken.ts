@@ -18,14 +18,14 @@ export const GenerateJWT = (userId: string, res: Response) => {
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    sameSite: "none",
+    sameSite: env.NODE_ENV !== "Development"? "none": "lax",
     secure: env.NODE_ENV !== "Development",
     maxAge: 2 * 60 * 60 * 1000
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    sameSite: "none",
+    sameSite: env.NODE_ENV !== "Development"? "none": "lax",
     secure: env.NODE_ENV !== "Development",
     maxAge: 10 * 24 * 60 * 60 * 1000
   });
@@ -42,7 +42,7 @@ export const GenerateATK = (userId: string, res: Response) => {
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    sameSite: "none",
+    sameSite: env.NODE_ENV !== "Development"? "none": "lax",
     secure: env.NODE_ENV !== "Development",
     maxAge: 2 * 60 * 60 * 1000
   });
