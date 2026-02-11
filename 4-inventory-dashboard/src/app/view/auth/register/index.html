@@ -1,0 +1,117 @@
+<div class="flex justify-center items-center h-dvh">
+  <div class="flex flex-col border border-gray-400 rounded-xl p-5 relative">
+
+    <!-- Title -->
+    <div class="relative flex justify-center">
+      <h1
+        class="text-md text-center text-emerald-600 font-bold
+               border border-gray-400 rounded-full px-4 py-2
+               bg-white absolute -top-14"
+      >
+        Welcome to our <br />Organization!
+      </h1>
+    </div>
+
+    <div class="pt-10">
+      <form class="flex flex-col gap-2" (ngSubmit)="handleRegister()">
+
+        <!-- Name -->
+        <input
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:border-blue-500"
+          placeholder="Name"
+          [value]="registerData().Name"
+          (input)="setField('Name', $any($event.target).value)"
+        />
+
+        <!-- Email -->
+        <input
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:border-blue-500"
+          placeholder="Email"
+          [value]="registerData().Email"
+          (input)="setField('Email', $any($event.target).value)"
+        />
+
+        <!-- Password -->
+        <input
+          type="password"
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:border-blue-500"
+          placeholder="Password"
+          [value]="registerData().Password"
+          (input)="setField('Password', $any($event.target).value)"
+        />
+
+        <!-- Re-Password -->
+        <input
+          type="password"
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:border-blue-500"
+          placeholder="Re-Password"
+          [value]="re_password()"
+          (input)="re_password.set($any($event.target).value)"
+        />
+
+        <!-- Gender -->
+        <select
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:border-blue-500 bg-white"
+          [value]="registerData().Gender"
+          (change)="setField('Gender', $any($event.target).value)"
+        >
+          <option value="" disabled selected>Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <!-- Address -->
+        <textarea
+          rows="2"
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:border-blue-500 resize-none"
+          placeholder="Address"
+          [value]="registerData().Address"
+          (input)="setField('Address', $any($event.target).value)"
+        ></textarea>
+
+        <!-- Phone -->
+        <input
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:border-blue-500"
+          placeholder="Phone (+00 00000 00000)"
+          [value]="registerData().Phone"
+          (input)="setField('Phone', $any($event.target).value)"
+        />
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="mt-4 min-w-75 bg-blue-500 text-white p-2 rounded-md
+                 transition-transform duration-200
+                 hover:scale-[0.98] active:scale-[0.95]"
+        >
+          Register
+        </button>
+
+        <!-- Login -->
+        <a
+          routerLink="/auth/login"
+          class="text-blue-500 text-sm font-bold text-center
+                 hover:underline active:scale-[0.98] cursor-pointer"
+        >
+          Already have account!
+        </a>
+
+        <!-- Error -->
+        <div *ngIf="error().Status">
+          <p class="text-red-700 text-sm font-bold text-center">
+            {{ error().Message }}
+          </p>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

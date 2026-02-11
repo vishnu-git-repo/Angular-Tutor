@@ -1,0 +1,68 @@
+<div class="flex justify-center items-center h-dvh">
+  <div class="flex flex-col border border-gray-400 rounded-xl p-5">
+
+    <div class="relative flex justify-center">
+      <h1
+        class="text-lg text-emerald-600 font-bold
+               border border-gray-400 rounded-4xl
+               w-fit px-4 py-2 z-100 bg-white
+               absolute -top-10.75"
+      >
+        Welcome Back!
+      </h1>
+    </div>
+
+    <div class="pt-10">
+      <form class="flex flex-col w-fit gap-2" (ngSubmit)="handleLogin()">
+
+        <!-- Email -->
+        <input
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:outline-blue-500 focus:border-blue-500"
+          placeholder="Email"
+          [value]="loginData().Email"
+          (input)="setField('Email', $any($event.target).value)"
+        />
+
+        <!-- Password -->
+        <input
+          type="password"
+          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
+                 focus:outline-blue-500 focus:border-blue-500"
+          placeholder="Password"
+          [value]="loginData().Password"
+          (input)="setField('Password', $any($event.target).value)"
+        />
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="mt-5 min-w-75 bg-blue-500 text-white p-2 rounded-md
+                 transition-transform duration-200 ease-out
+                 hover:scale-[0.98] active:scale-[0.95] cursor-pointer"
+        >
+          Login
+        </button>
+
+        <!-- Register -->
+        <a
+          routerLink="/auth/register"
+          class="text-blue-500 text-sm font-bold hover:underline
+                 transition-transform duration-200 ease-out
+                 active:scale-[0.98] cursor-pointer"
+        >
+          New User!
+        </a>
+
+        <!-- Error -->
+        <div *ngIf="error().Status">
+          <p class="text-red-700 text-sm font-bold">
+            Error :
+            <span class="font-normal">{{ error().Message }}</span>
+          </p>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
