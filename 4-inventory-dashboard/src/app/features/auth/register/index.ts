@@ -1,11 +1,11 @@
 import { Component, Inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { AuthService } from "../../../services/auth";
-import { Router, RouterLink } from "@angular/router";
-import { IRegisterData } from "../../../utils/interface/auth";
-import { IError } from "../../../utils/interface";
-import { RegisterSchema } from "../../../utils/schemas/auth";
 import { FormsModule } from "@angular/forms";
+import { Router, RouterLink } from "@angular/router";
+import { AuthService } from "../../../core/services/auth";
+import { IRegisterData } from "../../../shared/interface/auth";
+import { IError } from "../../../shared/interface";
+import { RegisterSchema } from "../../../shared/schemas/auth";
 
 @Component({
     selector: "app-root",

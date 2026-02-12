@@ -1,0 +1,148 @@
+<!-- Main Layout -->
+<div class="flex min-h-screen">
+  
+  <!-- Desktop Sidebar (Hidden on Mobile) -->
+  <div class="hidden md:block fixed left-0 top-0 h-screen bg-gray-900 text-white z-30 
+              transition-all duration-300 ease-in-out overflow-hidden"
+       [class.w-64]="sidebarExpanded()"
+       [class.w-16]="!sidebarExpanded()"
+       (mouseenter)="onSidebarHover()"
+       (mouseleave)="onSidebarLeave()">
+    
+    <!-- Sidebar Header -->
+    <div class="p-4 border-b border-gray-800 h-16 flex items-center">
+      <div class="flex items-center gap-3 whitespace-nowrap">
+        <i class="pi pi-apple text-xl shrink-0"></i>
+        <span class="transition-opacity duration-300 overflow-hidden"
+              [class.opacity-100]="sidebarExpanded()"
+              [class.opacity-0]="!sidebarExpanded()"
+              [class.w-0]="!sidebarExpanded()">
+          Dashboard
+        </span>
+      </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="p-4 space-y-2">
+      <!-- Home -->
+      <a routerLink="/" 
+         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+        <i class="pi pi-home text-lg shrink-0"></i>
+        <span class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+              [class.opacity-100]="sidebarExpanded()"
+              [class.opacity-0]="!sidebarExpanded()"
+              [class.w-0]="!sidebarExpanded()">
+          Home
+        </span>
+      </a>
+
+      <!-- Users -->
+      <a routerLink="/users" 
+         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+        <i class="pi pi-users text-lg shrink-0"></i>
+        <span class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+              [class.opacity-100]="sidebarExpanded()"
+              [class.opacity-0]="!sidebarExpanded()"
+              [class.w-0]="!sidebarExpanded()">
+          Users
+        </span>
+      </a>
+
+      <!-- Settings -->
+      <a routerLink="/settings" 
+         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+        <i class="pi pi-cog text-lg shrink-0"></i>
+        <span class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+              [class.opacity-100]="sidebarExpanded()"
+              [class.opacity-0]="!sidebarExpanded()"
+              [class.w-0]="!sidebarExpanded()">
+          Settings
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 transition-all duration-300"
+       [class.md:ml-16]="!sidebarExpanded()"
+       [class.md:ml-64]="sidebarExpanded()">
+    
+    <!-- Top Navbar -->
+    <div class="bg-white shadow p-4 border-b">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <!-- Mobile Menu Button -->
+          <button type="button"
+                  class="p-2 rounded-lg hover:bg-gray-100 md:hidden"
+                  (click)="toggleMobileMenu()">
+            <i class="pi pi-bars text-xl"></i>
+          </button>
+          
+          <!-- Desktop Menu Button (Fixed - using method instead of arrow function) -->
+          <button type="button"
+                  class="p-2 rounded-lg hover:bg-gray-100 hidden md:block"
+                  (click)="toggleSidebarExpanded()">
+            <i class="pi pi-bars text-xl"></i>
+          </button>
+          
+          <h1 class="ml-4 text-xl font-semibold">Dashboard</h1>
+        </div>
+        
+        <!-- User Profile -->
+        <div class="flex items-center gap-4">
+          <i class="pi pi-bell text-xl cursor-pointer hover:text-gray-600"></i>
+          <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+            <span class="text-white font-semibold text-sm">U</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="p-4 md:p-6">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Drawer (Only shown on mobile) -->
+<p-drawer 
+  [(visible)]="sidebarVisible"
+  position="left"
+  [modal]="true"
+  styleClass="w-72">
+  
+  <div class="h-full bg-gray-900 text-white">
+    <!-- Drawer Header -->
+    <div class="p-4 border-b border-gray-800">
+      <h2 class="text-xl font-bold flex items-center gap-2">
+        <i class="pi pi-apple"></i>
+        Dashboard
+      </h2>
+    </div>
+    
+    <!-- Drawer Menu -->
+    <div class="p-4 space-y-2">
+      <a routerLink="" 
+         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
+         (click)="closeSidebar()">
+        <i class="pi pi-home"></i>
+        <span>Home</span>
+      </a>
+      
+      <a routerLink="users" 
+         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
+         (click)="closeSidebar()">
+        <i class="pi pi-users"></i>
+        <span>Users</span>
+      </a>
+      
+      <a routerLink="settings" 
+         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
+         (click)="closeSidebar()">
+        <i class="pi pi-cog"></i>
+        <span>Settings</span>
+      </a>
+    </div>
+  </div>
+</p-drawer>

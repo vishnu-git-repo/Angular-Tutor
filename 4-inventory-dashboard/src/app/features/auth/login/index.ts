@@ -1,11 +1,11 @@
 import { Component, inject, signal } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
-import { AuthService } from "../../../services/auth";
-import { ILoginData } from "../../../utils/interface/auth";
-import { IError } from "../../../utils/interface";
-import { LoginSchema } from "../../../utils/schemas/auth";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { AuthService } from "../../../core/services/auth";
+import { ILoginData } from "../../../shared/interface/auth";
+import { IError } from "../../../shared/interface";
+import { LoginSchema } from "../../../shared/schemas/auth";
 
 @Component({
     selector: "app-login",
@@ -20,11 +20,12 @@ export class Login {
 
     public readonly api_url = "auth/login";
 
+    public isLoggedIn = signal<boolean>(false);
+    public userRole = signal<string|null>(null)
     public loginData = signal<ILoginData>({
         Email: "",
         Password: ""
     });
-
     public error = signal<IError>({
         Status: false,
         Message: ""
@@ -47,8 +48,9 @@ export class Login {
 
         this.authService.login(this.api_url, this.loginData())
             .subscribe({
-                next: () => {
-                    this.router.navigate(["/"]);
+                next: (res) => {
+                    console.log("Redirecting>>>>>")
+                    this.router.navigate(["/client"]);
                 },
                 error: (err) => {
                     this.error.set({
