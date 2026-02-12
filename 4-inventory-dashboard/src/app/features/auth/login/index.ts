@@ -50,7 +50,7 @@ export class Login {
             .subscribe({
                 next: (res) => {
                     console.log("Redirecting>>>>>")
-                    this.router.navigate(["/client"]);
+                    this.router.navigate([""]);
                 },
                 error: (err) => {
                     this.error.set({

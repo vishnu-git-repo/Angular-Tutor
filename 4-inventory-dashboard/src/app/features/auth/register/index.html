@@ -1,4 +1,4 @@
-<div class="flex justify-center items-center h-dvh">
+<div class="flex justify-center items-center min-h-dvh bg-white text-black">
   <div class="flex flex-col border border-gray-400 rounded-xl p-5 relative">
 
     <!-- Title -->
@@ -56,11 +56,11 @@
         <!-- Gender -->
         <select
           class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500 bg-white"
+                 focus:border-blue-500 "
           [value]="registerData().Gender"
           (change)="setField('Gender', $any($event.target).value)"
         >
-          <option value="" disabled selected>Select Gender</option>
+          <option class="text-white" value="" disabled selected>Select Gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
           <option value="Other">Other</option>
@@ -97,7 +97,7 @@
 
         <!-- Login -->
         <a
-          routerLink="/auth/login"
+          routerLink="login"
           class="text-blue-500 text-sm font-bold text-center
                  hover:underline active:scale-[0.98] cursor-pointer"
         >

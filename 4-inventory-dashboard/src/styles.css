@@ -1,3 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+@theme {
+  --color-charcoal: #18181a;
+  --color-custom-gray-850: #18181a;
+}
+
+
+.custom-tooltip {
+  font-size: 10px !important;
+  padding: 2px 2px !important;
+  max-width: 300px !important;
+}
+
+.table-tooltip {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}

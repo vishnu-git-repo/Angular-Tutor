@@ -44,11 +44,26 @@ export class AuthService {
     );
   }
 
+  logout(): Observable<any> {
+    return this.http.get(
+      `${environment.api_url}auth/logout`,
+      { withCredentials: true}
+    )
+  }
+
   isLoggedIn() {
     return !!this.user();
   }
 
   getRole() {
     return this.user()?.role;
+  }
+
+  getUser() {
+    if(!this.user()){
+      this.checkAuth();
+      return this.user();
+    }
+    return this.user();
   }
 }

@@ -1,1 +1,226 @@
-Admin User
+<div class="text-white rounded shadow-lg flex flex-col gap-5">
+    <!-- Title  -->
+    <div class="flex justify-between">
+        <h2>Clients</h2>
+        <div class="flex">
+            <input type="text" placeholder="search">
+            <!-- Add User -->
+            <div class="w-10 h-10 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                (click)="handleAddUser()" pTooltip="Logout" pTooltipPosition="bottom"
+                tooltipStyleClass="custom-tooltip">
+                <i
+                    class="pi pi-plus text-gray-600 group-hover:text-green-600 text-lg active:scale-90 transition-all duration-200">
+                </i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="card rounded-lg overflow-hidden">
+        <p-tabs value="0">
+            <p-tablist>
+                <p-tab value="0">All</p-tab>
+                <p-tab value="1">Current</p-tab>
+                <p-tab value="2">Blocked</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+                <p-tabpanel value="0">
+                    <div class="card">
+                        <p-table [value]="userList()" [tableStyle]="{ 'min-width': '50rem' }">
+
+                            <!-- Header -->
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </ng-template>
+
+                            <!-- Body -->
+                            <ng-template pTemplate="body" let-user let-rowIndex="rowIndex">
+                                <tr>
+                                    <td>{{ rowIndex + 1 }}</td>
+                                    <td>{{ user.name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.phone }}</td>
+                                    <td class="flex justify-start gap-2">
+                                        <span
+                                            class="size-6 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                            (click)="openDialog('view',user)" pTooltip="View Client"
+                                            tooltipPosition="bottom" tooltipStyleClass="custom-tooltip">
+                                            <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 active:scale-90 transition-all duration-200"
+                                                style="font-size: 0.75rem;">
+                                            </i>
+                                        </span>
+                                        <span
+                                            class="size-6 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                            (click)="openDialog('update',user)" pTooltip="Update Details"
+                                            tooltipPosition="bottom" tooltipStyleClass="custom-tooltip">
+                                            <i class="pi pi-user-edit text-gray-600 group-hover:text-blue-600 active:scale-90 transition-all duration-200"
+                                                style="font-size: 0.75rem;">
+                                            </i>
+                                        </span>
+                                        <span
+                                            class="size-6 rounded-full border border-gray-300 hover:border-orange-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                            (click)="openDialog('password',user)" pTooltip="Update Password"
+                                            tooltipPosition="bottom" tooltipStyleClass="custom-tooltip">
+                                            <i class="pi pi-key text-gray-600 group-hover:text-orange-600 active:scale-90 transition-all duration-200"
+                                                style="font-size: 0.85rem;">
+                                            </i>
+                                        </span>
+                                        @if (user.status==1) {
+                                        <span
+                                            class="size-6 rounded-full border border-gray-300 hover:border-red-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                            (click)="openDialog('block',user)" pTooltip="Lock Access"
+                                            tooltipPosition="bottom" tooltipStyleClass="custom-tooltip">
+                                            <i class="pi pi-unlock text-green-600 group-hover:text-red-600 active:scale-90 transition-all duration-200"
+                                                style="font-size: 0.75rem;">
+                                            </i>
+                                        </span>
+                                        } @else {
+                                        <span
+                                            class="size-6 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                            (click)="openDialog('unblock',user)" pTooltip="Unlock Access"
+                                            tooltipPosition="bottom" tooltipStyleClass="custom-tooltip">
+                                            <i class="pi pi-lock text-red-600 group-hover:text-green-600 active:scale-90 transition-all duration-200"
+                                                style="font-size: 0.75rem;">
+                                            </i>
+                                        </span> 
+                                        }
+                                        <span
+                                            class="size-6 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                            (click)="openDialog('borrow',user)" pTooltip="View Borrows"
+                                            tooltipPosition="bottom" tooltipStyleClass="custom-tooltip">
+                                            <i class="pi pi-receipt text-gray-600 group-hover:text-blue-600 active:scale-90 transition-all duration-200"
+                                                style="font-size: 0.85rem;">
+                                            </i>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                        </p-table>
+
+                    </div>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </div>
+    Pagination
+
+    <!-- Dialog -->
+    <div class="card flex justify-center">
+        <p-dialog [modal]="true" [visible]="dialogState().visible" (onHide)="closeDialog()" [style]="{ width: '20rem' }"
+            [header]="dialogState().type ? (dialogState().type | titlecase) : ''">
+
+            <div *ngIf="dialogState().data as user">
+
+                @switch (dialogState().type) {
+
+                @case ('view') {
+
+                <div class="flex items-center justify-between border-b border-zinc-500 pb-2">
+                    <div class="flex gap-4">
+                        @if(user.status==1){
+                        <b class="p-1 bg-green-500 items-center rounded-full"></b>
+                        }@else{
+                        <b class="p-1 bg-red-500 rounded-full"></b>
+                        }
+                        <span>{{ user.name }}</span>
+                    </div>
+                    <p-avatar shape="circle" class="p-2" size="large">
+                        <i class="pi pi-user"></i>
+                    </p-avatar>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4 pt-4">
+                    <div>
+                        @if (user.gender=="Male") {
+                        <i class="pi pi-mars"></i>
+                        } @else if (user.gender=="Female") {
+                        <i class="pi pi-venus"></i>
+                        } @else {
+                        <i class="pi pi-users"></i>
+                        }
+                    </div>
+                    <span>{{ user.gender }}</span>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="pi pi-envelope"></i>
+                    <span>{{ user.email }}</span>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="pi pi-phone"></i>
+                    <span>{{ user.phone }}</span>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="pi pi-map-marker"></i>
+                    <span>{{ user.address }}</span>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="pi pi-sign-in"></i>
+                    <span>{{ user.createdAt | date:'dd MMM yyyy' }}</span>
+                </div>
+
+                }
+
+                @case ('update') {
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="font-semibold w-24">Name</label>
+                    <span>{{ user.name }}</span>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="font-semibold w-24">Email</label>
+                    <span>{{ user.email }}</span>
+                </div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="font-semibold w-24">Phone</label>
+                    <span>{{ user.phone }}</span>
+                </div>
+                }
+
+                @case ('password') {
+                <div class="flex items-center gap-4 mb-4">
+                    <label class="font-semibold w-24">New Password</label>
+                    <input type="password" class="p-inputtext p-component w-full">
+                </div>
+                }
+
+                @case ('block') {
+                <div class="flex items-center gap-4 mb-4">
+                    <span>Are you sure you want to block {{ user.name }}?</span>
+                </div>
+                }
+
+                @case ('unblock') {
+                <div class="flex items-center gap-4 mb-4">
+                    <span>Are you sure you want to unblock {{ user.name }}?</span>
+                </div>
+                }
+
+                @case ('borrow') {
+                <div class="flex items-center gap-4 mb-4">
+                    <span>Borrow history of {{ user.name }}</span>
+                </div>
+                }
+
+                }
+
+            </div>
+
+            <div class="flex justify-end">
+                <p-button label="Close" severity="secondary" (click)="closeDialog()" />
+            </div>
+
+        </p-dialog>
+    </div>
+</div>
