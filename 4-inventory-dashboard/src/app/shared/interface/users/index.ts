@@ -9,8 +9,9 @@ export interface IUserResponse {
     status:number,
     createdAt: string,
     updatedAt: string,
-    borrows: any[]
+    borrows?: any[]
 }
+
 
 export interface IUpdateUserRequest {
     Name: string,
@@ -22,5 +23,26 @@ export interface IUpdateUserRequest {
 export interface IUpdatePasswordRequest {
     Email: string;
     Password: string|null;
-    RePassword: string;
+    NewPassword: string;
+}
+
+export interface IGetFilteredUserRequest {
+    Status: number
+    RowCount: number,
+    PageNo: number,
+    TotalCount?: number,
+    BlockedCount?: number,
+    ActiveCount?: number,
+    SearchString?: string,
+}
+
+export interface IGetFilteredUserResponse {
+    Status: number,
+    RowCount?: number,
+    PageNo?: number,
+    TotalCount: number,
+    BlockedCount: number,
+    ActiveCount: number,
+    SearchString: string,
+    Users: IUserResponse[]
 }
