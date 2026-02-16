@@ -65,10 +65,10 @@ export class AdminUserComponent implements OnInit {
   public tabvalue = signal<number>(0);
   public userList = signal<IUserResponse[]>([]);
   public isPageLoad = signal<boolean>(true);
-  public filterOptions = signal<IFilterOptions>({
-    row_count: 10,
-    page_no: 1,
-  });
+  // public filterOptions = signal<IFilterOptions>({
+  //   row_count: 10,
+  //   page_no: 1,
+  // });
 
   public dialogState = signal<{
     visible: boolean;
@@ -245,6 +245,8 @@ export class AdminUserComponent implements OnInit {
     }));
     this.fetchUsers();
   }
+
+
 
   // CRUD
   handleUpdateUser(user: IUserResponse) {
