@@ -165,6 +165,7 @@ export class AdminUserComponent implements OnInit {
   }
 
   goToFirstPage() {
+    if (this.isFirstPage()) return;
     this.paginatorState.update(state => ({
       ...state,
       PageNo: 1
@@ -192,6 +193,7 @@ export class AdminUserComponent implements OnInit {
     this.fetchUsers();
   }
   goToLastPage() {
+    if (this.isLastPage()) return;
     if (this.paginatorState().Status == 0) {
       this.paginatorState.update(state => ({
         ...state,
@@ -211,6 +213,7 @@ export class AdminUserComponent implements OnInit {
     this.fetchUsers();
   }
   goToPage(page: number) { }
+  
   OnRowChange(e: any) {
     this.paginatorState.update(state => ({
       ...state,

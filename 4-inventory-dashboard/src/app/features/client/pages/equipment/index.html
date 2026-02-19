@@ -1,1 +1,177 @@
-Client Equipment
+<div class="text-white rounded shadow-lg flex flex-col gap-5">
+
+    <!-- 🔹 HEADER -->
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i class="pi pi-cog text-2xl" style="font-size: 2rem"></i>
+            <h2 class="text-2xl">Equipments</h2>
+        </div>
+
+        <div class="flex gap-5 items-center">
+            <!-- Search -->
+            <p-iftalabel class="w-full min-w-62.5">
+                <input pInputText (input)="onSearch($event)" placeholder="Search equipment..." class="min-w-70" />
+                <label>Search by name | category</label>
+            </p-iftalabel>
+        </div>
+    </div>
+
+    <div>
+        <p-tabs value="0">
+            <p-tablist>
+
+                <p-tab value="0" (click)="onCategoryTab(0)">
+                    <span class="flex items-center gap-2 text-lg font-medium">
+                        All
+                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('primary')">
+                            {{ paginatorState().TotalCount ||0 }}
+                        </p-chip>
+                    </span>
+                </p-tab>
+
+                <p-tab value="1" (click)="onCategoryTab(1)">
+                    <span class="flex items-center gap-2 text-lg font-medium">
+                        Tools
+                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('blue')">
+                            {{ Counts().Tools || 0 }}
+                        </p-chip>
+                    </span>
+                </p-tab>
+
+                <p-tab value="2" (click)="onCategoryTab(2)">
+                    <span class="flex items-center gap-2 text-lg font-medium">
+                        Electronics
+                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('indigo')">
+                            {{ Counts().Electronics || 0 }}
+                        </p-chip>
+                    </span>
+                </p-tab>
+
+                <p-tab value="3" (click)="onCategoryTab(3)">
+                    <span class="flex items-center gap-2 text-lg font-medium">
+                        Vehicles
+                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('orange')">
+                            {{ Counts().Vehicles || 0}}
+                        </p-chip>
+                    </span>
+                </p-tab>
+
+                <p-tab value="4" (click)="onCategoryTab(4)">
+                    <span class="flex items-center gap-2 text-lg font-medium">
+                        Furniture
+                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('purple')">
+                            {{ Counts().Furniture || 0}}
+                        </p-chip>
+                    </span>
+                </p-tab>
+
+                <p-tab value="5" (click)="onCategoryTab(5)">
+                    <span class="flex items-center gap-2 text-lg font-medium">
+                        Safety Gear
+                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('warning')">
+                            {{ Counts().SafetyGear || 0 }}
+                        </p-chip>
+                    </span>
+                </p-tab>
+
+                <p-tab value="6" (click)="onCategoryTab(6)">
+                    <span class="flex items-center gap-2 text-lg font-medium">
+                        Others
+                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('neutral')">
+                            {{ Counts().Other || 0 }}
+                        </p-chip>
+                    </span>
+                </p-tab>
+
+            </p-tablist>
+        </p-tabs>
+    </div>
+
+    <div>
+
+        <!-- EMPTY TABLE -->
+        @if (equipmentList().length==0) {
+        <div class="flex justify-center items-center min-h-[50dvh]">
+            <span class="text-2xl">Oops! No equipments found</span>
+        </div>
+        }
+
+        <!-- SKELETON TABLE -->
+        @else if (isEquipmentLoad()) {
+        <p-table>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Total</th>
+                    <th>Available</th>
+                    <th>In Use</th>
+                    <th>Reserved</th>
+                    <th>Maintenance</th>
+                    <th>Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body">
+                <tr>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                </tr>
+            </ng-template>
+        </p-table>
+        } @else {
+
+        <!-- ENTRIE TABLE -->
+        <p-table [value]="equipmentList()">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Total</th>
+                    <th>Available</th>
+                    <th>In Use</th>
+                    <th class="min-w-24">Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-e let-i="rowIndex">
+                <tr>
+                    <td>{{ getIndex() + i + 1}}</td>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.description }}</td>
+                    <td>
+                        <p-chip [label]="EquipmentCategory[e.category]" [style]="getChipColor('secondary')">
+                        </p-chip>
+                    </td>
+                    <td>{{ e.totalItems }}</td>
+                    <td>{{ e.availableCount }}</td>
+                    <td>{{ e.inUseCount }}</td>
+                    <td class="">
+                        <div class="flex justify-start gap-2">
+                            <span
+                                class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                                (click)="openRequestBorrow(e)" pTooltip="Request borrow" tooltipPosition="bottom"
+                                tooltipStyleClass="custom-tooltip">
+                                <i class="pi pi-plus text-gray-600 group-hover:text-blue-600 transition-all duration-200"
+                                    style="font-size: 0.85rem;">
+                                </i>
+                            </span>
+                        </div>
+                    </td>
+
+                </tr>
+            </ng-template>
+        </p-table>
+        }
+    </div>
+
+</div>

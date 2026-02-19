@@ -3,12 +3,12 @@ import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 
 @Component({
-    selector: "app-client-user",
+    selector: "app-client-borrow",
     standalone: true,
     imports: [FormsModule, CommonModule], 
     templateUrl: "./index.html",
 })
 
-export class ClientUserComponent {
+export class ClientBorrowComponent {
 
 }

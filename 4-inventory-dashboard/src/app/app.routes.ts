@@ -4,15 +4,18 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { RoleGuard } from './core/guards/role.guard';
 import { Login } from './features/auth/login';
 import { Register } from './features/auth/register';
+import { EUserRole } from './shared/Enums/UserEnums';
+
 import { AdminDashboard } from './features/admin/layout';
 import { AdminUserComponent } from './features/admin/pages/user';
 import { AdminEquipmentComponent } from './features/admin/pages/equipment';
-import { ClientDashboard } from './features/client/layout';
-import { ClientUserComponent } from './features/client/pages/user';
-import { ClientEquipmentComponent } from './features/client/pages/equipment';
-import { EUserRole } from './shared/Enums/UserEnums';
 import { AdminInsightComponent } from './features/admin/pages/insight';
 import { AdminBorrowComponent } from './features/admin/pages/borrows';
+
+import { ClientDashboard } from './features/client/layout';
+import { ClientEquipmentComponent } from './features/client/pages/equipment';
+import { ClientInsightComponent } from './features/client/pages/insight';
+import { ClientBorrowComponent } from './features/client/pages/borrow';
 
 export const routes: Routes = [
 
@@ -51,8 +54,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: EUserRole.Client },
     children: [
-      { path: 'user', component: ClientUserComponent },
-      { path: 'equipment', component: ClientEquipmentComponent },
+      { path: 'insight', component: ClientInsightComponent },
+      { path: 'equipments', component: ClientEquipmentComponent },
+      { path: 'borrows', component: ClientBorrowComponent},
       { path: '', redirectTo: 'user', pathMatch: 'full' }
     ]
   },

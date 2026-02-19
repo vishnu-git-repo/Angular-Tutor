@@ -18,8 +18,11 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 
 import { EquipmentCategory, EquipmentCondition, EquipmentStatus } from "../../../../shared/Enums/EquipmentEnums";
-import { EquipmentResponseCounts, IGetEquipment } from "../../../../shared/interface/equipments";
+import { dEquipmentResponseCounts, EquipmentResponseCounts, ICreateEquipmentsRequest, IGetEquipment } from "../../../../shared/interface/equipments";
 import { EquipmentService } from "../../../../core/services/equipment";
+import { Colors } from "../../../../shared/colors";
+import { CategoryConstant } from "../../../../shared/constants";
+import { CreateEquipmentSchema } from "../../../../shared/schemas/equipment";
 
 @Component({
     selector: "app-admin-equipment",
@@ -44,6 +47,12 @@ import { EquipmentService } from "../../../../core/services/equipment";
 })
 export class AdminEquipmentComponent implements OnInit {
 
+    Math = Math;
+    EquipmentCategory = EquipmentCategory;
+    EquipmentCondition = EquipmentCondition;
+    EquipmentStatus = EquipmentStatus;
+    CategoryList = CategoryConstant;
+    
     private searchSubject = new Subject<string>();
     equipmentService = inject(EquipmentService);
 
@@ -55,13 +64,27 @@ export class AdminEquipmentComponent implements OnInit {
     public equipmentItemsList = signal<any[]>([]);
     public WholeEquipmentItemList = signal<any[]>([]);
 
-    public Counts = signal<EquipmentResponseCounts>({
-        Category: { Tools: 0, Electronics: 0, Vehicles: 0, Furniture: 0, SafetyGear: 0, Other: 0 },
-        Status: { Available: 0, Reserved: 0, InUse: 0, UnderMaintenance: 0 },
-        Condition: { New: 0, Good: 0, Damaged: 0, Retired: 0 }
+    public groupDialog = signal({
+        add: false,
+        view: false,
+        edit: false
     });
 
-    public isGroupViewDialogOpen = false;
+    initialCreateEquipmentForm: {
+        Name: string;
+        Description: string;
+        Price: number;
+        Category: keyof typeof EquipmentCategory;
+        Count: number;
+    } = {
+            Name: "",
+            Description: "",
+            Price: 0,
+            Category: "Other",
+            Count: 5
+        };
+    public createEquipmentForm = signal(this.initialCreateEquipmentForm);
+
 
     public initialPaginator = {
         RowCount: 10,
@@ -74,8 +97,30 @@ export class AdminEquipmentComponent implements OnInit {
         EquipmentId: 0,
         TotalCount: 0
     };
-
     public paginatorState = signal(this.initialPaginator);
+
+    public Counts = signal<EquipmentResponseCounts>({
+        Category: { Tools: 0, Electronics: 0, Vehicles: 0, Furniture: 0, SafetyGear: 0, Other: 0 },
+        Status: { Available: 0, Reserved: 0, InUse: 0, UnderMaintenance: 0 },
+        Condition: { New: 0, Good: 0, Damaged: 0, Retired: 0 }
+    });
+
+
+    public dPaginatorState = signal({
+        RowCount: 10,
+        PageNo: 1,
+        SearchString: "",
+        IsGroup: false,
+        Category: 0,
+        Status: 0,
+        Condition: 0,
+        EquipmentId: 0,
+        TotalCount: 0
+    })
+    public dCounts = signal<dEquipmentResponseCounts>({
+        Status: { Available: 0, Reserved: 0, InUse: 0, UnderMaintenance: 0 },
+        Condition: { New: 0, Good: 0, Damaged: 0, Retired: 0 }
+    });
 
     ngOnInit(): void {
 
@@ -133,19 +178,19 @@ export class AdminEquipmentComponent implements OnInit {
 
         this.isEquipmentGroupItemsLoad.set(true);
 
-        this.equipmentService.getFilteredEquipment(this.paginatorState())
+        this.equipmentService.getFilteredEquipment(this.dPaginatorState())
             .subscribe({
                 next: res => {
 
                     this.equipmentItemsList.set(res.data.items ?? []);
 
-                    this.Counts.update(prev => ({
+                    this.dCounts.update(prev => ({
                         ...prev,
                         Status: res.data.statusCounts,
                         Condition: res.data.conditionCounts
                     }));
 
-                    this.paginatorState.update(prev => ({
+                    this.dPaginatorState.update(prev => ({
                         ...prev,
                         TotalCount: res.data.totalCount
                     }));
@@ -170,6 +215,7 @@ export class AdminEquipmentComponent implements OnInit {
             next: res => {
 
                 this.WholeEquipmentItemList.set(res.data.items ?? []);
+                console.log("setting data >>>>", this.WholeEquipmentItemList())
 
                 this.paginatorState.update(prev => ({
                     ...prev,
@@ -210,20 +256,6 @@ export class AdminEquipmentComponent implements OnInit {
         newIsGroup
             ? this.fetchEquipmentGroups()
             : this.fetchWholeEquipmentsItems(true);
-    }
-
-    openGroupViewDialog(equipmentId: number) {
-
-        this.isGroupViewDialogOpen = true;
-
-        this.paginatorState.update(s => ({
-            ...s,
-            EquipmentId: equipmentId,
-            Status: 0,
-            Condition: 0
-        }));
-
-        this.fetchEquipmentsGroupItems();
     }
 
     onSearch(event: Event) {
@@ -283,59 +315,379 @@ export class AdminEquipmentComponent implements OnInit {
         this.fetchWholeEquipmentsItems();
     }
 
-    OnEquipmentRowChange(e: any) {
+    // Pagination
+    goToFirstPage(i: number) {
+        if (this.isFirstPage(i)) return;
+        if (i == 1) {
+            this.paginatorState.update(state => ({
+                ...state,
+                PageNo: 1
+            }));
 
-        this.paginatorState.update(state => ({
-            ...state,
-            RowCount: e,
-            PageNo: 1
+            this.paginatorState().IsGroup
+                ? this.fetchEquipmentGroups()
+                : this.fetchWholeEquipmentsItems();
+        } else {
+            this.dPaginatorState.update(state => ({
+                ...state,
+                PageNo: 1
+            }))
+            this.fetchEquipmentsGroupItems();
+        }
+    }
+    goToPreviousPage(i: number) {
+        if (i == 1) {
+            if (this.isFirstPage(i)) return;
+            this.paginatorState.update(state => ({
+                ...state,
+                PageNo: state.PageNo - 1
+            }))
+            this.paginatorState().IsGroup
+                ? this.fetchEquipmentGroups()
+                : this.fetchWholeEquipmentsItems();
+        } else {
+            if (this.isFirstPage(i)) return;
+            this.dPaginatorState.update(state => ({
+                ...state,
+                PageNo: state.PageNo - 1
+            }))
+            this.fetchEquipmentsGroupItems();
+        }
+    }
+    goToNextPage(i: number) {
+        if (i == 1) {
+            if (this.isLastPage(i)) return;
+            this.paginatorState.update(state => ({
+                ...state,
+                PageNo: state.PageNo + 1
+            }))
+            this.paginatorState().IsGroup
+                ? this.fetchEquipmentGroups()
+                : this.fetchWholeEquipmentsItems();
+        } else {
+            if (this.isLastPage(i)) return;
+            this.dPaginatorState.update(state => ({
+                ...state,
+                PageNo: state.PageNo + 1
+            }))
+            this.fetchEquipmentsGroupItems();
+        }
+    }
+    goToLastPage(i: number) {
+        if (this.isLastPage(i)) {
+            console.log("Iam already in last page!")
+            return;
+        };
+        console.log("I value ===>", i)
+        if (i == 1) {
+            if (this.paginatorState().Category == 1) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Category.Tools ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Category == 2) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Category.Electronics ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Category == 3) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Category.Vehicles ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Category == 4) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Category.Furniture ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Category == 5) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Category.SafetyGear ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Category == 6) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Category.Other ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            }
+            this.fetchEquipmentGroups();
+        } else if (i == 2) {
+            if (this.dPaginatorState().Status == 1) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Status.Available ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else if (this.dPaginatorState().Status == 2) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Status.InUse ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else if (this.dPaginatorState().Status == 3) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Status.Reserved ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else if (this.dPaginatorState().Status == 4) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Status.UnderMaintenance ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else if (this.dPaginatorState().Condition == 1) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Condition.New ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else if (this.dPaginatorState().Condition == 2) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Condition.Good ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else if (this.dPaginatorState().Condition == 3) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Condition.Damaged ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else if (this.dPaginatorState().Condition == 4) {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dCounts().Condition.Retired ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            } else {
+                this.dPaginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.dPaginatorState().TotalCount ?? 0) / (this.dPaginatorState().RowCount ?? 1))
+                }))
+            }
+            this.fetchEquipmentsGroupItems();
+        } else {
+            if (this.paginatorState().Status == 1) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Status.Available ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Status == 2) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Status.InUse ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Status == 3) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Status.Reserved ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Status == 4) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Status.UnderMaintenance ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Condition == 1) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Condition.New ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Condition == 2) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Condition.Good ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Condition == 3) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Condition.Damaged ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else if (this.paginatorState().Condition == 4) {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.Counts().Condition.Retired ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            } else {
+                this.paginatorState.update(state => ({
+                    ...state,
+                    PageNo: Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1))
+                }))
+            }
+            console.log("Go to last api calling")
+            this.fetchWholeEquipmentsItems();
+        }
+    }
+    onRowChange(i: number, e: any) {
+        if (i == 1) {
+            this.paginatorState.update(state => ({
+                ...state,
+                RowCount: e,
+                PageNo: 1
+            }));
+
+            this.paginatorState().IsGroup
+                ? this.fetchEquipmentGroups()
+                : this.fetchWholeEquipmentsItems();
+        } else {
+            this.dPaginatorState.update(state => ({
+                ...state,
+                RowCount: e,
+                PageNo: 1
+            }))
+            this.fetchEquipmentsGroupItems();
+        }
+    }
+    isFirstPage(i: number) {
+        if (i == 1) {
+            return this.paginatorState().PageNo == 1 ?
+                true : false;
+        } else {
+            return this.dPaginatorState().PageNo == 1 ?
+                true : false;
+        }
+    }
+    isLastPage(i: number) {
+        if (i == 1) {
+            if (this.paginatorState().Category == 1) {
+                return this.paginatorState().PageNo == Math.ceil((this.Counts().Category.Tools ?? 0) / (this.paginatorState().RowCount ?? 1))
+            } else if (this.paginatorState().Category == 2) {
+                return this.paginatorState().PageNo == Math.ceil((this.Counts().Category.Electronics ?? 0) / (this.paginatorState().RowCount ?? 1))
+            } else if (this.paginatorState().Category == 3) {
+                return this.paginatorState().PageNo == Math.ceil((this.Counts().Category.Vehicles ?? 0) / (this.paginatorState().RowCount ?? 1))
+            } else if (this.paginatorState().Category == 4) {
+                return this.paginatorState().PageNo == Math.ceil((this.Counts().Category.Furniture ?? 0) / (this.paginatorState().RowCount ?? 1))
+            } else if (this.paginatorState().Category == 5) {
+                return this.paginatorState().PageNo == Math.ceil((this.Counts().Category.SafetyGear ?? 0) / (this.paginatorState().RowCount ?? 1))
+            } else if (this.paginatorState().Category == 6) {
+                return this.paginatorState().PageNo == Math.ceil((this.Counts().Category.Other ?? 0) / (this.paginatorState().RowCount ?? 1))
+            } else {
+                return this.paginatorState().PageNo == Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1))
+            }
+        } if (i == 2) {
+            if (this.dPaginatorState().Status == 1) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Status.Available ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.dPaginatorState().Status == 2) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Status.InUse ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.dPaginatorState().Status == 3) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Status.Reserved ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.dPaginatorState().Status == 4) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Status.UnderMaintenance ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.dPaginatorState().Condition == 1) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Condition.New ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.dPaginatorState().Condition == 2) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Condition.Good ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.dPaginatorState().Condition == 3) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Condition.Damaged ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.dPaginatorState().Condition == 4) {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dCounts().Condition.Retired ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else {
+                return (this.dPaginatorState().PageNo == Math.ceil((this.dPaginatorState().TotalCount ?? 0) / (this.dPaginatorState().RowCount ?? 1))) ?
+                    true : false;
+            }
+        } else {
+            if (this.paginatorState().Status == 1) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Status.Available ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.paginatorState().Status == 2) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Status.InUse ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.paginatorState().Status == 3) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Status.Reserved ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.paginatorState().Status == 4) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Status.UnderMaintenance ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.paginatorState().Condition == 1) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Condition.New ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.paginatorState().Condition == 2) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Condition.Good ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.paginatorState().Condition == 3) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Condition.Damaged ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else if (this.paginatorState().Condition == 4) {
+                return (this.paginatorState().PageNo == Math.ceil((this.Counts().Condition.Retired ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            } else {
+                return (this.paginatorState().PageNo == Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1))) ?
+                    true : false;
+            }
+        }
+    }
+
+
+    // Dialog
+    openGroupAddDialog() {
+        this.groupDialog.update(state => ({ ...state, add: true }))
+    }
+    openGroupViewDialog(equipmentId: number) {
+
+        this.groupDialog.update(state => ({ ...state, view: true }))
+
+        this.dPaginatorState.update(s => ({
+            ...s,
+            EquipmentId: equipmentId,
+            Status: 0,
+            Condition: 0
+        }));
+        this.fetchEquipmentsGroupItems();
+    }
+    openGroupEditDialog(equipmentId: number) {
+
+        this.groupDialog.update(state => ({ ...state, edit: true }))
+
+        this.paginatorState.update(s => ({
+            ...s,
+            EquipmentId: equipmentId,
+            Status: 0,
+            Condition: 0
         }));
 
-        this.paginatorState().IsGroup
-            ? this.fetchEquipmentGroups()
-            : this.fetchWholeEquipmentsItems();
+        this.fetchEquipmentsGroupItems();
     }
 
-    EquipmentCategoryMapper(v: number) {
-        return v == 1 ? EquipmentCategory.Tools :
-               v == 2 ? EquipmentCategory.Electronics :
-               v == 3 ? EquipmentCategory.Vehicles :
-               v == 4 ? EquipmentCategory.Furniture :
-               v == 5 ? EquipmentCategory.SafetyGear :
-               EquipmentCategory.Other;
+    getIndex(i: number) {
+        if (i == 1)
+            return (this.paginatorState().PageNo - 1) * this.paginatorState().RowCount;
+        return (this.dPaginatorState().PageNo - 1) * this.dPaginatorState().RowCount;
     }
 
-    EquipmentStatusMapper(s: number) {
-        return s == 1 ? EquipmentStatus.Available :
-               s == 2 ? EquipmentStatus.InUse :
-               s == 3 ? EquipmentStatus.Reserved :
-               EquipmentStatus.UnderMaintenance;
-    }
-
-    EquipmentConditionMapper(c: number) {
-        return c == 1 ? EquipmentCondition.New :
-               c == 2 ? EquipmentCondition.Good :
-               c == 3 ? EquipmentCondition.Damaged :
-               EquipmentCondition.Retired;
-    }
-
-    // Pagination
-    goToFirstPage() {
-
-    }
-    goToPreviousPage() {
-
-    }
-    goToNextPage() {
-
-    }
-    goToLastPage() {
-
-    }
-    onRowChange() {
-
+    getChipColor(color: keyof typeof Colors) {
+        return Colors[color] || Colors.neutral;
     }
 
     //CRUD
-    handleAddEquipment() {}
+    handleAddEquipment() {
+        const formValue = this.createEquipmentForm();
+
+        const apiPayload = {
+            ...formValue,
+            Category: EquipmentCategory[formValue.Category]
+        };
+
+        const result = CreateEquipmentSchema.safeParse(apiPayload);
+
+        if (!result.success) {
+            console.log(result.error);
+            return;
+        }
+
+        this.equipmentService.createEquipment(result.data)
+            .subscribe({
+                next: res => {
+                    console.log(res),
+                    this.fetchEquipmentGroups(),
+                    this.groupDialog.update( state => ({...state, add: false}))
+                },
+                error: err => console.log(err)
+            });
+    }
 }

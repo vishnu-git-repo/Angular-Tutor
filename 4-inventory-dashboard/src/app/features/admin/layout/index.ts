@@ -53,16 +53,6 @@ export class AdminDashboard implements OnInit {
     }
   }
 
-  handleLogout () {
-    this.authService.logout()
-    .subscribe({
-      next: (res) => {
-        this.router.navigate([""]);
-      },
-      error : e => console.log(Error)
-    })
-  }
-
   toggleSidebar() {
     this.sidebarVisible.set(true);
   }
@@ -94,5 +84,16 @@ export class AdminDashboard implements OnInit {
     if (this.isMobile()) {
       this.toggleSidebar();
     }
+  }
+
+
+  handleLogout () {
+    this.authService.logout()
+    .subscribe({
+      next: (res) => {
+        this.router.navigate([""]);
+      },
+      error : e => console.log(Error)
+    })
   }
 }

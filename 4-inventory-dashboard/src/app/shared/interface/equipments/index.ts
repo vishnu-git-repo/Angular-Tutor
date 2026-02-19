@@ -126,3 +126,7 @@ export interface EquipmentResponseCounts {
     Status: EquipmentStatusCounts;
     Condition: EquipmentConditionCounts;
 }
+export interface dEquipmentResponseCounts{
+    Status: EquipmentStatusCounts;
+    Condition: EquipmentConditionCounts;
+}
