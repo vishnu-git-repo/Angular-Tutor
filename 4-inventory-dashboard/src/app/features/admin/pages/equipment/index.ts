@@ -1,7 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -28,7 +27,6 @@ import { CreateEquipmentSchema } from "../../../../shared/schemas/equipment";
     selector: "app-admin-equipment",
     standalone: true,
     imports: [
-        RouterLink,
         FormsModule,
         CommonModule,
         IftaLabelModule,

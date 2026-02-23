@@ -4,7 +4,7 @@ import { FormsModule } from "@angular/forms";
 
 
 @Component({
-    selector: "app-client-borrow",
+    selector: "app-client-insight",
     standalone: true,
     imports: [FormsModule, CommonModule], 
     templateUrl: "./index.html",

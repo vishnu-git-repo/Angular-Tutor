@@ -136,10 +136,11 @@
                     <th>Name</th>
                     <th>Description</th>
                     <th>Category</th>
+                    <th>Price</th>
                     <th>Total</th>
                     <th>Available</th>
                     <th>In Use</th>
-                    <th class="min-w-24">Actions</th>
+                    <th class="min-w-24 flex justify-center">Actions</th>
                 </tr>
             </ng-template>
 
@@ -152,26 +153,102 @@
                         <p-chip [label]="EquipmentCategory[e.category]" [style]="getChipColor('secondary')">
                         </p-chip>
                     </td>
+                    <td>{{ e.price | currency: 'INR' }}</td>
                     <td>{{ e.totalItems }}</td>
                     <td>{{ e.availableCount }}</td>
                     <td>{{ e.inUseCount }}</td>
                     <td class="">
-                        <div class="flex justify-start gap-2">
+                        <div class="flex justify-center gap-2">
+                            @if (e.availableCount>0) {
                             <span
                                 class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
-                                (click)="openRequestBorrow(e)" pTooltip="Request borrow" tooltipPosition="bottom"
+                                (click)="openRequestBorrowDialog(e)" pTooltip="Request borrow" tooltipPosition="bottom"
                                 tooltipStyleClass="custom-tooltip">
                                 <i class="pi pi-plus text-gray-600 group-hover:text-blue-600 transition-all duration-200"
                                     style="font-size: 0.85rem;">
                                 </i>
                             </span>
+                            } @else {
+                                <span>
+                                    No Actions
+                                </span>
+                            }
                         </div>
                     </td>
 
                 </tr>
             </ng-template>
         </p-table>
+
+        <!-- Pagination -->
+        <div class="flex justify-center items-center gap-5 mt-5">
+            <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                pTooltip="First Page" tooltipPosition="left" tooltipStyleClass="custom-tooltip"
+                (click)="goToFirstPage()">
+                <i class="pi pi-angle-double-left"></i>
+            </div>
+            <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                (click)="goToPreviousPage()">
+                <i class="pi pi-angle-left"></i>
+            </div>
+            <div class="px-5">
+                {{paginatorState().PageNo}}
+            </div>
+            <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                (click)="goToNextPage()">
+                <i class="pi pi-angle-right"></i>
+            </div>
+            <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip"
+                (click)="goToLastPage()">
+                <i class="pi pi-angle-double-right"></i>
+            </div>
+            <div class="flex gap-2 items-center">
+                <p-select [options]="[5, 10, 25, 50]" [ngModel]="paginatorState().RowCount"
+                    (ngModelChange)="onRowChange($event)" class="w-full" /> Rows
+            </div>
+            <div>
+                Showing :
+                {{ (paginatorState().PageNo - 1) * paginatorState().RowCount + 1 }}
+                -
+                {{
+                Math.min(
+                paginatorState().PageNo * paginatorState().RowCount,
+                paginatorState().TotalCount
+                )
+                }}
+                of {{ paginatorState().TotalCount }}
+            </div>
+
+        </div>
         }
     </div>
+
+    <p-dialog [(visible)]="Dialog().Request" [modal]="true" [style]="{ minWidth: '30rem' }" header="Make Request">
+        <div class="flex flex-col gap-5 p-5">
+            <div class="flex justify-between">
+                <p>{{selectedEquipment().name}}</p>
+                <p>
+                    Available
+                    <span class="px-3 py-1 rounded-full" [style]="getChipColor('warning')">
+                        {{selectedEquipment().availableCount}}
+                    </span>
+                </p>
+            </div>
+            <p-iftalabel class="w-full">
+                <input pInputText id="dialog_client_equipment_borrow_request_count" class="w-full"
+                    [(ngModel)]="requestPayload().EquipmentCount" />
+                <label for="dialog_client_equipment_borrow_request_count"> Count </label>
+            </p-iftalabel>
+            <p-iftalabel class="w-full">
+                <input pInputText id="dialog_client_equipment_borrow_request_days" class="w-full"
+                    [(ngModel)]="requestPayload().BorrowedDays" />
+                <label for="dialog_client_equipment_borrow_request_days"> Borrow Days</label>
+            </p-iftalabel>
+            <div class="flex justify-end">
+                <p-button label="Request" severity="success" (click)="handleRequestBorrow()" />
+            </div>
+        </div>
+    </p-dialog>
 
 </div>

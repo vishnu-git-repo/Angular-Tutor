@@ -32,7 +32,6 @@ export class RoleRedirectComponent implements OnInit {
       }
 
       const role = auth.data.role;
-      console.log(`<<<<< ${role} ${EUserRole.Admin} ${EUserRole.Client} >>>>>`)
 
       switch (role) {
         case EUserRole.Admin:

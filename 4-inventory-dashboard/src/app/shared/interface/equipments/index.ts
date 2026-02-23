@@ -130,3 +130,15 @@ export interface dEquipmentResponseCounts{
     Status: EquipmentStatusCounts;
     Condition: EquipmentConditionCounts;
 }
+
+
+
+// Client
+
+export interface IReqBorrowRequest {
+    UserId: number;
+    EquipmentId: number;
+    EquipmentCount: number;
+    BorrowedDays: number;
+    EquipmentPrice: number;
+}
