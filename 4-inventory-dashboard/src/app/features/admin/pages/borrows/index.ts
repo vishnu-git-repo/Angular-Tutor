@@ -16,29 +16,30 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { BorrowService } from "../../../../core/services/borrow";
-import { IGetAdminBorrowRequest } from "../../../../shared/interface/borrows";
+import { IAcceptBorrowRequest, IGetAdminBorrowRequest } from "../../../../shared/interface/borrows";
 import { Colors } from "../../../../shared/colors";
 import { Router, RouterModule } from "@angular/router";
+import { Badge } from "primeng/badge";
 
 @Component({
     selector: "app-admin-borrow",
     standalone: true,
     imports: [
-        RouterModule,
-        FormsModule,
-        CommonModule,
-        IftaLabelModule,
-        InputTextModule,
-        ButtonModule,
-        TabsModule,
-        TableModule,
-        TooltipModule,
-        DialogModule,
-        ChipModule,
-        SkeletonModule,
-        SelectModule,
-        TextareaModule
-    ],
+    RouterModule,
+    FormsModule,
+    CommonModule,
+    IftaLabelModule,
+    InputTextModule,
+    ButtonModule,
+    TabsModule,
+    TableModule,
+    TooltipModule,
+    DialogModule,
+    ChipModule,
+    SkeletonModule,
+    SelectModule,
+    TextareaModule,
+],
     templateUrl: "./index.html",
 })
 
@@ -51,6 +52,20 @@ export class AdminBorrowComponent {
     private borrowService = inject(BorrowService);
     private router = inject(Router);
 
+    public acceptPayload = signal<IAcceptBorrowRequest>({
+        BorrowId: 0,
+        UserId: 0,
+        PreRemarks: ""
+    });
+
+    public Dialog = signal<{
+        approve: boolean,
+        accept: boolean
+    }>({
+        accept: false,
+        approve: false
+    })
+
     public isLoading = signal<boolean>(false);
     public borrowList = signal<any>([]);
     public Counts = signal<{
@@ -58,7 +73,7 @@ export class AdminBorrowComponent {
         Accepted: number;
         Assigned: number;
         Pending: number;
-        Paid: number;
+        Paid: number; 
         Approved: number;
         Waitlisted: number;
         Ack: number;
@@ -124,7 +139,7 @@ export class AdminBorrowComponent {
         this.searchSubject.next(value);
     }
 
-    getIndex(i: number) {
+    getIndex() {
         return (this.paginatorState().PageNo - 1) * this.paginatorState().RowCount;
     }
 
@@ -174,5 +189,32 @@ export class AdminBorrowComponent {
     // Dialog
     openDialog(type: string) {
 
+    }
+
+    // Actions
+    handleViewBorrow(id: number){
+        this.router.navigate(['/admin/borrows/view',id]);
+    }
+    handleAcceptBorrow(id: number, userId: number){
+        this.acceptPayload.set({
+            BorrowId: id,
+            UserId: userId,
+            PreRemarks: "Approved your Request!"
+        });
+        this.Dialog.update(state => ({...state, accept: !state.accept}))
+    }
+    handleApproveBorrow(id: number){
+
+    }
+
+    // Service
+    acceptBorrowService(){
+        this.borrowService.putAcceptBorrow(this.acceptPayload()).subscribe({
+            next : res => {
+                console.log(res);
+                this.Dialog.update(state => ({...state, accept: !state.accept}))
+            },
+            error: err => console.log(err)
+        })
     }
 }

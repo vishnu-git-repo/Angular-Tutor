@@ -103,8 +103,8 @@
             </p-tablist>
         </p-tabs>
         } @else {
-        <!-- 🔹 STATUS + CONDITION TABS (ONLY ITEMS MODE) -->
-        <!-- 🔹 STATUS + CONDITION TABS -->
+
+        <!-- STATUS + CONDITION TABS (ONLY ITEMS MODE) -->
         <p-tabs value="0">
             <p-tablist>
 
@@ -197,7 +197,7 @@
         <div class="card">
             <!--  EMPTY  -->
             @if (equipmentList().length==0) {
-            <div class="flex justify-center items-center min-h-[50dvh]">
+            <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
                 <span class="text-2xl">Oops! No equipments found</span>
             </div>
             }
@@ -240,6 +240,7 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>Category</th>
+                        <th>Price</th>
                         <th>Total</th>
                         <th>Available</th>
                         <th>In Use</th>
@@ -251,11 +252,14 @@
                     <tr>
                         <td>{{ getIndex(1) + i + 1}}</td>
                         <td>{{ e.name }}</td>
-                        <td>{{ e.description }}</td>
+                        <td>
+                            <p class="max-w-80">{{ e.description }}</p>
+                        </td>
                         <td>
                             <p-chip [label]="EquipmentCategory[e.category]" [style]="getChipColor('secondary')">
                             </p-chip>
                         </td>
+                        <td>{{ e.price | currency: 'INR' }}</td>
                         <td>{{ e.totalItems }}</td>
                         <td>{{ e.availableCount }}</td>
                         <td>{{ e.inUseCount }}</td>
@@ -268,7 +272,7 @@
                                     <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 transition-all duration-200"
                                         style="font-size: 0.85rem;">
                                     </i>
-                                </span>
+                                </span> 
                                 <span
                                     class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
                                     (click)="openGroupEditDialog(e.id)" pTooltip="Edit Equipment"
@@ -279,7 +283,6 @@
                                 </span>
                             </div>
                         </td>
-
                     </tr>
                 </ng-template>
             </p-table>
@@ -291,13 +294,17 @@
                         <th>#</th>
                         <th>Item ID</th>
                         <th>Equipment</th>
+                        <th>Description</th>
                         <th>Status</th>
+                        <th>Price</th>
                         <th>Condition</th>
                         <th>Created</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body">
                     <tr>
+                        <td><p-skeleton></p-skeleton></td>
+                        <td><p-skeleton></p-skeleton></td>
                         <td><p-skeleton></p-skeleton></td>
                         <td><p-skeleton></p-skeleton></td>
                         <td><p-skeleton></p-skeleton></td>
@@ -319,6 +326,7 @@
                         <th>Equipment</th>
                         <th>Description</th>
                         <th>Status</th>
+                        <th>Price</th>
                         <th>Condition</th>
                         <th>Created</th>
                     </tr>
@@ -339,6 +347,7 @@
                             ">
                             </p-chip>
                         </td>
+                        <td>{{ item.price | currency: 'INR'  }}</td>
                         <td>
                             <p-chip [label]="EquipmentCondition[item.condition]" [style]="
                                 item.condition == 1 ? getChipColor('success') :

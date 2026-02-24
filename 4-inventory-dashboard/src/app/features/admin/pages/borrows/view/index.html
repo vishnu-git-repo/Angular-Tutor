@@ -1,1 +1,240 @@
-View Borrow
+<div class="text-white flex flex-col gap-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center pb-4">
+        <div class="flex items-center gap-3">
+            <i class="pi pi-receipt text-2xl" style="font-size: 2rem"></i>
+            <h2 class="text-2xl font-semibold tracking-wide">Borrow Details</h2>
+        </div>
+
+        <p-button (click)="handleBackButton()" pTooltip="Back" tooltipPosition="bottom" severity="secondary"
+            [outlined]="true">
+            <i class="pi pi-arrow-left text-sm"></i>
+            <span class="ml-2">Back</span>
+        </p-button>
+    </div>
+
+    @if(isDataLoading()){
+    <div class="flex justify-center items-center py-10">
+        <p class="text-gray-400 text-lg">Loading borrow details...</p>
+    </div>
+    }
+    @else if(data()==null){
+    <div class="flex justify-center py-10 text-gray-400">
+        <p>No data found</p>
+    </div>
+    }
+    @else{
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- LEFT COLUMN -->
+        <div class="flex flex-col gap-6">
+
+            <!-- Client Card -->
+            <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+                    Client Information
+                </h3>
+
+                <div class="grid grid-cols-2 gap-y-3 text-sm">
+                    <span class="text-gray-400">Name</span>
+                    <span class="font-medium">{{data()?.borrow?.userName}}</span>
+
+                    <span class="text-gray-400">Email</span>
+                    <span class="font-medium">{{data()?.borrow?.userEmail}}</span>
+                </div>
+            </div>
+
+            <!-- Borrow Card -->
+            <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+                    Borrow Information
+                </h3>
+
+                <div class="grid grid-cols-2 gap-y-3 text-sm">
+
+                    <span class="text-gray-400">Status</span>
+                    <p-chip [label]="BorrowStatus[data()?.borrow?.borrowStatus ?? 0]||'Unknown'"
+                        [style]="getChipColor('primary')" class="w-fit">
+                    </p-chip>
+
+                    <span class="text-gray-400">Equipment Count</span>
+                    <span class="font-medium">
+                        {{data()?.borrow?.equipmentCounts}}
+                    </span>
+
+                    <span class="text-gray-400">Start Date</span>
+                    <span>
+                        {{getDateTimeFromUtc(data()?.borrow?.startDate||"")}}
+                    </span>
+
+                    <span class="text-gray-400">Expected Return</span>
+                    <span>
+                        {{getDateTimeFromUtc(data()?.borrow?.expectedReturnDate||"")}}
+                    </span>
+
+                    <span class="text-gray-400">Actual Return</span>
+                    <span>
+                        {{ !data()?.borrow?.actualReturnDate
+                        ? 'Not Returned'
+                        : getDateTimeFromUtc(data()?.borrow?.actualReturnDate || '')
+                        }}
+                    </span>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="flex flex-col gap-6">
+
+            <!-- Payment Card -->
+            <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+                <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+                    Payment Summary
+                </h3>
+
+                <div class="grid grid-cols-2 gap-y-3 text-sm">
+
+                    <span class="text-gray-400">Total Price</span>
+                    <span class="font-medium">
+                        {{data()?.borrow?.totalPrice | currency:'INR'}}
+                    </span>
+
+                    <span class="text-gray-400">Paid Amount</span>
+                    <span>
+                        {{data()?.borrow?.paidAmount | currency:'INR'}}
+                    </span>
+
+                    <span class="text-gray-400 font-semibold">Due Amount</span>
+                    <span class="font-semibold text-red-400">
+                        {{data()?.borrow?.dueAmount | currency:'INR'}}
+                    </span>
+
+                    <span class="text-gray-400">Late Fee</span>
+                    <span>
+                        {{data()?.borrow?.lateFee | currency:'INR'}}
+                    </span>
+
+                    <span class="text-gray-400">Payment Status</span>
+                    <p-chip [label]="data()?.borrow?.isPaymentCompleted ? 'Paid' : 'Not Paid'" [style]="getChipColor(
+                                data()?.borrow?.isPaymentCompleted ? 'success' : 'danger'
+                            )" class="w-fit">
+                    </p-chip>
+
+                    @if(data()?.borrow?.isPaymentCompleted){
+                    <span class="text-gray-400">Payment Mode</span>
+                    <p-chip [label]="PaymentMode[data()?.borrow?.paymentMode ?? 0] || 'Unknown'"
+                        [style]="getChipColor('success')" class="w-fit">
+                    </p-chip>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    @if(data()?.borrow?.preRemarks){
+    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+            Pre Remarks
+        </h3>
+        <p class="text-sm text-gray-300 leading-relaxed">
+            {{data()?.borrow?.preRemarks}}
+        </p>
+    </div>
+    }
+
+    @if(data()?.borrow?.postRemarks){
+    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+            Post Remarks
+        </h3>
+        <p class="text-sm text-gray-300 leading-relaxed">
+            {{data()?.borrow?.postRemarks}}
+        </p>
+    </div>
+    }
+
+    @if(data()?.borrow?.ackRemarks){
+    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+            Acknowledgement Remarks
+        </h3>
+        <p class="text-sm text-gray-300 leading-relaxed">
+            {{data()?.borrow?.ackRemarks}}
+        </p>
+    </div>
+    }
+    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+            Borrowed Equipments
+        </h3>
+
+        <p-table [value]="data()?.equipments || []" styleClass="p-datatable-sm" [tableStyle]="{'min-width':'100%'}">
+
+            <ng-template pTemplate="header">
+                <tr class="text-sm text-gray-400 uppercase tracking-wide">
+                    <th class="w-12">#</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th class="text-center">Return Status</th>
+                    <th>Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-e let-i="rowIndex">
+                <tr class="text-sm">
+                    <td>{{i+1}}</td>
+
+                    <td class="font-medium">
+                        {{e.equipmentName}}
+                    </td>
+                    <td class="font-medium">
+                        <p class="max-w-100">
+                            {{e.equipmentDescription}}
+                        </p>
+                    </td>
+                    <td>
+                        {{e.borrowedPrice | currency:'INR'}}
+                    </td>
+
+                    <td class="text-center">
+                        <p-chip [label]="e.isReturned ? 'Returned' : 'Not Returned'"
+                            [style]="getChipColor(e.isReturned ? 'success' : 'danger')" class="w-fit">
+                        </p-chip>
+                    </td>
+
+                    <td>
+                        <div class="flex justify-start gap-2">
+                            <span
+                                class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                                pTooltip="View Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                                (click)="handleViewEquipment(e.equipmentItemId)">
+                                <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 transition-all duration-200"
+                                    style="font-size: 0.85rem;">
+                                </i>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center py-6 text-gray-400">
+                        No equipment records found.
+                    </td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+    </div>
+    }
+</div>

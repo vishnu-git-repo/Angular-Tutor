@@ -165,7 +165,7 @@
                 </tr>
             </ng-template>
         </p-table>
-        <div class="flex justify-center items-center min-h-[50dvh]">
+        <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
             <span class="text-2xl">Oops! No Borrows found</span>
         </div>
     </div>
@@ -190,11 +190,11 @@
         </ng-template>
         <ng-template pTemplate="body" let-b let-i="rowIndex">
             <tr>
-                <td class="text-center">{{ i + 1 }}</td>
+                <td class="text-center">{{ getIndex() + i + 1 }}</td>
                 <td class="text-left">{{ b.id }}</td>
                 <td class="text-left">{{ b.userName }}</td>
                 <td class="text-center">{{ b.equipmentCounts }}</td>
-                <td class="text-right">{{ b.totalPrice | currency }}</td>
+                <td class="text-right">{{ b.totalPrice | currency: 'INR' }}</td>
                 <td class="text-center whitespace-nowrap">{{ b.startDate | date:'MMM d, yyyy h:mm a' }}</td>
                 <td class="text-center whitespace-nowrap">{{ b.expectedReturnDate | date:'MMM d, yyyy h:mm a' }}</td>
                 <td class="text-center whitespace-nowrap">
@@ -205,9 +205,42 @@
                     }
                 </td>
                 <td class="text-center">{{ b.expectedDuration }}</td>
-                <td class="text-center">
-                    <!-- Your action buttons here -->
-                    <button class="btn btn-sm btn-primary">View</button>
+                <td class="">
+                    <div class="flex justify-start gap-2">
+                        <!-- View -->
+                        <span
+                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                            pTooltip="View Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            (click)="handleViewBorrow(b.id)">
+                            <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 transition-all duration-200"
+                                style="font-size: 0.85rem;">
+                            </i>
+                        </span>
+
+                        <!-- Accept -->
+                        @if (b.status==1) {
+                        <span
+                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                            pTooltip="Approve Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            (click)="handleAcceptBorrow(b.id, b.userId)">
+                            <i class="pi pi-check-square text-gray-600 group-hover:text-green-600 transition-all duration-200"
+                                style="font-size: 0.85rem;">
+                            </i>
+                        </span>
+                        }
+
+                        <!-- Close -->
+                        @if (b.status==1||b.status==5||b.status==7){
+                        <span
+                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-red-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                            pTooltip="Close Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            (click)="handleViewBorrow(b.id)">
+                            <i class="pi pi-times-circle text-gray-600 group-hover:text-red-600 transition-all duration-200"
+                                style="font-size: 0.85rem;">
+                            </i>
+                        </span>
+                        }
+                    </div>
                 </td>
             </tr>
         </ng-template>
@@ -230,8 +263,7 @@
             <i class="pi pi-angle-right"></i>
         </div>
         <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-            pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip"
-            (click)="goToLastPage()">
+            pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip" (click)="goToLastPage()">
             <i class="pi pi-angle-double-right"></i>
         </div>
         <div class="flex gap-2 items-center">
@@ -250,7 +282,19 @@
             }}
             of {{ paginatorState().TotalCount }}
         </div>
-
     </div>
-
 </div>
+
+<p-dialog [(visible)]="Dialog().accept" [modal]="true" [style]="{ width: 'fit' }" header="Approve Borrow">
+    <div class="flex flex-col min-w-80 gap-5">
+        <p-iftaLabel>
+            <textarea pTextarea row="5" cols="50" id="admin_borrows_approve_premarks"
+                [(ngModel)]="acceptPayload().PreRemarks" [autoResize]="true">
+            </textarea>
+            <label for="admin_borrows_approve_premarks">Pre Marks</label>
+        </p-iftaLabel>
+        <div class="flex justify-end">
+            <p-button (click)="acceptBorrowService()" severity="success">Accept</p-button>
+        </div>
+    </div>
+</p-dialog>

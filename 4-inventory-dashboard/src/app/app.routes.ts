@@ -16,13 +16,15 @@ import { ClientDashboard } from './features/client/layout';
 import { ClientEquipmentComponent } from './features/client/pages/equipment';
 import { ClientInsightComponent } from './features/client/pages/insight';
 import { ClientBorrowComponent } from './features/client/pages/borrow';
+import { AdminBorrowViewComponent } from './features/admin/pages/borrows/view';
 
 export const routes: Routes = [
 
-  
+  // Public routes (NO layout)
   { path: 'login', component: Login },
   { path: 'register', component: Register },
 
+  // Root route → redirect based on role
 
   {
     path: '',
@@ -31,7 +33,6 @@ export const routes: Routes = [
       import('./core/guards/role.redirect').then(m => m.RoleRedirectComponent)
   },
 
-  
   // Admin Layout
   {
     path: 'admin',
@@ -39,15 +40,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: EUserRole.Admin },
     children: [
-      { path: 'insight', component: AdminInsightComponent },
+      { path: 'insight', component: AdminInsightComponent},
       { path: 'users', component: AdminUserComponent },
       { path: 'equipments', component: AdminEquipmentComponent },
-      {
-        path: 'borrows',
-        component: AdminBorrowComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: EUserRole.Admin },
-      },
+      { path: 'borrows', component:AdminBorrowComponent},
+      { path: 'borrows/view/:id', component: AdminBorrowViewComponent},
       { path: '', redirectTo: 'insight', pathMatch: 'full' }
     ]
   },
@@ -61,7 +58,7 @@ export const routes: Routes = [
     children: [
       { path: 'insight', component: ClientInsightComponent },
       { path: 'equipments', component: ClientEquipmentComponent },
-      { path: 'borrows', component: ClientBorrowComponent },
+      { path: 'borrows', component: ClientBorrowComponent},
       { path: '', redirectTo: 'user', pathMatch: 'full' }
     ]
   },

@@ -1,10 +1,8 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../../../environment";
-import { IGetAdminBorrowRequest } from "../../../shared/interface/borrows";
-
-
+import { IAcceptBorrowRequest, IGetAdminBorrowRequest } from "../../../shared/interface/borrows";
 
 
 
@@ -14,11 +12,25 @@ import { IGetAdminBorrowRequest } from "../../../shared/interface/borrows";
 export class BorrowService {
     constructor(private http: HttpClient) { }
 
-    getAdminBorrows(payload: IGetAdminBorrowRequest):Observable<any>{
-            const api_url = `${environment.api_url}borrows/adminBorrows`;
-            return this.http.post(api_url, payload, {
-                withCredentials: true
-            })
-        }
+    getBorrowByID(id: number): Observable<any> {
+        const api_url = `${environment.api_url}borrows/${id}`;
+        return this.http.get(api_url, {
+            withCredentials: true
+        });
+    }
+
+    getAdminBorrows(payload: IGetAdminBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/adminBorrows`;
+        return this.http.post(api_url, payload, {
+            withCredentials: true
+        });
+    }
+
+    putAcceptBorrow(payload: IAcceptBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/accept/${payload.BorrowId}`;
+        return this.http.put(api_url, payload, {
+            withCredentials: true
+        })
+    }
 
 }
