@@ -29,9 +29,9 @@
         </span>
       </a>
 
-      <!-- Users -->
+      <!-- Equipments -->
       <a routerLink="equipments" class="flex items-center gap-3 p-3 rounded-lg hover:bg-pink-900 transition-colors">
-        <i class="pi pi-users text-lg shrink-0"></i>
+        <i class="pi pi-cog text-lg shrink-0"></i>
         <span class="transition-all duration-300 overflow-hidden whitespace-nowrap"
           [class.opacity-100]="sidebarExpanded()" [class.opacity-0]="!sidebarExpanded()"
           [class.w-0]="!sidebarExpanded()">
@@ -39,15 +39,26 @@
         </span>
       </a>
 
-      <!-- Settings -->
+      <!-- Borrows -->
       <a routerLink="borrows" class="flex items-center gap-3 p-3 rounded-lg hover:bg-pink-900 transition-colors">
-        <i class="pi pi-cog text-lg shrink-0"></i>
+        <i class="pi pi-receipt text-lg shrink-0"></i>
         <span class="transition-all duration-300 overflow-hidden whitespace-nowrap"
           [class.opacity-100]="sidebarExpanded()" [class.opacity-0]="!sidebarExpanded()"
           [class.w-0]="!sidebarExpanded()">
           Borrows
         </span>
       </a>
+
+      <!-- Cart -->
+      <a routerLink="cart" class="flex items-center gap-3 p-3 rounded-lg hover:bg-pink-900 transition-colors">
+        <i class="pi pi-shopping-cart text-lg shrink-0"></i>
+        <span class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+          [class.opacity-100]="sidebarExpanded()" [class.opacity-0]="!sidebarExpanded()"
+          [class.w-0]="!sidebarExpanded()">
+          Cart
+        </span>
+      </a>
+
     </div>
   </div>
 

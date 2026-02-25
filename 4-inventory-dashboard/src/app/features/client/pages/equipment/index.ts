@@ -14,10 +14,12 @@ import { ButtonModule } from "primeng/button";
 import { TooltipModule } from "primeng/tooltip";
 import { SelectModule } from 'primeng/select';
 
-import { EquipmentCategoryCounts, IGetEquipment, IReqBorrowRequest } from "../../../../shared/interface/equipments";
+import { EquipmentCategoryCounts, IGroupEquipmentItems } from "../../../../shared/interface/equipments";
 import { EquipmentCategory } from "../../../../shared/Enums/EquipmentEnums";
 import { Colors } from "../../../../shared/colors";
 import { EquipmentService } from "../../../../core/services/equipment";
+import { IRequestBorrowItems } from "../../../../shared/interface/borrows";
+import { ClientCartItem } from "../../../../shared/interface/cart";
 
 
 @Component({
@@ -47,24 +49,25 @@ export class ClientEquipmentComponent implements OnInit {
     private equipmentService = inject(EquipmentService);
     private searchSubject = new Subject<string>();
 
-    public equipmentList = signal<IGetEquipment[]>([]);
+    public equipmentList = signal<IGroupEquipmentItems[]>([]);
     public isEquipmentLoad = signal<boolean>(false);
     public selectedEquipment = signal<any>({});
+    public CartItems = signal<ClientCartItem[] | null>(null)
+    public CartItem = signal<ClientCartItem>({
+        Equipment: null,
+        Quantity: 1
+    })
+    public Error = signal<{
+        addCart: string;
+    }>({
+        addCart: ""
+    });
+
     public Counts = signal<EquipmentCategoryCounts>({
         Tools: 0, Electronics: 0, Vehicles: 0, Furniture: 0, SafetyGear: 0, Other: 0
     })
-
-    // Payload
-    public requestPayload = signal<IReqBorrowRequest>({
-        UserId: 0,
-        EquipmentId: 0,
-        EquipmentCount: 1,
-        BorrowedDays: 1,
-        EquipmentPrice: 0
-    })
-
     public Dialog = signal({
-        Request: false
+        AddCart: false
     })
 
     public initialPaginator = {
@@ -226,18 +229,79 @@ export class ClientEquipmentComponent implements OnInit {
 
 
     // Dialogs
-    openRequestBorrowDialog(e: any) {
-        this.Dialog.update( state => ({
+    openAddCartDialog(e: IGroupEquipmentItems) {
+
+        this.selectedEquipment.set(e);
+
+        const storedCart = localStorage.getItem("clientCart");
+        let existingQuantity = 1;
+
+        if (storedCart) {
+            const cartData: ClientCartItem[] = JSON.parse(storedCart);
+            const existing = cartData.find(item => item.Equipment?.id === e.id);
+            if (existing) {
+                existingQuantity = existing.Quantity;
+            }
+        }
+
+        this.CartItem.set({
+            Equipment: e,
+            Quantity: existingQuantity
+        });
+
+        this.Dialog.update(state => ({
             ...state,
-            Request: true
-        }))
-        this.selectedEquipment.set(e)
-        console.log("Selected Equipment>>>>",this.selectedEquipment())
+            AddCart: true
+        }));
     }
 
+    handleAddCartItems() {
+        this.Error.update(state => ({ ...state, addCart: "" }));
 
-    // CRUD
-    handleRequestBorrow () {
+        const quantity = Number(this.CartItem().Quantity);
+        const equipment = this.selectedEquipment();
 
+        if (!quantity || quantity <= 0) {
+            this.Error.update(state => ({ ...state, addCart: "Enter valid quantity" }));
+            return;
+        }
+
+        if (quantity > equipment.availableCount) {
+            this.Error.update(state => ({
+                ...state,
+                addCart: `Available only ${equipment.availableCount}`
+            }));
+            return;
+        }
+
+        let cartData: ClientCartItem[] = [];
+
+        const storedCart = localStorage.getItem("clientCart");
+
+        if (storedCart !== null) {
+            try {
+                cartData = JSON.parse(storedCart);
+            } catch {
+                cartData = [];
+            }
+        }
+
+        const existingIndex = cartData.findIndex(
+            item => item.Equipment?.id === equipment.id
+        );
+
+        if (existingIndex > -1) {
+            cartData[existingIndex].Quantity = quantity; // Replace (A)
+        } else {
+            cartData.push({
+                Equipment: equipment,
+                Quantity: quantity
+            });
+        }
+
+        localStorage.setItem("clientCart", JSON.stringify(cartData));
+
+        this.CartItem.set({ Equipment: null, Quantity: 1 });
+        this.Dialog.update(state => ({ ...state, AddCart: false }));
     }
 } 

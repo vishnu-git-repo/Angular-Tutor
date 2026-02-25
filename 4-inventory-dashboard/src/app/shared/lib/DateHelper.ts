@@ -36,3 +36,15 @@ export function getDateTimeFromUtc(utc: string): string {
         hour12: true
     });
 }
+
+export function getDurationInDays(startUtc: string, endUtc: string): number {
+    if (!startUtc || !endUtc) return 0;
+
+    const start = new Date(startUtc);
+    const end = new Date(endUtc);
+    const diffMs = end.getTime() - start.getTime();
+    
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    return diffDays > 0 ? diffDays : 0;
+}

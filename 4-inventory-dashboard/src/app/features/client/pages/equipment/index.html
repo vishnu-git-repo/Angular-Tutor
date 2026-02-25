@@ -1,6 +1,6 @@
 <div class="text-white rounded shadow-lg flex flex-col gap-5">
 
-    <!-- 🔹 HEADER -->
+    <!-- HEADER -->
     <div class="flex justify-between items-center">
         <div class="flex items-center gap-2">
             <i class="pi pi-cog text-2xl" style="font-size: 2rem"></i>
@@ -88,16 +88,8 @@
     </div>
 
     <div>
-
-        <!-- EMPTY TABLE -->
-        @if (equipmentList().length==0) {
-        <div class="flex justify-center items-center min-h-[50dvh]">
-            <span class="text-2xl">Oops! No equipments found</span>
-        </div>
-        }
-
         <!-- SKELETON TABLE -->
-        @else if (isEquipmentLoad()) {
+        @if (isEquipmentLoad()) {
         <p-table>
             <ng-template pTemplate="header">
                 <tr>
@@ -126,6 +118,13 @@
                 </tr>
             </ng-template>
         </p-table>
+        }
+
+        <!-- EMPTY TABLE -->
+        @else if (equipmentList().length==0) {
+        <div class="flex justify-center items-center min-h-[50dvh]">
+            <span class="text-2xl">Oops! No equipments found</span>
+        </div>
         } @else {
 
         <!-- ENTRIE TABLE -->
@@ -148,7 +147,9 @@
                 <tr>
                     <td>{{ getIndex() + i + 1}}</td>
                     <td>{{ e.name }}</td>
-                    <td>{{ e.description }}</td>
+                    <td>
+                        <p class="max-w-100">{{ e.description }}</p>
+                    </td>
                     <td>
                         <p-chip [label]="EquipmentCategory[e.category]" [style]="getChipColor('secondary')">
                         </p-chip>
@@ -162,16 +163,16 @@
                             @if (e.availableCount>0) {
                             <span
                                 class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
-                                (click)="openRequestBorrowDialog(e)" pTooltip="Request borrow" tooltipPosition="bottom"
+                                (click)="openAddCartDialog(e)" pTooltip="Add cart" tooltipPosition="bottom"
                                 tooltipStyleClass="custom-tooltip">
-                                <i class="pi pi-plus text-gray-600 group-hover:text-blue-600 transition-all duration-200"
+                                <i class="pi pi-cart-plus text-gray-600 group-hover:text-blue-600 transition-all duration-200"
                                     style="font-size: 0.85rem;">
                                 </i>
                             </span>
                             } @else {
-                                <span>
-                                    No Actions
-                                </span>
+                            <span>
+                                No Actions
+                            </span>
                             }
                         </div>
                     </td>
@@ -224,7 +225,7 @@
         }
     </div>
 
-    <p-dialog [(visible)]="Dialog().Request" [modal]="true" [style]="{ minWidth: '30rem' }" header="Make Request">
+    <p-dialog [(visible)]="Dialog().AddCart" [modal]="true" [style]="{ minWidth: '30rem' }" header="Add to Cart">
         <div class="flex flex-col gap-5 p-5">
             <div class="flex justify-between">
                 <p>{{selectedEquipment().name}}</p>
@@ -237,16 +238,16 @@
             </div>
             <p-iftalabel class="w-full">
                 <input pInputText id="dialog_client_equipment_borrow_request_count" class="w-full"
-                    [(ngModel)]="requestPayload().EquipmentCount" />
+                    [(ngModel)]="CartItem().Quantity" />
                 <label for="dialog_client_equipment_borrow_request_count"> Count </label>
             </p-iftalabel>
-            <p-iftalabel class="w-full">
-                <input pInputText id="dialog_client_equipment_borrow_request_days" class="w-full"
-                    [(ngModel)]="requestPayload().BorrowedDays" />
-                <label for="dialog_client_equipment_borrow_request_days"> Borrow Days</label>
-            </p-iftalabel>
+            @if( Error().addCart != ""){
+            <p class="text-red-600">
+                {{Error().addCart}}
+            </p>
+            }
             <div class="flex justify-end">
-                <p-button label="Request" severity="success" (click)="handleRequestBorrow()" />
+                <p-button label="Add Cart" severity="success" (click)="handleAddCartItems()" />
             </div>
         </div>
     </p-dialog>

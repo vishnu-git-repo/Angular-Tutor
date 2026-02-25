@@ -13,9 +13,18 @@ export interface IGetAdminBorrowRequest {
     TotalCount: number;
 }
 
-export interface IRequestBorrowRequest {
-    
+export interface IReqBorrowRequest {
+    UserId: number;
+    StartDate: string;
+    ExpectedReturnDate: string;
+    Items: IRequestBorrowItems[];
 }
+
+export interface IRequestBorrowItems {
+    EquipmentId: number;
+    Quantity: number;
+}
+
 
 export interface IAcceptBorrowRequest {
     BorrowId: number;
@@ -38,10 +47,10 @@ interface IBorrowDetail {
     userName: string;
     userEmail: string;
     borrowId: number;
-    borrowStatus: BorrowStatus; 
+    borrowStatus: BorrowStatus;
     equipmentCounts: number;
-    startDate: string; 
-    expectedReturnDate: string; 
+    startDate: string;
+    expectedReturnDate: string;
     actualReturnDate: string | null;
     totalPrice: number;
     paidAmount: number;
@@ -50,7 +59,7 @@ interface IBorrowDetail {
     paymentMode: PaymentMode;
     isPaymentCompleted: boolean;
     paymentId: string | null;
-    requestedDate: string; 
+    requestedDate: string;
     acceptedDate: string | null;
     assignedDate: string | null;
     pendingDate: string | null;
@@ -62,8 +71,8 @@ interface IBorrowDetail {
     preRemarks: string | null;
     postRemarks: string | null;
     ackRemarks: string | null;
-    createdAt: string; 
-    updatedAt: string; 
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface IEquipmentDetail {

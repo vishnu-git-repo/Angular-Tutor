@@ -17,6 +17,7 @@ import { ClientEquipmentComponent } from './features/client/pages/equipment';
 import { ClientInsightComponent } from './features/client/pages/insight';
 import { ClientBorrowComponent } from './features/client/pages/borrow';
 import { AdminBorrowViewComponent } from './features/admin/pages/borrows/view';
+import { ClientCartComponent } from './features/client/pages/cart';
 
 export const routes: Routes = [
 
@@ -59,7 +60,8 @@ export const routes: Routes = [
       { path: 'insight', component: ClientInsightComponent },
       { path: 'equipments', component: ClientEquipmentComponent },
       { path: 'borrows', component: ClientBorrowComponent},
-      { path: '', redirectTo: 'user', pathMatch: 'full' }
+      { path: 'cart', component: ClientCartComponent},
+      { path: '', redirectTo: 'insight', pathMatch: 'full' }
     ]
   },
 

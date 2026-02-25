@@ -11,7 +11,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  private user = signal<any | null>(null);
+  public User = signal<any | null>(null);
 
   login(apiUrl: string, data: ILoginData): Observable<any> {
     return this.http.post(
@@ -36,9 +36,9 @@ export class AuthService {
     ).pipe(
       tap((res: any) => {
         if (res?.status) {
-          this.user.set(res.data);
+          this.User.set(res.data);
         } else {
-          this.user.set(null);
+          this.User.set(null);
         }
       })
     );
@@ -52,18 +52,18 @@ export class AuthService {
   }
 
   isLoggedIn() {
-    return !!this.user();
+    return !!this.User();
   }
 
   getRole() {
-    return this.user()?.role;
+    return this.User()?.role;
   }
 
   getUser() {
-    if(!this.user()){
+    if(!this.User()){
       this.checkAuth();
-      return this.user();
+      return this.User();
     }
-    return this.user();
+    return this.User();
   }
 }

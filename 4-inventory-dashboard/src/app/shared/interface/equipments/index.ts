@@ -34,18 +34,7 @@ export interface IGetEquipmentGroupItem {
 
 }
 export interface IGetEquipmentGroupResponse {
-    items: [{
-        id: number;
-        name: string;
-        description: string;
-        price: number;
-        category: number;
-        totalItems: number;
-        availableCount: number;
-        inUseCount: number;
-        reservedCount: number;
-        maintenanceCount: number;
-    }],
+    items: IGroupEquipmentItems[],
     totalCount: number;
     categoryCounts: {
         Tools?: number;
@@ -55,7 +44,19 @@ export interface IGetEquipmentGroupResponse {
         SafetyGear?: number;
         Other?: number;
     }
+}
 
+export interface IGroupEquipmentItems {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    category: number;
+    totalItems: number;
+    availableCount: number;
+    inUseCount: number;
+    reservedCount: number;
+    maintenanceCount: number;
 }
 
 export interface IGetEquipmentResponse {
@@ -126,19 +127,7 @@ export interface EquipmentResponseCounts {
     Status: EquipmentStatusCounts;
     Condition: EquipmentConditionCounts;
 }
-export interface dEquipmentResponseCounts{
+export interface dEquipmentResponseCounts {
     Status: EquipmentStatusCounts;
     Condition: EquipmentConditionCounts;
-}
-
-
-
-// Client
-
-export interface IReqBorrowRequest {
-    UserId: number;
-    EquipmentId: number;
-    EquipmentCount: number;
-    BorrowedDays: number;
-    EquipmentPrice: number;
 }
