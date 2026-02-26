@@ -212,9 +212,13 @@ export class AdminBorrowComponent {
         this.borrowService.putAcceptBorrow(this.acceptPayload()).subscribe({
             next : res => {
                 console.log(res);
-                this.Dialog.update(state => ({...state, accept: !state.accept}))
+                this.Dialog.update(state => ({...state, accept: !state.accept}));
+                this.fetchBorrows();
             },
             error: err => console.log(err)
-        })
+        });
+        
+
+        // do your Ideas here... I want remove the borrow items in list and change the counts.. requested-1 and accepted+1.. because it goes to next tab
     }
 }

@@ -116,26 +116,27 @@ export class ClientCartComponent implements OnInit {
         );
     }
 
-    // Duration calculation (minimum 1 if same day)
     get duration(): number {
         const start = this.datePickerValues().StartDate;
         const end = this.datePickerValues().ExpectedReturnDate;
         if (!start || !end) return 1;
 
-        const diffMs = end.getTime() - start.getTime();
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1; // +1 to include same day borrow
+        const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+        const diffDays =
+            Math.floor(
+                (new Date(end).setHours(0, 0, 0, 0) -
+                    new Date(start).setHours(0, 0, 0, 0)) / MS_PER_DAY
+            ) + 1;
         return diffDays > 0 ? diffDays : 1;
     }
 
-    // Called when user changes start date
     onStartDateChange(selected: Date) {
         if (!selected) return;
 
         const nextDay = new Date(selected);
-        // min return = selected start date (same day allowed)
         this.minReturnDate = nextDay;
 
-        // Adjust return date if before new min
         if (this.datePickerValues().ExpectedReturnDate < nextDay) {
             this.datePickerValues.update((state) => ({
                 ...state,
@@ -143,14 +144,12 @@ export class ClientCartComponent implements OnInit {
             }));
         }
 
-        // Update payload UTC
         this.requestPayload.update((state) => ({
             ...state,
             StartDate: selected.toISOString(),
         }));
     }
 
-    // Called when user changes return date
     onReturnDateChange(selected: Date) {
         if (!selected) return;
         this.requestPayload.update((state) => ({
@@ -163,7 +162,7 @@ export class ClientCartComponent implements OnInit {
         this.Dialog.update(state => ({ ...state, checkOut: true }));
     }
 
-    handleRequestBorrow(){
+    handleRequestBorrow() {
         const items = this.CartItems().map(item => ({
             EquipmentId: item.Equipment?.id || 0,
             Quantity: item.Quantity
@@ -178,7 +177,7 @@ export class ClientCartComponent implements OnInit {
         }));
 
         this.borrowService.postRequestBorrow(this.requestPayload()).subscribe({
-            next: res=> {
+            next: res => {
                 console.log(res);
                 this.Dialog.update(state => ({ ...state, checkOut: true }));
             },

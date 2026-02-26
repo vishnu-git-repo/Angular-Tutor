@@ -177,6 +177,16 @@
                                     style="font-size: 0.85rem;">
                                 </i>
                             </span>
+                            @if (user.status==1) {
+                            <span
+                                class="size-6 rounded-full border border-gray-300 hover:border-cyan-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                (click)="handleAddToStore(user)" pTooltip="Add to store" tooltipPosition="bottom"
+                                tooltipStyleClass="custom-tooltip">
+                                <i class="pi pi-wallet text-zinc-600 group-hover:text-cyan-600 active:scale-90 transition-all duration-200"
+                                    style="font-size: 0.75rem;">
+                                </i>
+                            </span>
+                            }
                         </td>
                     </tr>
                 </ng-template>

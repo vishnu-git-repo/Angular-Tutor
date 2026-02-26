@@ -17,11 +17,12 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 
 import { EquipmentCategory, EquipmentCondition, EquipmentStatus } from "../../../../shared/Enums/EquipmentEnums";
-import { dEquipmentResponseCounts, EquipmentResponseCounts, ICreateEquipmentsRequest, IGetEquipment } from "../../../../shared/interface/equipments";
+import { dEquipmentResponseCounts, EquipmentResponseCounts, ICreateEquipmentsRequest, IGetEquipment, IGroupEquipmentItems } from "../../../../shared/interface/equipments";
 import { EquipmentService } from "../../../../core/services/equipment";
 import { Colors } from "../../../../shared/colors";
 import { CategoryConstant } from "../../../../shared/constants";
 import { CreateEquipmentSchema } from "../../../../shared/schemas/equipment";
+import { AdminStore } from "../../../../shared/interface/cart";
 
 @Component({
     selector: "app-admin-equipment",
@@ -50,7 +51,7 @@ export class AdminEquipmentComponent implements OnInit {
     EquipmentCondition = EquipmentCondition;
     EquipmentStatus = EquipmentStatus;
     CategoryList = CategoryConstant;
-    
+
     private searchSubject = new Subject<string>();
     equipmentService = inject(EquipmentService);
 
@@ -682,10 +683,58 @@ export class AdminEquipmentComponent implements OnInit {
             .subscribe({
                 next: res => {
                     console.log(res),
-                    this.fetchEquipmentGroups(),
-                    this.groupDialog.update( state => ({...state, add: false}))
+                        this.fetchEquipmentGroups(),
+                        this.groupDialog.update(state => ({ ...state, add: false }))
                 },
                 error: err => console.log(err)
             });
     }
+
+    handleAddToStore(equipment: IGroupEquipmentItems) {
+    try {
+        if (!equipment) return;
+
+        const adminStore = localStorage.getItem("adminStore");
+
+        if (adminStore !== null) {
+
+            const parsedStore: AdminStore = JSON.parse(adminStore);
+
+            const alreadyExists = parsedStore.Equipments.some(
+                item => item.Equipment?.id === equipment.id
+            );
+
+            if (alreadyExists) {
+                return; 
+            }
+
+            if ((equipment.availableCount || 0) < 1) {
+                alert("Equipment is not available");
+                return;
+            }
+
+            parsedStore.Equipments.push({
+                Equipment: equipment,
+                Quantity: 1
+            });
+
+            localStorage.setItem("adminStore", JSON.stringify(parsedStore));
+
+        } else {
+
+            const newStore: AdminStore = {
+                User: null,
+                Equipments: [{
+                    Equipment: equipment,
+                    Quantity: 1
+                }]
+            };
+
+            localStorage.setItem("adminStore", JSON.stringify(newStore));
+        }
+
+    } catch (error) {
+        console.error("Error loading cart from localStorage:", error);
+    }
+}
 }

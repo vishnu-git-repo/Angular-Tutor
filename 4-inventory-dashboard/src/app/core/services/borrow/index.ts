@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../../../environment";
-import { IAcceptBorrowRequest, IGetAdminBorrowRequest, IReqBorrowRequest } from "../../../shared/interface/borrows";
+import { IAcceptBorrowRequest, IGetAdminBorrowRequest, IGetClientBorrowRequest, IReqBorrowRequest } from "../../../shared/interface/borrows";
 
 
 
@@ -26,12 +26,26 @@ export class BorrowService {
         });
     }
 
+    getClientBorrows(payload: IGetClientBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/clientBorrows`;
+        return this.http.post(api_url, payload, {
+            withCredentials: true
+        });
+    }
+
     postRequestBorrow(payload: IReqBorrowRequest): Observable<any> {
         const api_url = `${environment.api_url}borrows/request`;
         return this.http.post(api_url, payload, {
             withCredentials: true
         })
     }
+
+    postAssignBorrow(payload: IReqBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/assign`;
+        return this.http.post(api_url, payload, {
+            withCredentials: true
+        })
+    } 
 
     putAcceptBorrow(payload: IAcceptBorrowRequest): Observable<any> {
         const api_url = `${environment.api_url}borrows/accept/${payload.BorrowId}`;

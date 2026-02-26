@@ -22,6 +22,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { IGetFilteredUserRequest, IUpdatePasswordRequest, IUpdateUserRequest, IUserResponse } from "../../../../shared/interface/users";
 import { UserService } from "../../../../core/services/user";
 import { GenderConstant } from "../../../../shared/constants";
+import { AdminStore } from "../../../../shared/interface/cart";
 
 interface IFilterOptions {
   row_count: number;
@@ -40,7 +41,6 @@ type DialogType =
   selector: "app-admin-user",
   standalone: true,
   imports: [
-    RouterLink,
     FormsModule,
     CommonModule,
     TabsModule,
@@ -213,7 +213,7 @@ export class AdminUserComponent implements OnInit {
     this.fetchUsers();
   }
   goToPage(page: number) { }
-  
+
   OnRowChange(e: any) {
     this.paginatorState.update(state => ({
       ...state,
@@ -337,5 +337,25 @@ export class AdminUserComponent implements OnInit {
 
   handleViewBorrows(user: IUserResponse) {
 
+  }
+
+  handleAddToStore(user: IUserResponse) {
+    try {
+      const adminStore = localStorage.getItem("adminStore");
+
+      if (adminStore !== null) {
+        const parsedStore: AdminStore = JSON.parse(adminStore);
+        parsedStore.User = user;
+        localStorage.setItem("adminStore", JSON.stringify(parsedStore));
+      } else {
+        const newStore: AdminStore = {
+          User: user,
+          Equipments: []
+        }
+        localStorage.setItem("adminStore", JSON.stringify(newStore));
+      }
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
+    }
   }
 }

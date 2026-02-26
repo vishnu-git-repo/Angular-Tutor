@@ -13,7 +13,22 @@ export interface IGetAdminBorrowRequest {
     TotalCount: number;
 }
 
+export interface IGetClientBorrowRequest {
+    RowCount: number;
+    PageNo: number;
+    Status: number;
+    SearchString: string;
+    UserId: number;
+}
+
 export interface IReqBorrowRequest {
+    UserId: number;
+    StartDate: string;
+    ExpectedReturnDate: string;
+    Items: IRequestBorrowItems[];
+}
+
+export interface IAssignBorrowRequest {
     UserId: number;
     StartDate: string;
     ExpectedReturnDate: string;

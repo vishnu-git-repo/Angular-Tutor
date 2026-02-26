@@ -31,7 +31,7 @@
 
             <!-- Call-to-action -->
             <a routerLink="/client/equipments"
-                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold shadow-lg transition-all duration-200">
+                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold shadow-lg transition-all duration-200 cursor-pointer">
                 Browse Equipments
             </a>
         </div>
@@ -100,7 +100,7 @@
             </p-ifta-label>
 
             <!-- Borrow Price -->
-            <p class="mt-4">Hi {{User().name}}! Your calculated borrow price is:</p>
+            <p class="mt-20">Hi {{User().name}}! Your calculated borrow price is:</p>
             <div class="inline-grid grid-cols-2 gap-x-5">
                 <i>For Per Day</i>
                 <span>{{ total | currency: "INR" }}</span>

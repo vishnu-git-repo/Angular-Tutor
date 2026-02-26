@@ -1,0 +1,259 @@
+<div class="text-white rounded shadow-lg flex flex-col gap-5">
+
+    <!-- 🔹 HEADER -->
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i class="pi pi-wallet" style="font-size: 2rem"></i>
+            <h2 class="text-2xl">Store</h2>
+        </div>
+        <div class="flex gap-5 items-center">
+            <p-button (click)="clearStore()" icon="pi pi-times" label="Clear" severity="warn"
+                variant="outlined"></p-button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-y-5 lg:grid-cols-3 lg:gap-5">
+        <!-- Left Section -->
+        <div class="col-span-1">
+            <div class="flex flex-col gap-5 bg-charcoal rounded-md border border-gray-600 min-h-[40dvh] p-5">
+                <div class="flex justify-between items-center">
+                    <p class="flex gap-2 items-center"><i class="pi pi-user" style="font-Size: 1.5rem"></i>User</p>
+                    <p-iftaLabel class="w-60">
+                        <p-autocomplete id="admin_store_search_user_input" class="w-full" [suggestions]="userList()"
+                            [optionLabel]="'name'" [dropdown]="true" [forceSelection]="true"
+                            [(ngModel)]="selectedUserModel" (completeMethod)="searchUser($event)"
+                            (onSelect)="onUserSelect($event)" placeholder="Search Client...">
+                            <ng-template let-user pTemplate="item">
+                                <div class="flex items-center gap-3 py-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
+                                        {{ user.name?.charAt(0) }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-medium">{{ user.name }}</span>
+                                        <span class="text-xs text-gray-400">{{ user.email }}</span>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-autocomplete>
+                        <label for="admin_store_search_user_input">
+                            Search Name | Email | Phone
+                        </label>
+                    </p-iftaLabel>
+                </div>
+                @if(selectedUser()){
+                <div class="mt-10">
+                    <div class="w-80">
+                        <div class="flex items-center justify-between border-b border-zinc-500 pb-2">
+                            <div class="flex gap-4">
+                                <b class="p-1 bg-green-500 items-center rounded-full"></b>
+                                <span>{{ selectedUser()?.name || "" }}</span>
+                            </div>
+                            <p-avatar shape="circle" class="p-2" size="large">
+                                <i class="pi pi-user"></i>
+                            </p-avatar>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-4 pt-4">
+                            <div>
+                                @if (selectedUser()?.gender=="Male") {
+                                <i class="pi pi-mars"></i>
+                                } @else if (selectedUser()?.gender=="Female") {
+                                <i class="pi pi-venus"></i>
+                                } @else {
+                                <i class="pi pi-users"></i>
+                                }
+                            </div>
+                            <span>{{ selectedUser()?.gender }}</span>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-4">
+                            <i class="pi pi-envelope"></i>
+                            <span>{{ selectedUser()?.email }}</span>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-4">
+                            <i class="pi pi-phone"></i>
+                            <span>{{ selectedUser()?.phone }}</span>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-4">
+                            <i class="pi pi-map-marker"></i>
+                            <span>{{ selectedUser()?.address }}</span>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-4">
+                            <i class="pi pi-sign-in"></i>
+                            <span>{{ selectedUser()?.createdAt | date:'MMM dd, yyyy' }}</span>
+                        </div>
+                    </div>
+                </div>
+                } @else {
+                <div
+                    class="min-h-[50vh] flex flex-col justify-center items-center rounded-lg border border-zinc-700 bg-charcoal shadow-inner p-10 gap-6">
+
+                    <!-- Icon -->
+                    <div
+                        class="flex items-center justify-center w-32 h-32 rounded-full bg-zinc-800 shadow-lg text-6xl text-gray-400">
+                        <i class="pi pi-user-minus" style="font-size: 3rem;"></i>
+                    </div>
+
+                    <!-- Message -->
+                    <h3 class="text-xl font-semibold text-gray-100">User not selected</h3>
+                    <p class="text-gray-400 text-center max-w-xs">
+                        Looks like you haven’t added any user yet. Explore the User and then assign it.
+                    </p>
+
+                    <!-- Call-to-action -->
+                    <a routerLink="/admin/users"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold shadow-lg transition-all duration-200 cursor-pointer">
+                        Browse User
+                    </a>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Right Section -->
+        <div class="col-span-2">
+            <div class="flex flex-col gap-5 bg-charcoal rounded-md border border-gray-600 min-h-[40dvh] p-5">
+                <div class="flex justify-between items-center">
+                    <p class="flex gap-2 items-center"><i class="pi pi-user" style="font-Size: 1.5rem"></i>Equipments
+                    </p>
+                    <p-iftaLabel class="w-60">
+                        <p-autocomplete id="admin_store_search_equipment_input" class="w-full" [suggestions]="equipmentList()"
+                            [optionLabel]="'name'" [dropdown]="true" [forceSelection]="true"
+                            [(ngModel)]="selectedEquipmentModel" (completeMethod)="searchEquipment($event)"
+                            (onSelect)="onEquipmentSelect($event)" placeholder="Search Equipment...">
+
+                            <ng-template let-equipment pTemplate="item">
+                                <div class="flex items-center gap-3 py-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg--600 flex items-center justify-center text-sm font-bold text-white">
+                                        {{ equipment.name?.charAt(0) }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-wrap">
+                                            {{ equipment.name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-autocomplete>
+                        <label for="admin_store_search_equipment_input">
+                            Search Name
+                        </label>
+                    </p-iftaLabel>
+                </div>
+                <ng-container *ngIf="StoreItems().Equipments.length === 0">
+                    <div
+                        class="min-h-[50vh] flex flex-col justify-center items-center rounded-lg border border-zinc-700 bg-charcoal shadow-inner p-10 gap-6">
+
+                        <!-- Icon -->
+                        <div
+                            class="flex items-center justify-center w-32 h-32 rounded-full bg-zinc-800 shadow-lg text-6xl text-gray-400">
+                            <i class="pi pi-cart-arrow-down" style="font-size: 3rem;"></i>
+                        </div>
+
+                        <!-- Message -->
+                        <h3 class="text-xl font-semibold text-gray-100">Your Store is Empty</h3>
+                        <p class="text-gray-400 text-center max-w-xs">
+                            Looks like you haven’t added any equipments yet. Explore the Equipments and then assign it.
+                        </p>
+
+                        <!-- Call-to-action -->
+                        <a routerLink="/admin/equipments"
+                            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold shadow-lg transition-all duration-200 cursor-pointer">
+                            Browse Equipments
+                        </a>
+                    </div>
+                </ng-container>
+
+                <!-- Store ITEMS GRID -->
+                <ng-container *ngIf="StoreItems().Equipments.length > 0">
+                    <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                        <div *ngFor="let item of StoreItems().Equipments"
+                            class="bg-zinc-800 p-4 rounded-lg shadow-lg flex flex-col justify-between">
+
+                            <!-- ITEM INFO -->
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex flex-col max-w-xs">
+                                    <span class="font-semibold truncate" [title]="item.Equipment?.name">{{
+                                        item.Equipment?.name
+                                        }}</span>
+                                    <span class="text-gray-400">{{ item.Equipment?.price | currency: "INR" }}</span>
+                                </div>
+                                <button pButton type="button" icon="pi pi-trash"
+                                    class="p-button-rounded p-button-text p-button-danger" pTooltip="Remove Item"
+                                    (click)="removeItem(item)">
+                                </button>
+                            </div>
+
+                            <!-- QUANTITY CONTROLS -->
+                            <div class="flex items-center gap-2 mb-2">
+                                <button pButton type="button" icon="pi pi-minus" class="p-button-rounded p-button-text"
+                                    [disabled]="item.Quantity <= 1" pTooltip="Decrease Quantity"
+                                    (click)="updateQuantity(item, -1)">
+                                </button>
+                                <span class="px-3 font-medium">{{ item.Quantity }}</span>
+                                <button pButton type="button" icon="pi pi-plus" class="p-button-rounded p-button-text"
+                                    [disabled]="item.Quantity >= (item.Equipment?.availableCount || 0)"
+                                    pTooltip="Increase Quantity" (click)="updateQuantity(item, 1)">
+                                </button>
+                                <span class="ml-auto font-semibold">{{ (item.Equipment?.price || 0) * item.Quantity |
+                                    currency:
+                                    "INR" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STICKY FOOTER -->
+                    <div
+                        class="sticky bottom-0 bg-zinc-900 p-4 flex justify-between items-center shadow-lg mt-4 rounded-t-lg z-10">
+                        <span class="text-xl font-bold">Total: {{ total | currency: "INR" }}</span>
+                        <a (click)="handleCheckout()"
+                            class="px-6 py-2 bg-blue-600 rounded hover:bg-blue-700 font-semibold">Checkout</a>
+                    </div>
+                </ng-container>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT DIALOG -->
+    <p-dialog [(visible)]="Dialog().checkOut" [modal]="true" [style]="{ minWidth: '30rem' }" header="Assign a Borrow">
+        <div class="min-w-80 flex flex-col p-5 gap-5">
+
+            <!-- Start Date -->
+            <p-ifta-label>
+                <p-datepicker [(ngModel)]="datePickerValues().StartDate" class="w-full" [minDate]="minStartDate"
+                    (onSelect)="onStartDateChange($event)" id="client_cart_request_dialog_startdate"></p-datepicker>
+                <label for="client_cart_request_dialog_startdate">Start Date</label>
+            </p-ifta-label>
+
+            <!-- Return Date -->
+            <p-ifta-label>
+                <p-datepicker [(ngModel)]="datePickerValues().ExpectedReturnDate" class="w-full"
+                    [minDate]="minReturnDate" (onSelect)="onReturnDateChange($event)"
+                    id="client_cart_request_expectedreturndate"></p-datepicker>
+                <label for="client_cart_request_expectedreturndate">Return Date</label>
+            </p-ifta-label>
+
+            <!-- Borrow Price -->
+            <p class="mt-20">Your calculated borrow price is:</p>
+            <div class="inline-grid grid-cols-2 gap-x-5">
+                <i>For Per Day</i>
+                <span>{{ total | currency: "INR" }}</span>
+                <i>For {{ duration }} Day{{ duration > 1 ? 's' : '' }}</i>
+                <span class="text-blue-600">{{ duration * total | currency: "INR" }}</span>
+            </div>
+
+            <!-- Request Button -->
+            <div class="flex justify-end mt-4">
+                <button pButton type="button" severity="success" (click)="handleAssignBorrow()">Assign</button>
+            </div>
+        </div>
+    </p-dialog>
+
+</div>

@@ -58,6 +58,15 @@
         </span>
       </a>
 
+      <a routerLink="store" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+        <i class="pi pi-wallet text-lg shrink-0"></i>
+        <span class="transition-all duration-300 overflow-hidden whitespace-nowrap"
+          [class.opacity-100]="sidebarExpanded()" [class.opacity-0]="!sidebarExpanded()"
+          [class.w-0]="!sidebarExpanded()">
+          Store
+        </span>
+      </a>
+
     </div>
   </div>
 
