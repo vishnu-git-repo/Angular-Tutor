@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, skip, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, first, skip, takeUntil } from 'rxjs/operators';
 
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { InputTextModule } from 'primeng/inputtext';
@@ -16,7 +16,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { BorrowService } from "../../../../core/services/borrow";
-import { IAcceptBorrowRequest, IGetAdminBorrowRequest } from "../../../../shared/interface/borrows";
+import { IAcceptBorrowRequest, IGetAdminBorrowRequest, IGetClientBorrowRequest } from "../../../../shared/interface/borrows";
 import { Colors } from "../../../../shared/colors";
 import { Router, RouterModule } from "@angular/router";
 import { AuthService } from "../../../../core/services/auth";
@@ -25,25 +25,25 @@ import { AuthService } from "../../../../core/services/auth";
     selector: "app-client-borrow",
     standalone: true,
     imports: [
-    RouterModule,
-    FormsModule,
-    CommonModule,
-    IftaLabelModule,
-    InputTextModule,
-    ButtonModule,
-    TabsModule,
-    TableModule,
-    TooltipModule,
-    DialogModule,
-    ChipModule,
-    SkeletonModule,
-    SelectModule,
-    TextareaModule,
-],
+        RouterModule,
+        FormsModule,
+        CommonModule,
+        IftaLabelModule,
+        InputTextModule,
+        ButtonModule,
+        TabsModule,
+        TableModule,
+        TooltipModule,
+        DialogModule,
+        ChipModule,
+        SkeletonModule,
+        SelectModule,
+        TextareaModule,
+    ],
     templateUrl: "./index.html",
 })
 
-export class ClientBorrowComponent{
+export class ClientBorrowComponent {
 
     Math = Math
 
@@ -76,7 +76,7 @@ export class ClientBorrowComponent{
         Accepted: number;
         Assigned: number;
         Pending: number;
-        Paid: number; 
+        Paid: number;
         Approved: number;
         Waitlisted: number;
         Ack: number;
@@ -85,18 +85,15 @@ export class ClientBorrowComponent{
         Requested: 0, Accepted: 0, Assigned: 0, Pending: 0, Paid: 0, Approved: 0, Waitlisted: 0, Ack: 0, Closed: 0
     })
 
-    public initialPaginator: IGetAdminBorrowRequest = {
+    public initialPaginator: IGetClientBorrowRequest = {
         RowCount: 10,
         PageNo: 1,
         Status: 0,
-        EquipmentId: 0,
-        EquipmentItemId: 0,
         UserId: 0,
         SearchString: "",
-        BorrowId: 0,
         TotalCount: 0
     };
-    public paginatorState = signal<IGetAdminBorrowRequest>(this.initialPaginator);
+    public paginatorState = signal<IGetClientBorrowRequest>(this.initialPaginator);
 
 
     ngOnInit(): void {
@@ -125,7 +122,7 @@ export class ClientBorrowComponent{
 
     fetchBorrows() {
         this.isLoading.set(true);
-        this.borrowService.getAdminBorrows(this.paginatorState())
+        this.borrowService.getClientBorrows(this.paginatorState())
             .subscribe({
                 next: res => {
                     this.Counts.set(res.data.statusCounts);
@@ -164,30 +161,81 @@ export class ClientBorrowComponent{
 
     // Pagination
     goToFirstPage() {
-
+        if (this.isFirstPage()) return;
+        this.paginatorState.update(state => ({ ...state, PageNo: 1 }));
+        this.fetchBorrows();
     }
+
     goToPreviousPage() {
-
+        if (this.isFirstPage()) return;
+        this.paginatorState.update(state => ({ ...state, PageNo: state.PageNo - 1 }));
+        this.fetchBorrows();
     }
+
     goToNextPage() {
-
+        if (this.isLastPage()) return;
+        this.paginatorState.update(state => ({ ...state, PageNo: state.PageNo + 1 }));
+        this.fetchBorrows();
     }
+
     goToLastPage() {
+        if (this.isLastPage()) return;
+        if (this.paginatorState().Status == 1)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Requested ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if (this.paginatorState().Status == 2)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Accepted ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if (this.paginatorState().Status == 3)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Assigned ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if (this.paginatorState().Status == 4)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Pending ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if(this.paginatorState().Status==5)
+            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Paid ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
+        else if(this.paginatorState().Status==6)
+            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Approved ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
+        else if(this.paginatorState().Status==7)
+            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Waitlisted ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
+        else if(this.paginatorState().Status==8)
+            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Ack ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
+        else if(this.paginatorState().Status==9)
+            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Closed ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
+        else 
+            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
 
+        this.fetchBorrows();
     }
+
     onRowChange(n: number) {
-
+        this.paginatorState.update(state => ({ ...state, RowCount: n }));
+        this.fetchBorrows();
     }
+
     isFirstPage() {
         return this.paginatorState().PageNo == 1 ?
             true : false;
     }
-    
-    // isLastPage() {
-    //     if (this.paginatorState().Status == 1) {
-    //         return this.paginatorState().PageNo == Math.ceil((this.Counts().Category.Tools ?? 0) / (this.paginatorState().RowCount ?? 1))
-    //     }
-    // }
+
+    isLastPage() {
+        if (this.paginatorState().Status == 1)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Requested ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 2)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Accepted ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 3)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Assigned ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 4)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Pending ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 5)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Paid ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 6)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Approved ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 7)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Waitlisted ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 8)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Ack ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else if (this.paginatorState().Status == 9)
+            return this.paginatorState().PageNo == Math.ceil((this.Counts().Closed ?? 0) / (this.paginatorState().RowCount ?? 1));
+        else
+            return this.paginatorState().PageNo == Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1));
+    }
 
     // Dialog
     openDialog(type: string) {
@@ -195,32 +243,32 @@ export class ClientBorrowComponent{
     }
 
     // Actions
-    handleViewBorrow(id: number){
-        this.router.navigate(['/admin/borrows/view',id]);
+    handleViewBorrow(id: number) {
+        this.router.navigate(['/client/borrows/view', id]);
     }
-    handleAcceptBorrow(id: number, userId: number){
+    handleAcceptBorrow(id: number, userId: number) {
         this.acceptPayload.set({
             BorrowId: id,
             UserId: userId,
             PreRemarks: "Approved your Request!"
         });
-        this.Dialog.update(state => ({...state, accept: !state.accept}))
+        this.Dialog.update(state => ({ ...state, accept: !state.accept }))
     }
-    handleApproveBorrow(id: number){
+    handleApproveBorrow(id: number) {
 
     }
 
     // Service
-    acceptBorrowService(){
+    acceptBorrowService() {
         this.borrowService.putAcceptBorrow(this.acceptPayload()).subscribe({
-            next : res => {
+            next: res => {
                 console.log(res);
-                this.Dialog.update(state => ({...state, accept: !state.accept}));
+                this.Dialog.update(state => ({ ...state, accept: !state.accept }));
                 this.fetchBorrows();
             },
             error: err => console.log(err)
         });
-        
+
 
         // do your Ideas here... I want remove the borrow items in list and change the counts.. requested-1 and accepted+1.. because it goes to next tab
     }

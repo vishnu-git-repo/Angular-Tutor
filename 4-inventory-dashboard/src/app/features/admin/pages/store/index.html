@@ -14,103 +14,105 @@
 
     <div class="grid grid-cols-1 gap-y-5 lg:grid-cols-3 lg:gap-5">
         <!-- Left Section -->
-        <div class="col-span-1">
-            <div class="flex flex-col gap-5 bg-charcoal rounded-md border border-gray-600 min-h-[40dvh] p-5">
-                <div class="flex justify-between items-center">
-                    <p class="flex gap-2 items-center"><i class="pi pi-user" style="font-Size: 1.5rem"></i>User</p>
-                    <p-iftaLabel class="w-60">
-                        <p-autocomplete id="admin_store_search_user_input" class="w-full" [suggestions]="userList()"
-                            [optionLabel]="'name'" [dropdown]="true" [forceSelection]="true"
-                            [(ngModel)]="selectedUserModel" (completeMethod)="searchUser($event)"
-                            (onSelect)="onUserSelect($event)" placeholder="Search Client...">
-                            <ng-template let-user pTemplate="item">
-                                <div class="flex items-center gap-3 py-2">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
-                                        {{ user.name?.charAt(0) }}
+        <div class="col-span-1 relative">
+            <div class="sticky top-0">
+                <div class="flex flex-col gap-5 bg-charcoal rounded-md border border-gray-600 min-h-[40dvh] p-5">
+                    <div class="flex justify-between items-center">
+                        <p class="flex gap-2 items-center"><i class="pi pi-user" style="font-Size: 1.5rem"></i>User</p>
+                        <p-iftaLabel class="w-60">
+                            <p-autocomplete id="admin_store_search_user_input" class="w-full" [suggestions]="userList()"
+                                [optionLabel]="'name'" [dropdown]="true" [forceSelection]="true"
+                                [(ngModel)]="selectedUserModel" (completeMethod)="searchUser($event)"
+                                (onSelect)="onUserSelect($event)" placeholder="Search Client...">
+                                <ng-template let-user pTemplate="item">
+                                    <div class="flex items-center gap-3 py-2">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">
+                                            {{ user.name?.charAt(0) }}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-medium">{{ user.name }}</span>
+                                            <span class="text-xs text-gray-400">{{ user.email }}</span>
+                                        </div>
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span class="font-medium">{{ user.name }}</span>
-                                        <span class="text-xs text-gray-400">{{ user.email }}</span>
-                                    </div>
+                                </ng-template>
+                            </p-autocomplete>
+                            <label for="admin_store_search_user_input">
+                                Search Name | Email | Phone
+                            </label>
+                        </p-iftaLabel>
+                    </div>
+                    @if(selectedUser()){
+                    <div class="mt-10">
+                        <div class="w-80">
+                            <div class="flex items-center justify-between border-b border-zinc-500 pb-2">
+                                <div class="flex gap-4">
+                                    <b class="p-1 bg-green-500 items-center rounded-full"></b>
+                                    <span>{{ selectedUser()?.name || "" }}</span>
                                 </div>
-                            </ng-template>
-                        </p-autocomplete>
-                        <label for="admin_store_search_user_input">
-                            Search Name | Email | Phone
-                        </label>
-                    </p-iftaLabel>
-                </div>
-                @if(selectedUser()){
-                <div class="mt-10">
-                    <div class="w-80">
-                        <div class="flex items-center justify-between border-b border-zinc-500 pb-2">
-                            <div class="flex gap-4">
-                                <b class="p-1 bg-green-500 items-center rounded-full"></b>
-                                <span>{{ selectedUser()?.name || "" }}</span>
+                                <p-avatar shape="circle" class="p-2" size="large">
+                                    <i class="pi pi-user"></i>
+                                </p-avatar>
                             </div>
-                            <p-avatar shape="circle" class="p-2" size="large">
-                                <i class="pi pi-user"></i>
-                            </p-avatar>
-                        </div>
 
-                        <div class="flex items-center gap-4 mb-4 pt-4">
-                            <div>
-                                @if (selectedUser()?.gender=="Male") {
-                                <i class="pi pi-mars"></i>
-                                } @else if (selectedUser()?.gender=="Female") {
-                                <i class="pi pi-venus"></i>
-                                } @else {
-                                <i class="pi pi-users"></i>
-                                }
+                            <div class="flex items-center gap-4 mb-4 pt-4">
+                                <div>
+                                    @if (selectedUser()?.gender=="Male") {
+                                    <i class="pi pi-mars"></i>
+                                    } @else if (selectedUser()?.gender=="Female") {
+                                    <i class="pi pi-venus"></i>
+                                    } @else {
+                                    <i class="pi pi-users"></i>
+                                    }
+                                </div>
+                                <span>{{ selectedUser()?.gender }}</span>
                             </div>
-                            <span>{{ selectedUser()?.gender }}</span>
-                        </div>
 
-                        <div class="flex items-center gap-4 mb-4">
-                            <i class="pi pi-envelope"></i>
-                            <span>{{ selectedUser()?.email }}</span>
-                        </div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <i class="pi pi-envelope"></i>
+                                <span>{{ selectedUser()?.email }}</span>
+                            </div>
 
-                        <div class="flex items-center gap-4 mb-4">
-                            <i class="pi pi-phone"></i>
-                            <span>{{ selectedUser()?.phone }}</span>
-                        </div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <i class="pi pi-phone"></i>
+                                <span>{{ selectedUser()?.phone }}</span>
+                            </div>
 
-                        <div class="flex items-center gap-4 mb-4">
-                            <i class="pi pi-map-marker"></i>
-                            <span>{{ selectedUser()?.address }}</span>
-                        </div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <i class="pi pi-map-marker"></i>
+                                <span>{{ selectedUser()?.address }}</span>
+                            </div>
 
-                        <div class="flex items-center gap-4 mb-4">
-                            <i class="pi pi-sign-in"></i>
-                            <span>{{ selectedUser()?.createdAt | date:'MMM dd, yyyy' }}</span>
+                            <div class="flex items-center gap-4 mb-4">
+                                <i class="pi pi-sign-in"></i>
+                                <span>{{ selectedUser()?.createdAt | date:'MMM dd, yyyy' }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                } @else {
-                <div
-                    class="min-h-[50vh] flex flex-col justify-center items-center rounded-lg border border-zinc-700 bg-charcoal shadow-inner p-10 gap-6">
-
-                    <!-- Icon -->
+                    } @else {
                     <div
-                        class="flex items-center justify-center w-32 h-32 rounded-full bg-zinc-800 shadow-lg text-6xl text-gray-400">
-                        <i class="pi pi-user-minus" style="font-size: 3rem;"></i>
+                        class="min-h-[50vh] flex flex-col justify-center items-center rounded-lg border border-zinc-700 bg-charcoal shadow-inner p-10 gap-6">
+
+                        <!-- Icon -->
+                        <div
+                            class="flex items-center justify-center w-32 h-32 rounded-full bg-zinc-800 shadow-lg text-6xl text-gray-400">
+                            <i class="pi pi-user-minus" style="font-size: 3rem;"></i>
+                        </div>
+
+                        <!-- Message -->
+                        <h3 class="text-xl font-semibold text-gray-100">User not selected</h3>
+                        <p class="text-gray-400 text-center max-w-xs">
+                            Looks like you haven’t added any user yet. Explore the User and then assign it.
+                        </p>
+
+                        <!-- Call-to-action -->
+                        <a routerLink="/admin/users"
+                            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold shadow-lg transition-all duration-200 cursor-pointer">
+                            Browse User
+                        </a>
                     </div>
-
-                    <!-- Message -->
-                    <h3 class="text-xl font-semibold text-gray-100">User not selected</h3>
-                    <p class="text-gray-400 text-center max-w-xs">
-                        Looks like you haven’t added any user yet. Explore the User and then assign it.
-                    </p>
-
-                    <!-- Call-to-action -->
-                    <a routerLink="/admin/users"
-                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold shadow-lg transition-all duration-200 cursor-pointer">
-                        Browse User
-                    </a>
+                    }
                 </div>
-                }
             </div>
         </div>
 
@@ -121,10 +123,11 @@
                     <p class="flex gap-2 items-center"><i class="pi pi-user" style="font-Size: 1.5rem"></i>Equipments
                     </p>
                     <p-iftaLabel class="w-60">
-                        <p-autocomplete id="admin_store_search_equipment_input" class="w-full" [suggestions]="equipmentList()"
-                            [optionLabel]="'name'" [dropdown]="true" [forceSelection]="true"
-                            [(ngModel)]="selectedEquipmentModel" (completeMethod)="searchEquipment($event)"
-                            (onSelect)="onEquipmentSelect($event)" placeholder="Search Equipment...">
+                        <p-autocomplete id="admin_store_search_equipment_input" class="w-full"
+                            [suggestions]="equipmentList()" [optionLabel]="'name'" [dropdown]="true"
+                            [forceSelection]="true" [(ngModel)]="selectedEquipmentModel"
+                            (completeMethod)="searchEquipment($event)" (onSelect)="onEquipmentSelect($event)"
+                            placeholder="Search Equipment...">
 
                             <ng-template let-equipment pTemplate="item">
                                 <div class="flex items-center gap-3 py-2">

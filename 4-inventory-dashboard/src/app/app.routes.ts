@@ -19,6 +19,7 @@ import { AdminBorrowViewComponent } from './features/admin/pages/borrows/view';
 import { ClientCartComponent } from './features/client/pages/cart';
 import { AdminStoreComponent } from './features/admin/pages/store';
 import { ClientBorrowComponent } from './features/client/pages/borrow';
+import { ClientBorrowViewComponent } from './features/client/pages/borrow/view';
 
 export const routes: Routes = [
 
@@ -42,12 +43,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: EUserRole.Admin },
     children: [
-      { path: 'insight', component: AdminInsightComponent},
+      { path: 'insight', component: AdminInsightComponent },
       { path: 'users', component: AdminUserComponent },
       { path: 'equipments', component: AdminEquipmentComponent },
-      { path: 'borrows', component:AdminBorrowComponent},
-      { path: 'store', component: AdminStoreComponent},
-      { path: 'borrows/view/:id', component: AdminBorrowViewComponent},
+      { path: 'borrows', component: AdminBorrowComponent },
+      { path: 'store', component: AdminStoreComponent },
+      { path: 'borrows/view/:id', component: AdminBorrowViewComponent },
       { path: '', redirectTo: 'insight', pathMatch: 'full' }
     ]
   },
@@ -61,8 +62,9 @@ export const routes: Routes = [
     children: [
       { path: 'insight', component: ClientInsightComponent },
       { path: 'equipments', component: ClientEquipmentComponent },
-      { path: 'borrows', component: ClientBorrowComponent},
-      { path: 'cart', component: ClientCartComponent},
+      { path: 'borrows', component: ClientBorrowComponent },
+      { path: 'cart', component: ClientCartComponent },
+      { path: 'borrows/view/:id', component: ClientBorrowViewComponent },
       { path: '', redirectTo: 'insight', pathMatch: 'full' }
     ]
   },

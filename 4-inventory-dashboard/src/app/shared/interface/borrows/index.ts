@@ -19,6 +19,7 @@ export interface IGetClientBorrowRequest {
     Status: number;
     SearchString: string;
     UserId: number;
+    TotalCount: number;
 }
 
 export interface IReqBorrowRequest {
