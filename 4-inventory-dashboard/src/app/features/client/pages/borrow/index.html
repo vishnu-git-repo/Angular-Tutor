@@ -217,17 +217,17 @@
                             </i>
                         </span>
 
-                        <!-- Accept -->
-                        <!-- @if (b.status==1) {
+                        <!-- Make Pending -->
+                        @if (b.status==2||b.status==3){
                         <span
                             class="w-8 h-8 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
-                            pTooltip="Approve Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
-                            (click)="handleAcceptBorrow(b.id, b.userId)">
-                            <i class="pi pi-check text-gray-600 group-hover:text-green-600 transition-all duration-200"
+                            pTooltip="Start" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            (click)="handlePendingBorrow(b.id)">
+                            <i class="pi pi-play text-gray-600 group-hover:text-green-600 transition-all duration-200"
                                 style="font-size: 0.85rem;">
                             </i>
                         </span>
-                        } -->
+                        }
 
                         <!-- Close -->
                         <!-- @if (b.status==1||b.status==5||b.status==7){
@@ -284,17 +284,3 @@
         </div>
     </div>
 </div>
-
-<p-dialog [(visible)]="Dialog().accept" [modal]="true" [style]="{ width: 'fit' }" header="Approve Borrow">
-    <div class="flex flex-col min-w-80 gap-5">
-        <p-iftaLabel>
-            <textarea pTextarea row="5" cols="50" id="admin_borrows_approve_premarks"
-                [(ngModel)]="acceptPayload().PreRemarks" [autoResize]="true">
-            </textarea>
-            <label for="admin_borrows_approve_premarks">Pre Marks</label>
-        </p-iftaLabel>
-        <div class="flex justify-end">
-            <p-button (click)="acceptBorrowService()" severity="success">Accept</p-button>
-        </div>
-    </div>
-</p-dialog>

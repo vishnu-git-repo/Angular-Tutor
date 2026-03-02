@@ -1,117 +1,131 @@
-<div class="flex justify-center items-center min-h-dvh bg-white text-black">
-  <div class="flex flex-col border border-gray-400 rounded-xl p-5 relative">
+<div class="min-h-dvh flex justify-center items-center bg-surface-50">
+  <div class="card w-full max-w-md border shadow-4 border-round-xl p-5 relative">
 
     <!-- Title -->
-    <div class="relative flex justify-center">
-      <h1
-        class="text-md text-center text-emerald-600 font-bold
-               border border-gray-400 rounded-full px-4 py-2
-               bg-white absolute -top-14"
-      >
-        Welcome to our <br />Organization!
-      </h1>
+    <div class="flex justify-center mb-4">
+      <h2 class="text-2xl font-semibold text-primary text-center">
+        Create Account
+      </h2>
     </div>
 
-    <div class="pt-10">
-      <form class="flex flex-col gap-2" (ngSubmit)="handleRegister()">
+    <form class="flex flex-col items-center gap-3 border" (ngSubmit)="handleRegister()">
 
-        <!-- Name -->
+      <!-- Name -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500"
-          placeholder="Name"
+          pInputText
+          id="reg_name"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="registerData().Name"
           (input)="setField('Name', $any($event.target).value)"
         />
+        <label for="reg_name">Name</label>
+      </p-iftalabel>
 
-        <!-- Email -->
+      <!-- Email -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500"
-          placeholder="Email"
+          pInputText
+          id="reg_email"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="registerData().Email"
           (input)="setField('Email', $any($event.target).value)"
         />
+        <label for="reg_email">Email</label>
+      </p-iftalabel>
 
-        <!-- Password -->
+      <!-- Password -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
+          pInputText
           type="password"
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500"
-          placeholder="Password"
+          id="reg_password"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="registerData().Password"
           (input)="setField('Password', $any($event.target).value)"
         />
+        <label for="reg_password">Password</label>
+      </p-iftalabel>
 
-        <!-- Re-Password -->
+      <!-- Re-Password -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
+          pInputText
           type="password"
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500"
-          placeholder="Re-Password"
+          id="reg_repassword"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="re_password()"
           (input)="re_password.set($any($event.target).value)"
         />
+        <label for="reg_repassword">Confirm Password</label>
+      </p-iftalabel>
 
-        <!-- Gender -->
-        <select
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500 "
-          [value]="registerData().Gender"
-          (change)="setField('Gender', $any($event.target).value)"
-        >
-          <option class="text-white" value="" disabled selected>Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
+      <!-- Gender -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
+        <p-select
+          id="reg_gender"
+          [options]="[
+            { label: 'Male', value: 'Male' },
+            { label: 'Female', value: 'Female' },
+            { label: 'Other', value: 'Other' }
+          ]"
+          [ngModel]="registerData().Gender"
+          (ngModelChange)="setField('Gender', $event)"
+          placeholder="Select Gender"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
+        />
+        <label for="reg_gender">Gender</label>
+      </p-iftalabel>
 
-        <!-- Address -->
+      <!-- Address -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <textarea
+          pInputTextarea
           rows="2"
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500 resize-none"
-          placeholder="Address"
+          id="reg_address"
+          class="w-full"
           [value]="registerData().Address"
           (input)="setField('Address', $any($event.target).value)"
         ></textarea>
+        <label for="reg_address">Address</label>
+      </p-iftalabel>
 
-        <!-- Phone -->
+      <!-- Phone -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:border-blue-500"
-          placeholder="Phone (+00 00000 00000)"
+          pInputText
+          id="reg_phone"
+          class="w-full"
           [value]="registerData().Phone"
           (input)="setField('Phone', $any($event.target).value)"
         />
+        <label for="reg_phone">Phone</label>
+      </p-iftalabel>
 
-        <!-- Submit -->
-        <button
-          type="submit"
-          class="mt-4 min-w-75 bg-blue-500 text-white p-2 rounded-md
-                 transition-transform duration-200
-                 hover:scale-[0.98] active:scale-[0.95]"
-        >
-          Register
-        </button>
+      <!-- Submit -->
+      <p-button
+        type="submit"
+        label="Register"
+        styleClass="w-80"
+        severity="success">
+      </p-button>
 
-        <!-- Login -->
+      <!-- Login -->
+      <div class="text-center mt-2">
+        Already have an account?
         <a
-          routerLink="login"
-          class="text-blue-500 text-sm font-bold text-center
-                 hover:underline active:scale-[0.98] cursor-pointer"
+          routerLink="/login"
+          class="text-primary font-medium hover:underline cursor-pointer"
         >
-          Already have account!
+          Sign up
         </a>
+      </div>
 
-        <!-- Error -->
-        <div *ngIf="error().Status">
-          <p class="text-red-700 text-sm font-bold text-center">
-            {{ error().Message }}
-          </p>
-        </div>
+      <!-- Error -->
+      <div *ngIf="error().Status" class="mt-2">
+        <p-message severity="error" [text]="error().Message"></p-message>
+      </div>
 
-      </form>
-    </div>
+    </form>
   </div>
 </div>

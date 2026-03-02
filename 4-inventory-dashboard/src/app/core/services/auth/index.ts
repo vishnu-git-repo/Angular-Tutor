@@ -13,17 +13,19 @@ export class AuthService {
 
   public User = signal<any | null>(null);
 
-  login(apiUrl: string, data: ILoginData): Observable<any> {
+  login(data: ILoginData): Observable<any> {
+    const api_url = `${environment.api_url}auth/login`
     return this.http.post(
-      `${environment.api_url}${apiUrl}`,
+      api_url,
       data,
       { withCredentials: true }
     );
   }
 
-  register(apiUrl: string, data: IRegisterData): Observable<any> {
+  register(data: IRegisterData): Observable<any> {
+    const api_url = `${environment.api_url}auth/register`
     return this.http.post(
-      `${environment.api_url}${apiUrl}`,
+      api_url,
       data,
       { withCredentials: true }
     );

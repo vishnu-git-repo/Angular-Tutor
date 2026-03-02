@@ -48,6 +48,11 @@ export interface IAcceptBorrowRequest {
     PreRemarks: string;
 }
 
+export interface IPendingBorrowRequest {
+    BorrowId: number;
+    UserId: number
+}
+
 
 
 export interface IGetBorrowByIDResponse {

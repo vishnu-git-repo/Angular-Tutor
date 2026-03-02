@@ -6,11 +6,21 @@ import { AuthService } from "../../../core/services/auth";
 import { ILoginData } from "../../../shared/interface/auth";
 import { IError } from "../../../shared/interface";
 import { LoginSchema } from "../../../shared/schemas/auth";
+import { IftaLabelModule } from "primeng/iftalabel";
+import { ButtonModule } from "primeng/button";
+import { MessageModule } from "primeng/message";
 
 @Component({
     selector: "app-login",
     standalone: true,
-    imports: [RouterLink, FormsModule, CommonModule], 
+    imports: [
+        RouterLink,
+        FormsModule, 
+        CommonModule,
+        IftaLabelModule,
+        ButtonModule,
+        MessageModule
+    ], 
     templateUrl: "./index.html",
 })
 export class Login {
@@ -18,9 +28,7 @@ export class Login {
     private authService = inject(AuthService);
     private router = inject(Router);
 
-    public readonly api_url = "auth/login";
-
-    public isLoggedIn = signal<boolean>(false);
+    public isLoggingIn = signal<boolean>(false);
     public userRole = signal<string|null>(null)
     public loginData = signal<ILoginData>({
         Email: "",
@@ -46,13 +54,16 @@ export class Login {
             return;
         }
 
-        this.authService.login(this.api_url, this.loginData())
+        this.isLoggingIn.set(true);
+        this.authService.login(this.loginData())
             .subscribe({
                 next: (res) => {
-                    console.log("Redirecting>>>>>")
+                    this.isLoggingIn.set(false);
                     this.router.navigate([""]);
                 },
                 error: (err) => {
+                    this.isLoggingIn.set(false);
+                    console.log(err)
                     this.error.set({
                         Status: true,
                         Message: err.error?.message || "Login failed"

@@ -16,7 +16,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { BorrowService } from "../../../../core/services/borrow";
-import { IAcceptBorrowRequest, IGetAdminBorrowRequest, IGetClientBorrowRequest } from "../../../../shared/interface/borrows";
+import { IAcceptBorrowRequest, IGetClientBorrowRequest, IPendingBorrowRequest } from "../../../../shared/interface/borrows";
 import { Colors } from "../../../../shared/colors";
 import { Router, RouterModule } from "@angular/router";
 import { AuthService } from "../../../../core/services/auth";
@@ -50,24 +50,16 @@ export class ClientBorrowComponent {
     private searchSubject = new Subject<string>();
     private destroySubject = new Subject<void>();
     private borrowService = inject(BorrowService);
-    private authService = inject(AuthService)
+    private authService = inject(AuthService);
     private router = inject(Router);
 
-    User = this.authService.User();
+    public User = signal<any>(null);
 
     public acceptPayload = signal<IAcceptBorrowRequest>({
         BorrowId: 0,
         UserId: 0,
         PreRemarks: ""
     });
-
-    public Dialog = signal<{
-        approve: boolean,
-        accept: boolean
-    }>({
-        accept: false,
-        approve: false
-    })
 
     public isLoading = signal<boolean>(false);
     public borrowList = signal<any>([]);
@@ -97,6 +89,10 @@ export class ClientBorrowComponent {
 
 
     ngOnInit(): void {
+        this.User = this.authService.User;
+        if (!this.User()) {
+            this.authService.checkAuth().subscribe();
+        }
         this.fetchBorrows();
         this.searchSubject
             .pipe(
@@ -246,30 +242,21 @@ export class ClientBorrowComponent {
     handleViewBorrow(id: number) {
         this.router.navigate(['/client/borrows/view', id]);
     }
-    handleAcceptBorrow(id: number, userId: number) {
-        this.acceptPayload.set({
-            BorrowId: id,
-            UserId: userId,
-            PreRemarks: "Approved your Request!"
-        });
-        this.Dialog.update(state => ({ ...state, accept: !state.accept }))
-    }
-    handleApproveBorrow(id: number) {
-
-    }
-
-    // Service
-    acceptBorrowService() {
-        this.borrowService.putAcceptBorrow(this.acceptPayload()).subscribe({
+    
+    // CRUD
+    handlePendingBorrow( id: number){
+        const payload: IPendingBorrowRequest = {
+            BorrowId : id,
+            UserId : this.User().id
+        }
+        this.borrowService.putPendingBorrow(payload).subscribe({
             next: res => {
                 console.log(res);
-                this.Dialog.update(state => ({ ...state, accept: !state.accept }));
                 this.fetchBorrows();
             },
-            error: err => console.log(err)
+            error: err => {
+                console.log(err);
+            }
         });
-
-
-        // do your Ideas here... I want remove the borrow items in list and change the counts.. requested-1 and accepted+1.. because it goes to next tab
     }
 }

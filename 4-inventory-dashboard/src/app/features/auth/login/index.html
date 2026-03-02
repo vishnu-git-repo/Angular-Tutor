@@ -1,68 +1,68 @@
-<div class="flex justify-center items-center min-h-dvh bg-white text-black">
-  <div class="flex flex-col border border-gray-400 rounded-xl p-5">
+<div class="min-h-screen flex items-center justify-center bg-surface-900 px-4">
 
-    <div class="relative flex justify-center">
-      <h1
-        class="text-lg text-emerald-600 font-bold
-               border border-gray-400 rounded-4xl
-               w-fit px-4 py-2 z-100 bg-white
-               absolute -top-10.75"
-      >
-        Welcome Back!
-      </h1>
+  <div class="w-full max-w-md bg-surface-800 p-8 border-round-2xl shadow-8">
+
+    <!-- Title -->
+    <div class="text-center mb-7">
+      <h2 class="text-3xl font-semibold text-white mb-2">
+        Welcome Back
+      </h2>
+      <p class="text-sm text-color-secondary">
+        Sign in to continue to your dashboard
+      </p>
     </div>
 
-    <div class="pt-10">
-      <form class="flex flex-col w-fit gap-2" (ngSubmit)="handleLogin()">
+    <!-- Form -->
+    <form class="flex flex-col items-center gap-5" (ngSubmit)="handleLogin()">
 
-        <!-- Email -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:outline-blue-500 focus:border-blue-500"
-          placeholder="Email"
+          pInputText  
+          id="login_email"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="loginData().Email"
           (input)="setField('Email', $any($event.target).value)"
         />
+        <label for="login_email">Email</label>
+      </p-iftalabel>
 
-        <!-- Password -->
+      <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
+          pInputText
           type="password"
-          class="min-w-75 outline-none p-2 border-2 border-gray-400 rounded
-                 focus:outline-blue-500 focus:border-blue-500"
-          placeholder="Password"
+          id="login_password"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="loginData().Password"
           (input)="setField('Password', $any($event.target).value)"
         />
+        <label for="login_password">Password</label>
+      </p-iftalabel>
 
-        <!-- Submit -->
-        <button
-          type="submit"
-          class="mt-5 min-w-75 bg-blue-500 text-white p-2 rounded-md
-                 transition-transform duration-200 ease-out
-                 hover:scale-[0.98] active:scale-[0.95] cursor-pointer"
-        >
-          Login
-        </button>
+      <p-message
+        class="w-80"
+        *ngIf="error().Status"
+        severity="error"
+        [text]="error().Message">
+      </p-message>
 
-        <!-- Register -->
-        <a
-          routerLink="/register"
-          class="text-blue-500 text-sm font-bold hover:underline
-                 transition-transform duration-200 ease-out
-                 active:scale-[0.98] cursor-pointer"
-        >
-          New User!
-        </a>
+      <p-button
+        type="submit"
+        label="Login"
+        styleClass="w-80"
+        severity="primary"
+        [loading]="isLoggingIn()">
+      </p-button>
 
-        <!-- Error -->
-        <div *ngIf="error().Status">
-          <p class="text-red-700 text-sm font-bold">
-            Error :
-            <span class="font-normal">{{ error().Message }}</span>
-          </p>
-        </div>
+    </form>
 
-      </form>
+    <!-- Footer -->
+    <div class="text-center mt-6 text-sm text-color-secondary">
+      Don’t have an account?
+      <a routerLink="/register"
+         class="text-primary font-medium hover:underline ml-1">
+        Create one
+      </a>
     </div>
+
   </div>
 </div>

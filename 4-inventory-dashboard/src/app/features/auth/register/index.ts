@@ -1,4 +1,4 @@
-import { Component, Inject, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
@@ -6,20 +6,29 @@ import { AuthService } from "../../../core/services/auth";
 import { IRegisterData } from "../../../shared/interface/auth";
 import { IError } from "../../../shared/interface";
 import { RegisterSchema } from "../../../shared/schemas/auth";
+import { IftaLabel } from "primeng/iftalabel";
+import { SelectModule } from "primeng/select";
+import { ButtonModule } from "primeng/button";
+import { MessageModule } from 'primeng/message';
 
 @Component({
     selector: "app-root",
     standalone: true,
-    imports: [RouterLink, FormsModule, CommonModule],
+    imports: [
+        RouterLink, 
+        FormsModule, 
+        CommonModule,
+        IftaLabel,
+        SelectModule,
+        ButtonModule,
+        MessageModule
+    ],
     templateUrl: "./index.html",
 })
 export class Register {
-    private authService = Inject(AuthService);
-    private router = Inject(Router);
+    private authService = inject(AuthService);
+    private router = inject(Router);
 
-    public readonly api_url = "auth/register";
-
-    // ✅ MUST be public (template access)
     public re_password = signal<string>("");
 
     public registerData = signal<IRegisterData>({
@@ -53,7 +62,6 @@ export class Register {
             });
             return;
         }
-
         if (this.registerData().Password !== this.re_password()) {
             this.error.set({
                 Status: true,
@@ -62,17 +70,22 @@ export class Register {
             return;
         }
 
-        this.authService.Register(this.api_url, this.registerData())
+        alert("start api")
+        this.authService.register(this.registerData())
             .subscribe({
-                next: () => {
+                next: (res: any) => {
+                    console.log(res);
+                    alert("success")
                     this.router.navigate(["/auth/login"]);
                 },
                 error: (err: any) => {
+                    alert("fails")
                     this.error.set({
                         Status: true,
                         Message: err.error?.message || "Registration failed"
                     });
                 }
             });
+        alert("finish api")
     }
 }
