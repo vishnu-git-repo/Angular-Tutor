@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../../../environment";
-import { IAcceptBorrowRequest, IGetAdminBorrowRequest, IGetClientBorrowRequest, IPendingBorrowRequest, IReqBorrowRequest } from "../../../shared/interface/borrows";
+import { IAcceptBorrowRequest, IGetAdminBorrowRequest, IGetClientBorrowRequest, IPaidBorrowRequest, IPendingBorrowRequest, IReqBorrowRequest } from "../../../shared/interface/borrows";
 
 
 
@@ -60,5 +60,19 @@ export class BorrowService {
             withCredentials: true
         })
     }
+
+    putPaidBorrow(BorrowId: number, payload: IPaidBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/pay/${BorrowId}`;
+        return this.http.put(api_url, payload, {
+            withCredentials: true
+        })
+    }
+
+    createOrder(BorrowId: number): Observable<any> {
+    const api_url = `${environment.api_url}borrows/create-order/${BorrowId}`;
+    return this.http.post(api_url, {}, {
+        withCredentials: true
+    });
+}
 
 }

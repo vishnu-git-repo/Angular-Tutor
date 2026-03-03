@@ -1,7 +1,7 @@
 import { Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, tap } from "rxjs";
-import { ILoginData, IRegisterData } from "../../../shared/interface/auth";
+import { ICheckAuthResponse, ILoginData, IRegisterData } from "../../../shared/interface/auth";
 import { environment } from "../../../../environment";
 
 @Injectable({
@@ -11,7 +11,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  public User = signal<any | null>(null);
+  public User = signal<ICheckAuthResponse|null>(null);
 
   login(data: ILoginData): Observable<any> {
     const api_url = `${environment.api_url}auth/login`

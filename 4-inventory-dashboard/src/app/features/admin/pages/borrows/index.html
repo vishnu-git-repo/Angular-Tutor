@@ -204,13 +204,13 @@
                     <span class="text-gray-600">null</span>
                     }
                 </td>
-                <td class="text-center">{{ b.expectedDuration }}</td>
+                <td class="text-center">{{ getDuration(b.startDate, b.expectedReturnDate) }}</td>
                 <td class="">
                     <div class="flex justify-start gap-2">
                         <!-- View -->
                         <span
-                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
-                            pTooltip="View Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-400 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                            pTooltip="View" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
                             (click)="handleViewBorrow(b.id)">
                             <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 transition-all duration-200"
                                 style="font-size: 0.85rem;">
@@ -221,7 +221,7 @@
                         @if (b.status==1) {
                         <span
                             class="w-8 h-8 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
-                            pTooltip="Approve Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            pTooltip="Accept" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
                             (click)="handleAcceptBorrow(b.id, b.userId)">
                             <i class="pi pi-check text-gray-600 group-hover:text-green-600 transition-all duration-200"
                                 style="font-size: 0.85rem;">
@@ -229,8 +229,29 @@
                         </span>
                         }
 
+                        @if (b.status==5){
+                        <!-- Approve -->
+                        <span
+                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-green-900 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                            pTooltip="Approve" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            (click)="handleApproveBorrow(b.id, b.userId)">
+                            <i class="pi pi-verified text-gray-600 group-hover:text-green-950 transition-all duration-200"
+                                style="font-size: 0.85rem;">
+                            </i>
+                        </span>
+                        <!-- Waitlist -->
+                        <span
+                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-red-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                            pTooltip="Waitlist" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            (click)="handleWaitlistBorrow(b.id, b.userId)">
+                            <i class="pi pi-replay text-gray-600 group-hover:text-red-600 transition-all duration-200"
+                                style="font-size: 0.85rem;">
+                            </i>
+                        </span>
+                        }
+
                         <!-- Close -->
-                        @if (b.status==1||b.status==5||b.status==7){
+                        @if (b.status==1||b.status==7){
                         <span
                             class="w-8 h-8 rounded-full border border-gray-300 hover:border-red-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
                             pTooltip="Close Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"

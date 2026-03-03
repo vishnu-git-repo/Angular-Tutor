@@ -229,6 +229,18 @@
                         </span>
                         }
 
+                        <!-- Make Payment -->
+                        @if (b.status==4){
+                        <span
+                            class="w-8 h-8 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                            pTooltip="Start" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
+                            (click)="handlePaymentBorrow(b.id)">
+                            <i class="pi pi-indian-rupee text-gray-600 group-hover:text-green-600 transition-all duration-200"
+                                style="font-size: 0.85rem;">
+                            </i>
+                        </span>
+                        }
+
                         <!-- Close -->
                         <!-- @if (b.status==1||b.status==5||b.status==7){
                         <span

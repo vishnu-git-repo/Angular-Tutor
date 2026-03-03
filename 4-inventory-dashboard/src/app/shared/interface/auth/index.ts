@@ -11,3 +11,14 @@ export interface IRegisterData {
     Address: string;
     Phone: string;
 }
+
+export interface ICheckAuthResponse {
+    id: number,
+    name: string,
+    email: string,
+    gender: string,
+    address: string,
+    phone: string,
+    role: number,
+    status: number
+}

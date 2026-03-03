@@ -6,19 +6,19 @@ import { AuthService } from "../../../core/services/auth";
 import { IRegisterData } from "../../../shared/interface/auth";
 import { IError } from "../../../shared/interface";
 import { RegisterSchema } from "../../../shared/schemas/auth";
-import { IftaLabel } from "primeng/iftalabel";
+import { IftaLabelModule } from "primeng/iftalabel";
 import { SelectModule } from "primeng/select";
 import { ButtonModule } from "primeng/button";
 import { MessageModule } from 'primeng/message';
 
 @Component({
-    selector: "app-root",
+    selector: "app-register",
     standalone: true,
     imports: [
-        RouterLink, 
-        FormsModule, 
+        RouterLink,
+        FormsModule,
         CommonModule,
-        IftaLabel,
+        IftaLabelModule,
         SelectModule,
         ButtonModule,
         MessageModule
@@ -39,6 +39,8 @@ export class Register {
         Address: "",
         Phone: ""
     });
+
+    public isRegistering = signal<boolean>(false)
 
     public error = signal<IError>({
         Status: false,
@@ -70,22 +72,21 @@ export class Register {
             return;
         }
 
-        alert("start api")
+        this.isRegistering.set(true);
+
         this.authService.register(this.registerData())
             .subscribe({
                 next: (res: any) => {
-                    console.log(res);
-                    alert("success")
                     this.router.navigate(["/auth/login"]);
+                    this.isRegistering.set(false);
                 },
                 error: (err: any) => {
-                    alert("fails")
                     this.error.set({
                         Status: true,
                         Message: err.error?.message || "Registration failed"
                     });
+                    this.isRegistering.set(false);
                 }
             });
-        alert("finish api")
     }
 }

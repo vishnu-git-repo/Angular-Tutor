@@ -1,14 +1,19 @@
-<div class="min-h-dvh flex justify-center items-center bg-surface-50">
-  <div class="card w-full max-w-md border shadow-4 border-round-xl p-5 relative">
+<div class="min-h-screen flex items-center justify-center bg-surface-900 px-4">
+
+  <div class="w-full max-w-md bg-surface-800 p-8 border-round-2xl shadow-8">
 
     <!-- Title -->
-    <div class="flex justify-center mb-4">
-      <h2 class="text-2xl font-semibold text-primary text-center">
-        Create Account
+    <div class="text-center mb-7">
+      <h2 class="text-3xl font-semibold text-white mb-2">
+        Welcome to Inventory!
       </h2>
+      <p class="text-sm text-color-secondary">
+        Register to continue to your dashboard
+      </p>
     </div>
 
-    <form class="flex flex-col items-center gap-3 border" (ngSubmit)="handleRegister()">
+    <!-- Form -->
+    <form class="flex flex-col items-center gap-5" (ngSubmit)="handleRegister()">
 
       <!-- Name -->
       <p-iftalabel class="border border-zinc-700 rounded-lg">
@@ -47,7 +52,7 @@
         <label for="reg_password">Password</label>
       </p-iftalabel>
 
-      <!-- Re-Password -->
+      <!-- Confirm Password -->
       <p-iftalabel class="border border-zinc-700 rounded-lg">
         <input
           pInputText
@@ -69,10 +74,11 @@
             { label: 'Female', value: 'Female' },
             { label: 'Other', value: 'Other' }
           ]"
+          name = "Gender"
           [ngModel]="registerData().Gender"
           (ngModelChange)="setField('Gender', $event)"
           placeholder="Select Gender"
-          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
+          class="w-80"
         />
         <label for="reg_gender">Gender</label>
       </p-iftalabel>
@@ -83,7 +89,7 @@
           pInputTextarea
           rows="2"
           id="reg_address"
-          class="w-full"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="registerData().Address"
           (input)="setField('Address', $any($event.target).value)"
         ></textarea>
@@ -95,37 +101,42 @@
         <input
           pInputText
           id="reg_phone"
-          class="w-full"
+          class="w-80 px-3 pt-5 pb-2 focus:outline-none focus:border-zinc-400"
           [value]="registerData().Phone"
           (input)="setField('Phone', $any($event.target).value)"
         />
         <label for="reg_phone">Phone</label>
       </p-iftalabel>
 
+      <!-- Error -->
+      <p-message
+        class="w-80"
+        *ngIf="error().Status"
+        severity="error"
+        [text]="error().Message">
+      </p-message>
+
       <!-- Submit -->
       <p-button
         type="submit"
         label="Register"
         styleClass="w-80"
-        severity="success">
+        severity="primary"
+        [loading]="isRegistering()"
+      >
       </p-button>
 
-      <!-- Login -->
-      <div class="text-center mt-2">
-        Already have an account?
-        <a
-          routerLink="/login"
-          class="text-primary font-medium hover:underline cursor-pointer"
-        >
-          Sign up
-        </a>
-      </div>
-
-      <!-- Error -->
-      <div *ngIf="error().Status" class="mt-2">
-        <p-message severity="error" [text]="error().Message"></p-message>
-      </div>
-
     </form>
+
+    <!-- Footer -->
+    <div class="text-center mt-6 text-sm text-color-secondary">
+      Already have an account?
+      <a
+        routerLink="/login"
+        class="text-primary font-medium hover:underline ml-1">
+        Sign in
+      </a>
+    </div>
+
   </div>
 </div>

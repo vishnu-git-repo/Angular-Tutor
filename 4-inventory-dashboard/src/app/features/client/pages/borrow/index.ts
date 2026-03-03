@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, skip, takeUntil } from 'rxjs/operators';
 
 import { IftaLabelModule } from 'primeng/iftalabel';
@@ -20,6 +20,7 @@ import { IAcceptBorrowRequest, IGetClientBorrowRequest, IPendingBorrowRequest } 
 import { Colors } from "../../../../shared/colors";
 import { Router, RouterModule } from "@angular/router";
 import { AuthService } from "../../../../core/services/auth";
+import { ICheckAuthResponse } from "../../../../shared/interface/auth";
 
 @Component({
     selector: "app-client-borrow",
@@ -42,8 +43,7 @@ import { AuthService } from "../../../../core/services/auth";
     ],
     templateUrl: "./index.html",
 })
-
-export class ClientBorrowComponent {
+export class ClientBorrowComponent implements OnInit {
 
     Math = Math
 
@@ -52,8 +52,6 @@ export class ClientBorrowComponent {
     private borrowService = inject(BorrowService);
     private authService = inject(AuthService);
     private router = inject(Router);
-
-    public User = signal<any>(null);
 
     public acceptPayload = signal<IAcceptBorrowRequest>({
         BorrowId: 0,
@@ -74,7 +72,8 @@ export class ClientBorrowComponent {
         Ack: number;
         Closed: number;
     }>({
-        Requested: 0, Accepted: 0, Assigned: 0, Pending: 0, Paid: 0, Approved: 0, Waitlisted: 0, Ack: 0, Closed: 0
+        Requested: 0, Accepted: 0, Assigned: 0, Pending: 0,
+        Paid: 0, Approved: 0, Waitlisted: 0, Ack: 0, Closed: 0
     })
 
     public initialPaginator: IGetClientBorrowRequest = {
@@ -85,15 +84,30 @@ export class ClientBorrowComponent {
         SearchString: "",
         TotalCount: 0
     };
+
     public paginatorState = signal<IGetClientBorrowRequest>(this.initialPaginator);
 
+    async ngOnInit(): Promise<void> {
 
-    ngOnInit(): void {
-        this.User = this.authService.User;
-        if (!this.User()) {
-            this.authService.checkAuth().subscribe();
+        let user = this.authService.User();
+
+        if (!user) {
+            await firstValueFrom(this.authService.checkAuth());
+            user = this.authService.User();
         }
+
+        if (!user) {
+            console.error("User not authenticated");
+            return;
+        }
+
+        this.paginatorState.update(state => ({
+            ...state,
+            UserId: user.id
+        }));
+
         this.fetchBorrows();
+
         this.searchSubject
             .pipe(
                 debounceTime(500),
@@ -118,16 +132,20 @@ export class ClientBorrowComponent {
 
     fetchBorrows() {
         this.isLoading.set(true);
+
         this.borrowService.getClientBorrows(this.paginatorState())
             .subscribe({
                 next: res => {
                     this.Counts.set(res.data.statusCounts);
                     this.paginatorState.update(state => ({ ...state, TotalCount: res.data.totalCount }));
                     this.borrowList.set(res.data.items);
+                    this.isLoading.set(false);
                 },
-                error: err => console.log(err)
+                error: err => {
+                    console.log(err);
+                    this.isLoading.set(false);
+                }
             });
-        this.isLoading.set(false);
     }
 
     onSearch(event: Event) {
@@ -143,7 +161,6 @@ export class ClientBorrowComponent {
         return Colors[color] || Colors.neutral;
     }
 
-
     // Tab
     onStatusTab(num: number) {
         this.paginatorState.update(state => ({
@@ -153,7 +170,6 @@ export class ClientBorrowComponent {
         }))
         this.fetchBorrows();
     }
-
 
     // Pagination
     goToFirstPage() {
@@ -184,18 +200,18 @@ export class ClientBorrowComponent {
             this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Assigned ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
         else if (this.paginatorState().Status == 4)
             this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Pending ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
-        else if(this.paginatorState().Status==5)
-            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Paid ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
-        else if(this.paginatorState().Status==6)
-            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Approved ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
-        else if(this.paginatorState().Status==7)
-            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Waitlisted ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
-        else if(this.paginatorState().Status==8)
-            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Ack ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
-        else if(this.paginatorState().Status==9)
-            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.Counts().Closed ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
-        else 
-            this.paginatorState.update( state => ({ ...state, PageNo: Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1))}) );
+        else if (this.paginatorState().Status == 5)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Paid ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if (this.paginatorState().Status == 6)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Approved ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if (this.paginatorState().Status == 7)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Waitlisted ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if (this.paginatorState().Status == 8)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Ack ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else if (this.paginatorState().Status == 9)
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.Counts().Closed ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
+        else
+            this.paginatorState.update(state => ({ ...state, PageNo: Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1)) }));
 
         this.fetchBorrows();
     }
@@ -206,8 +222,7 @@ export class ClientBorrowComponent {
     }
 
     isFirstPage() {
-        return this.paginatorState().PageNo == 1 ?
-            true : false;
+        return this.paginatorState().PageNo == 1 ? true : false;
     }
 
     isLastPage() {
@@ -233,30 +248,111 @@ export class ClientBorrowComponent {
             return this.paginatorState().PageNo == Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1));
     }
 
-    // Dialog
-    openDialog(type: string) {
+    openDialog(type: string) { }
 
-    }
-
-    // Actions
     handleViewBorrow(id: number) {
         this.router.navigate(['/client/borrows/view', id]);
     }
-    
-    // CRUD
-    handlePendingBorrow( id: number){
-        const payload: IPendingBorrowRequest = {
-            BorrowId : id,
-            UserId : this.User().id
+
+    async handlePendingBorrow(id: number) {
+
+        let user = this.authService.User();
+
+        if (!user) {
+            await firstValueFrom(this.authService.checkAuth());
+            user = this.authService.User();
         }
+
+        if (!user) {
+            console.error("User not authenticated");
+            return;
+        }
+
+        const payload: IPendingBorrowRequest = {
+            BorrowId: id,
+            UserId: user.id
+        };
+
         this.borrowService.putPendingBorrow(payload).subscribe({
-            next: res => {
-                console.log(res);
-                this.fetchBorrows();
-            },
-            error: err => {
-                console.log(err);
+            next: () => this.fetchBorrows(),
+            error: err => console.log(err)
+        });
+    }
+
+    async handlePaymentBorrow(id: number) {
+
+        let user = this.authService.User();
+
+        if (!user) {
+            await firstValueFrom(this.authService.checkAuth());
+            user = this.authService.User();
+        }
+
+        if (!user) {
+            console.error("User not authenticated");
+            return;
+        }
+
+        try {
+            const orderResponse = await firstValueFrom(
+                this.borrowService.createOrder(id)
+            );
+
+            const order = orderResponse.data;
+
+            await this.loadRazorpayScript();
+
+            const options: any = {
+                key: order.key, 
+                amount: order.amount,
+                currency: "INR",
+                name: "Inventory System",
+                description: "Borrow Payment",
+                order_id: order.orderId,
+
+                handler: async (response: any) => {
+                    await firstValueFrom(
+                        this.borrowService.putPaidBorrow(id, {
+                            UserId: user.id,
+                            PaymentMode: 2, // UPI or whatever enum value
+                            RazorpayOrderId: response.razorpay_order_id,
+                            RazorpayPaymentId: response.razorpay_payment_id,
+                            RazorpaySignature: response.razorpay_signature
+                        })
+                    );
+
+                    this.fetchBorrows();
+                },
+
+                prefill: {
+                    name: user.name,
+                    email: user.email
+                },
+
+                theme: {
+                    color: "#18181a"
+                }
+            };
+
+            const razor = new (window as any).Razorpay(options);
+            razor.open();
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    private loadRazorpayScript(): Promise<void> {
+        return new Promise((resolve) => {
+            if ((window as any).Razorpay) {
+                resolve();
+                return;
             }
+
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve();
+            document.body.appendChild(script);
         });
     }
 }

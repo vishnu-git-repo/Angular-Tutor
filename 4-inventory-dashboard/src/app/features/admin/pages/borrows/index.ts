@@ -20,6 +20,7 @@ import { IAcceptBorrowRequest, IGetAdminBorrowRequest } from "../../../../shared
 import { Colors } from "../../../../shared/colors";
 import { Router, RouterModule } from "@angular/router";
 import { Badge } from "primeng/badge";
+import { getDurationInDays } from "../../../../shared/lib/DateHelper";
 
 @Component({
     selector: "app-admin-borrow",
@@ -46,6 +47,7 @@ import { Badge } from "primeng/badge";
 export class AdminBorrowComponent {
 
     Math = Math
+    getDuration = getDurationInDays;
 
     private searchSubject = new Subject<string>();
     private destroySubject = new Subject<void>();
@@ -203,7 +205,10 @@ export class AdminBorrowComponent {
         });
         this.Dialog.update(state => ({...state, accept: !state.accept}))
     }
-    handleApproveBorrow(id: number){
+    handleApproveBorrow(id: number, userId: number){
+
+    }
+    handleWaitlistBorrow(id: number, userId: number){
 
     }
 

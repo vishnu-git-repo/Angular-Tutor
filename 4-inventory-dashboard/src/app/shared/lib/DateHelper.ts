@@ -1,7 +1,7 @@
 
 export function getDateFromUtc(utc: string): string {
     if (!utc) return '';
-    
+
     const date = new Date(utc);
     return date.toLocaleDateString('en-IN', {
         month: 'short',
@@ -13,7 +13,7 @@ export function getDateFromUtc(utc: string): string {
 
 export function getTimeFromUtc(utc: string): string {
     if (!utc) return '';
-    
+
     const date = new Date(utc);
     return date.toLocaleTimeString('en-IN', {
         hour: 'numeric',
@@ -25,7 +25,7 @@ export function getTimeFromUtc(utc: string): string {
 
 export function getDateTimeFromUtc(utc: string): string {
     if (!utc) return '';
-    
+
     const date = new Date(utc);
     return date.toLocaleString('en-IN', {
         month: 'short',
@@ -42,9 +42,11 @@ export function getDurationInDays(startUtc: string, endUtc: string): number {
 
     const start = new Date(startUtc);
     const end = new Date(endUtc);
-    const diffMs = end.getTime() - start.getTime();
-    
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-    return diffDays > 0 ? diffDays : 0;
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
+    const diffDays =
+        Math.floor(
+            (end.setHours(0, 0, 0, 0) -
+                start.setHours(0, 0, 0, 0)) / MS_PER_DAY
+        ) + 1;
+    return diffDays > 0 ? diffDays : 1;
 }

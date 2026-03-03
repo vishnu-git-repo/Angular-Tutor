@@ -18,7 +18,7 @@ export interface IGetClientBorrowRequest {
     PageNo: number;
     Status: number;
     SearchString: string;
-    UserId: number;
+    UserId: any;
     TotalCount: number;
 }
 
@@ -53,6 +53,9 @@ export interface IPendingBorrowRequest {
     UserId: number
 }
 
+export interface IPaidBorrowRequest {
+    
+}
 
 
 export interface IGetBorrowByIDResponse {
