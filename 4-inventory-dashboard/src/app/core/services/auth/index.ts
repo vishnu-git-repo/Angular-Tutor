@@ -9,9 +9,9 @@ import { environment } from "../../../../environment";
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  public User = signal<ICheckAuthResponse|null>(null);
+  public User = signal<ICheckAuthResponse | null>(null);
 
   login(data: ILoginData): Observable<any> {
     const api_url = `${environment.api_url}auth/login`
@@ -46,10 +46,35 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(
+      `${environment.api_url}auth/forgot-password`,
+      { Email: email },
+      { withCredentials: true }
+    );
+  }
+
+  verifyOtp(email: string, otp: string): Observable<any> {
+    return this.http.post(
+      `${environment.api_url}auth/verify-otp`,
+      { Email: email, Otp: otp },
+      { withCredentials: true }
+    );
+  }
+
+  resetPassword(newPassword: string): Observable<any> {
+    return this.http.post(
+      `${environment.api_url}auth/reset-password`,
+      { NewPassword: newPassword },
+      { withCredentials: true }
+    );
+  }
+
+
   logout(): Observable<any> {
     return this.http.get(
       `${environment.api_url}auth/logout`,
-      { withCredentials: true}
+      { withCredentials: true }
     )
   }
 
@@ -62,7 +87,7 @@ export class AuthService {
   }
 
   getUser() {
-    if(!this.User()){
+    if (!this.User()) {
       this.checkAuth();
       return this.User();
     }

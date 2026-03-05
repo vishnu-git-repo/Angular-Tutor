@@ -17,7 +17,7 @@
 
             <!-- Add Equipment -->
             <div class="p-3 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
-                (click)="openGroupAddDialog()" pTooltip="Add Equipment" tooltipPosition="bottom"
+                (click)="openGroupAddDialog()" pTooltip="Create Equipment" tooltipPosition="bottom"
                 tooltipStyleClass="custom-tooltip">
                 <i
                     class="pi pi-plus text-gray-600 group-hover:text-green-600 text-lg active:scale-90 transition-all duration-200">
@@ -195,25 +195,21 @@
 
         <!--  TABLE SECTION -->
         <div class="card">
-            <!--  EMPTY  -->
-            @if (equipmentList().length==0) {
-            <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
-                <span class="text-2xl">Oops! No equipments found</span>
-            </div>
-            }
-            <!-- SKELETON GROUP -->
-            @else if (isEquipmentGroupLoad()) {
+
+            <!-- Group Equipments -->
+            @if(paginatorState().IsGroup)
+            {
+            @if (isEquipmentGroupLoad())
+            {
             <p-table>
                 <ng-template pTemplate="header">
                     <tr>
                         <th>#</th>
                         <th>Name</th>
+                        <th class="w-80">Description</th>
                         <th>Category</th>
-                        <th>Total</th>
-                        <th>Available</th>
-                        <th>In Use</th>
-                        <th>Reserved</th>
-                        <th>Maintenance</th>
+                        <th>Price</th>
+                        <th>Available/Total</th>
                         <th>Actions</th>
                     </tr>
                 </ng-template>
@@ -226,13 +222,18 @@
                         <td><p-skeleton></p-skeleton></td>
                         <td><p-skeleton></p-skeleton></td>
                         <td><p-skeleton></p-skeleton></td>
-                        <td><p-skeleton></p-skeleton></td>
-                        <td><p-skeleton></p-skeleton></td>
                     </tr>
                 </ng-template>
             </p-table>
-            } @else if(paginatorState().IsGroup){
-            <!-- GROUP TABLE -->
+            }
+            @else if (equipmentList().length==0)
+            {
+            <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
+                <span class="text-2xl">Oops! No equipments found</span>
+            </div>
+            }
+            @else
+            {
             <p-table [value]="equipmentList()">
                 <ng-template pTemplate="header">
                     <tr>
@@ -241,10 +242,8 @@
                         <th>Description</th>
                         <th>Category</th>
                         <th>Price</th>
-                        <th>Total</th>
-                        <th>Available</th>
-                        <th>In Use</th>
-                        <th class="min-w-24">Actions</th>
+                        <th>Available/Total</th>
+                        <th>Actions</th>
                     </tr>
                 </ng-template>
 
@@ -253,16 +252,23 @@
                         <td>{{ getIndex(1) + i + 1}}</td>
                         <td>{{ e.name }}</td>
                         <td>
-                            <p class="max-w-80">{{ e.description }}</p>
+                            <p class="w-80">{{ e.description }}</p>
                         </td>
                         <td>
                             <p-chip [label]="EquipmentCategory[e.category]" [style]="getChipColor('secondary')">
                             </p-chip>
                         </td>
                         <td>{{ e.price | currency: 'INR' }}</td>
-                        <td>{{ e.totalItems }}</td>
-                        <td>{{ e.availableCount }}</td>
-                        <td>{{ e.inUseCount }}</td>
+
+                        @if(e.availableCount==0){
+                        <td>
+                            <span class="text-red-500">{{e.availableCount}}</span>/{{e.totalItems}}
+                        </td>
+                        }@else{
+                        <td>
+                            <span class="text-green-500">{{e.availableCount}}</span>/{{e.totalItems}}
+                        </td>
+                        }
                         <td class="">
                             <div class="flex justify-start gap-2">
                                 <span
@@ -272,7 +278,7 @@
                                     <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 transition-all duration-200"
                                         style="font-size: 0.75rem;">
                                     </i>
-                                </span> 
+                                </span>
                                 <span
                                     class="size-6 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
                                     (click)="openGroupEditDialog(e.id)" pTooltip="Edit Equipment"
@@ -281,20 +287,30 @@
                                         style="font-size: 0.75rem;">
                                     </i>
                                 </span>
+                                @if(e.availableCount!=0){
                                 <span
-                                class="size-6 rounded-full border border-gray-300 hover:border-cyan-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
-                                (click)="handleAddToStore(e)" pTooltip="Add to store" tooltipPosition="bottom"
-                                tooltipStyleClass="custom-tooltip">
-                                <i class="pi pi-wallet text-zinc-600 group-hover:text-cyan-600 active:scale-90 transition-all duration-200"
-                                    style="font-size: 0.75rem;">
-                                </i>
-                            </span>
+                                    class="size-6 rounded-full border border-gray-300 hover:border-cyan-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                                    (click)="handleAddToStore(e)" pTooltip="Add to store" tooltipPosition="bottom"
+                                    tooltipStyleClass="custom-tooltip">
+                                    <i class="pi pi-wallet text-zinc-600 group-hover:text-cyan-600 active:scale-90 transition-all duration-200"
+                                        style="font-size: 0.75rem;">
+                                    </i>
+                                </span>
+                                }
                             </div>
                         </td>
                     </tr>
                 </ng-template>
             </p-table>
-            } @else if(isAllEquipmentLoad()){
+            }
+            }
+
+
+            <!-- All Equipment Items -->
+            @else
+            {
+            @if(isAllEquipmentLoad())
+            {
             <!-- SKELETON ALL EQUIPMENT -->
             <p-table>
                 <ng-template pTemplate="header">
@@ -322,10 +338,13 @@
                     </tr>
                 </ng-template>
             </p-table>
-
-
-            } @else {
-            <!--  ITEMS TABLE  -->
+            }
+            @else if (WholeEquipmentItemList().length==0) {
+            <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
+                <span class="text-2xl">Oops! No equipments found</span>
+            </div>
+            }
+            @else {
             <p-table [value]="WholeEquipmentItemList()">
                 <ng-template pTemplate="header">
                     <tr>
@@ -355,7 +374,7 @@
                             ">
                             </p-chip>
                         </td>
-                        <td>{{ item.price | currency: 'INR'  }}</td>
+                        <td>{{ item.price | currency: 'INR' }}</td>
                         <td>
                             <p-chip [label]="EquipmentCondition[item.condition]" [style]="
                                 item.condition == 1 ? getChipColor('success') :
@@ -370,10 +389,12 @@
                 </ng-template>
             </p-table>
             }
+            }
 
 
 
             <!-- Pagination -->
+            @if (!isEquipmentGroupLoad()||!isAllEquipmentLoad()){
             <div class="flex justify-center items-center gap-5 mt-5">
                 <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
                     pTooltip="First Page" tooltipPosition="left" tooltipStyleClass="custom-tooltip"
@@ -412,9 +433,8 @@
                     }}
                     of {{ paginatorState().TotalCount }}
                 </div>
-
             </div>
-
+            }
         </div>
     </div>
 </div>

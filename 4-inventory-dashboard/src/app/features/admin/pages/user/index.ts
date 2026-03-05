@@ -23,6 +23,8 @@ import { IGetFilteredUserRequest, IUpdatePasswordRequest, IUpdateUserRequest, IU
 import { UserService } from "../../../../core/services/user";
 import { GenderConstant } from "../../../../shared/constants";
 import { AdminStore } from "../../../../shared/interface/cart";
+import { UpdatePasswordSchema, UpdateUserSchema } from "../../../../shared/schemas/user";
+import { MessageService } from "primeng/api";
 
 interface IFilterOptions {
   row_count: number;
@@ -60,6 +62,10 @@ type DialogType =
 })
 
 export class AdminUserComponent implements OnInit {
+
+  Math = Math;
+
+  private messageService = inject(MessageService);
   private userService = inject(UserService);
   private searchSubject = new Subject<string>();
   public tabvalue = signal<number>(0);
@@ -78,6 +84,14 @@ export class AdminUserComponent implements OnInit {
     visible: false,
     type: "view",
   });
+
+  public Loading = signal<{
+    update: boolean,
+    password: boolean,
+  }>({
+    update: false,
+    password: false,
+  })
 
   public paginatorState = signal<IGetFilteredUserRequest>({
     Status: 0,
@@ -105,7 +119,7 @@ export class AdminUserComponent implements OnInit {
         this.paginatorState.update(state => ({
           ...state,
           SearchString: searchTerm,
-          PageNo: 1  // reset to first page
+          PageNo: 1
         }));
 
         this.fetchUsers();
@@ -214,6 +228,10 @@ export class AdminUserComponent implements OnInit {
   }
   goToPage(page: number) { }
 
+  getIndex() {
+    return (this.paginatorState().PageNo - 1) * this.paginatorState().RowCount;
+  }
+
   OnRowChange(e: any) {
     this.paginatorState.update(state => ({
       ...state,
@@ -253,61 +271,108 @@ export class AdminUserComponent implements OnInit {
 
   // CRUD
   handleUpdateUser(user: IUserResponse) {
+    this.Loading.update(state => ({ ...state, update: true }));
     const payload: IUpdateUserRequest = {
       Name: user.name,
       Gender: user.gender || "",
       Phone: user.phone || "",
       Address: user.address || ""
     }
+    const validation = UpdateUserSchema.safeParse(payload);
+    if (!validation.success) {
+      this.messageService.add({
+        severity: "error",
+        summary: "Error",
+        detail: validation.error.issues[0].message
+      });
+      this.Loading.update(state => ({ ...state, update: false }));
+      return;
+    }
     this.userService.updateUser(user.id, payload).subscribe({
       next: res => {
-        console.log("Update User Response", res);
+        this.messageService.add({
+          severity: "success",
+          summary: "Success",
+          detail: res.message
+        });
+        this.Loading.update(state => ({ ...state, update: false }));
         this.closeDialog();
       },
       error: err => {
-        console.log("Update User Response", err);
-        alert("Fails");
+        this.messageService.add({
+          severity: "error",
+          summary: "Error",
+          detail: err.error?.message || "Updation Fails"
+        });
+        this.Loading.update(state => ({ ...state, update: false }));
       }
     })
   }
 
   handleUpdatePassword(user: IUserResponse) {
+
+    this.Loading.update(state => ({ ...state, password: true }));
+
     const payload: IUpdatePasswordRequest = {
       Email: user.email,
       Password: "",
       NewPassword: this.password()
     }
+
+    const validation = UpdatePasswordSchema.safeParse({ Password: payload.NewPassword })
+    if (!validation.success) {
+      this.messageService.add({
+        severity: "error",
+        summary: "Error",
+        detail: validation.error.issues[0].message
+      });
+      this.Loading.update(state => ({ ...state, password: false }));
+      return;
+    }
+
     this.userService.updatePasswordByAdmin(user.id, payload).subscribe({
       next: res => {
-        console.log("Update UserPassword Response", res);
+        this.messageService.add({
+          severity: "success",
+          summary: "Success",
+          detail: res.message
+        });
         this.closeDialog();
+        this.Loading.update(state => ({ ...state, password: false }));
       },
       error: err => {
         console.log("Update UserPassword Response", err);
-        alert("Fails");
+        this.messageService.add({
+          severity: "error",
+          summary: "Error",
+          detail: err.error?.message || "Update Password Fails"
+        });
+        this.Loading.update(state => ({ ...state, password: false }));
       }
     })
   }
 
   handleBlockUser(user: IUserResponse) {
     const id = user.id;
+    const name = user.name;
     this.userService.blockClient(id).subscribe({
       next: res => {
         console.log("Block user Response", res);
-        const updatedList = this.userList().map(u =>
-          u.id === id ? { ...u, status: 2 } : u
-        );
-        this.userList.set(updatedList);
-        this.paginatorState.update(state => ({
-          ...state,
-          ActiveCount: (state.ActiveCount ?? 0) - 1,
-          BlockedCount: (state.BlockedCount ?? 0) + 1,
-        }));
+        this.messageService.add({
+          severity: "warn",
+          summary: "Warning",
+          detail: res.message
+        });
+        this.fetchUsers();
         this.closeDialog();
       },
       error: err => {
         console.log("Block user Response", err);
-        alert("Fails");
+        this.messageService.add({
+          severity: "error",
+          summary: "Error",
+          detail: err.error?.message
+        })
       }
     })
   }
@@ -316,21 +381,21 @@ export class AdminUserComponent implements OnInit {
 
     this.userService.unBlockClient(id).subscribe({
       next: res => {
-        console.log("UnBlock user Response", res);
-        const updatedList = this.userList().map(u =>
-          u.id === id ? { ...u, status: 1 } : u
-        );
-        this.userList.set(updatedList);
-        this.paginatorState.update(state => ({
-          ...state,
-          BlockedCount: (state.BlockedCount ?? 0) - 1,
-          ActiveCount: (state.ActiveCount ?? 0) + 1
-        }));
+        this.messageService.add({
+          severity: "success",
+          summary: "Success",
+          detail: res.message
+        })
+        this.fetchUsers();
         this.closeDialog();
       },
       error: err => {
         console.log("UnBlock user Response", err);
-        alert("Fails");
+        this.messageService.add({
+          severity: "error",
+          summary: "Error",
+          detail: err.error?.message
+        })
       }
     });
   }
@@ -354,7 +419,17 @@ export class AdminUserComponent implements OnInit {
         }
         localStorage.setItem("adminStore", JSON.stringify(newStore));
       }
+      this.messageService.add({
+          severity: "success",
+          summary: "Success",
+          detail: `${user.name} added to the store`
+        })
     } catch (error) {
+      this.messageService.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Error loading cart from localStorage"
+        })
       console.error("Error loading cart from localStorage:", error);
     }
   }

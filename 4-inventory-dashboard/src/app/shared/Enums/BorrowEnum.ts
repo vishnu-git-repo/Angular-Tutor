@@ -10,12 +10,3 @@ export enum BorrowStatus
     Ack = 8,
     Closed = 9
 }
-
-export enum PaymentMode
-{
-    Cash = 1,
-    UPI = 2,
-    Card = 3,
-    BankTransfer = 4,
-    NotPaid = 5
-}

@@ -104,3 +104,17 @@ export const Colors = {
         color: '#334155'
     }
 };
+
+export const EquipmentColors = {
+    available: "#22c55e",
+    inUse: "#3b82f6",
+    reserved: "#f59e0b",
+    maintenance: "#ef4444",
+
+    new: "#10b981",
+    good: "#6366f1",
+    damaged: "#f97316",
+    retired: "#6b7280",
+
+    neutral: "#6b7280"
+};

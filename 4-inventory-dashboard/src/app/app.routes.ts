@@ -20,6 +20,7 @@ import { ClientCartComponent } from './features/client/pages/cart';
 import { AdminStoreComponent } from './features/admin/pages/store';
 import { ClientBorrowComponent } from './features/client/pages/borrow';
 import { ClientBorrowViewComponent } from './features/client/pages/borrow/view';
+import { AdminEquipmentGroupViewComponent } from './features/admin/pages/equipment/view';
 
 export const routes: Routes = [
 
@@ -46,9 +47,10 @@ export const routes: Routes = [
       { path: 'insight', component: AdminInsightComponent },
       { path: 'users', component: AdminUserComponent },
       { path: 'equipments', component: AdminEquipmentComponent },
+      { path: 'equipments/view/group/:id', component: AdminEquipmentGroupViewComponent },
       { path: 'borrows', component: AdminBorrowComponent },
-      { path: 'store', component: AdminStoreComponent },
       { path: 'borrows/view/:id', component: AdminBorrowViewComponent },
+      { path: 'store', component: AdminStoreComponent },
       { path: '', redirectTo: 'insight', pathMatch: 'full' }
     ]
   },

@@ -1,4 +1,5 @@
-import { BorrowStatus, PaymentMode } from "../../Enums/BorrowEnum";
+import { BorrowStatus } from "../../Enums/BorrowEnum";
+import { PaymentMode, PaymentStatus } from "../../Enums/PaymentEnum";
 
 // PUBLIC
 export interface IGetAdminBorrowRequest {
@@ -54,13 +55,15 @@ export interface IPendingBorrowRequest {
 }
 
 export interface IPaidBorrowRequest {
-    
+
 }
 
 
 export interface IGetBorrowByIDResponse {
     borrow: IBorrowDetail;
-    equipments: IEquipmentDetail[]
+    equipments: IEquipmentDetail[];
+    payments : IPaymentLog[];
+    borrowLogs : IBorrowLogs[]
 }
 
 
@@ -79,22 +82,7 @@ interface IBorrowDetail {
     totalPrice: number;
     paidAmount: number;
     dueAmount: number;
-    lateFee: number;
-    paymentMode: PaymentMode;
     isPaymentCompleted: boolean;
-    paymentId: string | null;
-    requestedDate: string;
-    acceptedDate: string | null;
-    assignedDate: string | null;
-    pendingDate: string | null;
-    paidDate: string | null;
-    approvedDate: string | null;
-    waitlistedDate: string | null;
-    ackDate: string | null;
-    closedDate: string | null;
-    preRemarks: string | null;
-    postRemarks: string | null;
-    ackRemarks: string | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -106,6 +94,23 @@ interface IEquipmentDetail {
     equipmentItemId: number;
     borrowedPrice: number;
     isReturned: boolean;
+}
+
+interface IBorrowLogs {
+    id : number;
+    status : BorrowStatus;
+    description : string;
+    createdAt : string;
+}
+
+interface IPaymentLog {
+    id : number;
+    paymentMode : PaymentMode;
+    status : PaymentStatus;
+    razorPayOrderId : number;
+    razorPayPaymentId : number;
+    paymentInitiatedDate : string;
+    paymentCompletedDate : string;
 }
 
 

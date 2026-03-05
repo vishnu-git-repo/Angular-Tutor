@@ -16,6 +16,7 @@ import { DatePickerModule } from "primeng/datepicker";
 import { DialogModule } from "primeng/dialog";
 import { AdminStore, AdminStoreItem } from "../../../../shared/interface/cart";
 import { BorrowService } from "../../../../core/services/borrow";
+import { MessageService } from "primeng/api";
 
 
 
@@ -43,6 +44,7 @@ export class AdminStoreComponent implements OnInit {
     private equipmentService = inject(EquipmentService);
     private userService = inject(UserService);
     private borrowService = inject(BorrowService);
+    private messageService = inject(MessageService);
 
     public userList = signal<IUserResponse[]>([]);
     public equipmentList = signal<IGroupEquipmentItems[]>([]);
@@ -387,7 +389,7 @@ export class AdminStoreComponent implements OnInit {
         this.borrowService.postAssignBorrow(this.assignPayload()).subscribe({
             next: res => {
                 console.log(res);
-                this.Dialog.update(state => ({ ...state, checkOut: true }));
+                this.Dialog.update(state => ({ ...state, checkOut: false }));
             },
             error: err => console.log(err)
         });

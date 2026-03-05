@@ -115,22 +115,15 @@
                     </span>
 
                     <span class="text-gray-400">Late Fee</span>
-                    <span>
+                    <!-- <span>
                         {{data()?.borrow?.lateFee | currency:'INR'}}
-                    </span>
+                    </span> -->
 
                     <span class="text-gray-400">Payment Status</span>
                     <p-chip [label]="data()?.borrow?.isPaymentCompleted ? 'Paid' : 'Not Paid'" [style]="getChipColor(
                                 data()?.borrow?.isPaymentCompleted ? 'success' : 'danger'
                             )" class="w-fit">
                     </p-chip>
-
-                    @if(data()?.borrow?.isPaymentCompleted){
-                    <span class="text-gray-400">Payment Mode</span>
-                    <p-chip [label]="PaymentMode[data()?.borrow?.paymentMode ?? 0] || 'Unknown'"
-                        [style]="getChipColor('success')" class="w-fit">
-                    </p-chip>
-                    }
 
                 </div>
             </div>
@@ -139,38 +132,6 @@
 
     </div>
 
-    @if(data()?.borrow?.preRemarks){
-    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
-        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
-            Pre Remarks
-        </h3>
-        <p class="text-sm text-gray-300 leading-relaxed">
-            {{data()?.borrow?.preRemarks}}
-        </p>
-    </div>
-    }
-
-    @if(data()?.borrow?.postRemarks){
-    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
-        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
-            Post Remarks
-        </h3>
-        <p class="text-sm text-gray-300 leading-relaxed">
-            {{data()?.borrow?.postRemarks}}
-        </p>
-    </div>
-    }
-
-    @if(data()?.borrow?.ackRemarks){
-    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
-        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
-            Acknowledgement Remarks
-        </h3>
-        <p class="text-sm text-gray-300 leading-relaxed">
-            {{data()?.borrow?.ackRemarks}}
-        </p>
-    </div>
-    }
     <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
         <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
             Borrowed Equipments

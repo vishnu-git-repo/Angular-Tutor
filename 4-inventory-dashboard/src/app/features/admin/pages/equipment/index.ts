@@ -23,6 +23,7 @@ import { Colors } from "../../../../shared/colors";
 import { CategoryConstant } from "../../../../shared/constants";
 import { CreateEquipmentSchema } from "../../../../shared/schemas/equipment";
 import { AdminStore } from "../../../../shared/interface/cart";
+import { Router } from "@angular/router";
 
 @Component({
     selector: "app-admin-equipment",
@@ -40,7 +41,7 @@ import { AdminStore } from "../../../../shared/interface/cart";
         ChipModule,
         SkeletonModule,
         SelectModule,
-        TextareaModule
+        TextareaModule,
     ],
     templateUrl: "./index.html",
 })
@@ -54,6 +55,7 @@ export class AdminEquipmentComponent implements OnInit {
 
     private searchSubject = new Subject<string>();
     equipmentService = inject(EquipmentService);
+    private router = inject(Router);
 
     public isEquipmentGroupLoad = signal<boolean>(false);
     public isEquipmentGroupItemsLoad = signal<boolean>(false);
@@ -140,14 +142,12 @@ export class AdminEquipmentComponent implements OnInit {
 
                 this.paginatorState().IsGroup
                     ? this.fetchEquipmentGroups()
-                    : this.fetchWholeEquipmentsItems();
+                    : this.fetchWholeEquipmentsItems(true);
             });
     }
 
     fetchEquipmentGroups() {
-
         this.isEquipmentGroupLoad.set(true);
-
         this.equipmentService.getFilteredEquipment(this.paginatorState())
             .subscribe({
                 next: res => {
@@ -206,7 +206,6 @@ export class AdminEquipmentComponent implements OnInit {
     fetchWholeEquipmentsItems(updateCounts: boolean = false) {
 
         this.isAllEquipmentLoad.set(true);
-
         this.equipmentService.getFilteredEquipment({
             ...this.paginatorState(),
             IsGroup: false
@@ -285,7 +284,7 @@ export class AdminEquipmentComponent implements OnInit {
             PageNo: 1
         }));
 
-        this.fetchWholeEquipmentsItems();
+        this.fetchWholeEquipmentsItems(true);
     }
 
     onConditionTab(i: number) {
@@ -298,7 +297,7 @@ export class AdminEquipmentComponent implements OnInit {
             PageNo: 1
         }));
 
-        this.fetchWholeEquipmentsItems();
+        this.fetchWholeEquipmentsItems(true);
     }
 
     onAllTab() {
@@ -628,16 +627,7 @@ export class AdminEquipmentComponent implements OnInit {
         this.groupDialog.update(state => ({ ...state, add: true }))
     }
     openGroupViewDialog(equipmentId: number) {
-
-        this.groupDialog.update(state => ({ ...state, view: true }))
-
-        this.dPaginatorState.update(s => ({
-            ...s,
-            EquipmentId: equipmentId,
-            Status: 0,
-            Condition: 0
-        }));
-        this.fetchEquipmentsGroupItems();
+        this.router.navigate([`/admin/equipments/view/group/${equipmentId}`])
     }
     openGroupEditDialog(equipmentId: number) {
 
@@ -691,50 +681,50 @@ export class AdminEquipmentComponent implements OnInit {
     }
 
     handleAddToStore(equipment: IGroupEquipmentItems) {
-    try {
-        if (!equipment) return;
+        try {
+            if (!equipment) return;
 
-        const adminStore = localStorage.getItem("adminStore");
+            const adminStore = localStorage.getItem("adminStore");
 
-        if (adminStore !== null) {
+            if (adminStore !== null) {
 
-            const parsedStore: AdminStore = JSON.parse(adminStore);
+                const parsedStore: AdminStore = JSON.parse(adminStore);
 
-            const alreadyExists = parsedStore.Equipments.some(
-                item => item.Equipment?.id === equipment.id
-            );
+                const alreadyExists = parsedStore.Equipments.some(
+                    item => item.Equipment?.id === equipment.id
+                );
 
-            if (alreadyExists) {
-                return; 
-            }
+                if (alreadyExists) {
+                    return;
+                }
 
-            if ((equipment.availableCount || 0) < 1) {
-                alert("Equipment is not available");
-                return;
-            }
+                if ((equipment.availableCount || 0) < 1) {
+                    alert("Equipment is not available");
+                    return;
+                }
 
-            parsedStore.Equipments.push({
-                Equipment: equipment,
-                Quantity: 1
-            });
-
-            localStorage.setItem("adminStore", JSON.stringify(parsedStore));
-
-        } else {
-
-            const newStore: AdminStore = {
-                User: null,
-                Equipments: [{
+                parsedStore.Equipments.push({
                     Equipment: equipment,
                     Quantity: 1
-                }]
-            };
+                });
 
-            localStorage.setItem("adminStore", JSON.stringify(newStore));
+                localStorage.setItem("adminStore", JSON.stringify(parsedStore));
+
+            } else {
+
+                const newStore: AdminStore = {
+                    User: null,
+                    Equipments: [{
+                        Equipment: equipment,
+                        Quantity: 1
+                    }]
+                };
+
+                localStorage.setItem("adminStore", JSON.stringify(newStore));
+            }
+
+        } catch (error) {
+            console.error("Error loading cart from localStorage:", error);
         }
-
-    } catch (error) {
-        console.error("Error loading cart from localStorage:", error);
     }
-}
 }

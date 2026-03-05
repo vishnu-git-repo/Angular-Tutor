@@ -10,6 +10,7 @@ import { IftaLabelModule } from "primeng/iftalabel";
 import { SelectModule } from "primeng/select";
 import { ButtonModule } from "primeng/button";
 import { MessageModule } from 'primeng/message';
+import { MessageService } from "primeng/api";
 
 @Component({
     selector: "app-register",
@@ -26,7 +27,9 @@ import { MessageModule } from 'primeng/message';
     templateUrl: "./index.html",
 })
 export class Register {
+
     private authService = inject(AuthService);
+    private messageService = inject(MessageService);
     private router = inject(Router);
 
     public re_password = signal<string>("");
@@ -48,6 +51,10 @@ export class Register {
     });
 
     setField<K extends keyof IRegisterData>(key: K, value: string) {
+        this.error.set({
+            Status: false,
+            Message: ""
+        })
         this.registerData.update(v => ({ ...v, [key]: value }));
     }
 
@@ -77,6 +84,12 @@ export class Register {
         this.authService.register(this.registerData())
             .subscribe({
                 next: (res: any) => {
+                    console.log(res);
+                    this.messageService.add({
+                        severity: "success",
+                        summary: "Success",
+                        detail: res.message
+                    })
                     this.router.navigate(["/auth/login"]);
                     this.isRegistering.set(false);
                 },

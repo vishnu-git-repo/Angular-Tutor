@@ -7,11 +7,12 @@ import { CommonModule, Location } from "@angular/common";
 import { ButtonModule } from "primeng/button";
 
 import { getDateTimeFromUtc } from "../../../../../shared/lib/DateHelper";
-import { BorrowStatus, PaymentMode } from "../../../../../shared/Enums/BorrowEnum";
+import { BorrowStatus } from "../../../../../shared/Enums/BorrowEnum";
 import { ChipModule } from "primeng/chip";
 import { Colors } from "../../../../../shared/colors";
 import { TableModule } from "primeng/table";
 import { TooltipModule } from "primeng/tooltip";
+import { PaymentMode } from "../../../../../shared/Enums/PaymentEnum";
 
 
 @Component({

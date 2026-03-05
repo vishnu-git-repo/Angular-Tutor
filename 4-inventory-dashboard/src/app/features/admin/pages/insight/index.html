@@ -1,1 +1,276 @@
-Insight Admin
+<div class="bg-surface-800 border border-surface-700 rounded-2xl p-8 shadow-xl">
+
+    <!-- Title -->
+    <div class="flex items-center gap-3 mb-8">
+        <i class="pi pi-chart-bar text-xl text-primary"></i>
+        <h3 class="text-xl font-semibold text-white">
+            Statistics
+        </h3>
+    </div>
+
+    <!-- ================= STATUS ================= -->
+    <div class="mb-12">
+
+        <h4 class="text-xs tracking-widest text-gray-400 uppercase mb-6">
+            Status Distribution
+        </h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+
+            <!-- Available -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">Available</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getStatusStyle('Available').background"
+                        [style.color]="getStatusStyle('Available').color">
+                        {{ equipmentCounts().statusCounts.Available }}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getStatusStyle('Available').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getStatusStyle('Available').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().statusCounts.Available) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().statusCounts.Available)}}%
+                </span>
+
+            </div>
+
+
+            <!-- InUse -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">In Use</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getStatusStyle('InUse').background"
+                        [style.color]="getStatusStyle('InUse').color">
+                        {{equipmentCounts().statusCounts.InUse}}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getStatusStyle('InUse').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getStatusStyle('InUse').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().statusCounts.InUse) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().statusCounts.InUse)}}%
+                </span>
+
+            </div>
+
+
+            <!-- Reserved -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">Reserved</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getStatusStyle('Reserved').background"
+                        [style.color]="getStatusStyle('Reserved').color">
+                        {{equipmentCounts().statusCounts.Reserved}}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getStatusStyle('Reserved').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getStatusStyle('Reserved').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().statusCounts.Reserved) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().statusCounts.Reserved)}}%
+                </span>
+
+            </div>
+
+
+            <!-- Maintenance -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">Maintenance</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getStatusStyle('Maintenance').background"
+                        [style.color]="getStatusStyle('Maintenance').color">
+                        {{equipmentCounts().statusCounts.Maintenance}}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getStatusStyle('Maintenance').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getStatusStyle('Maintenance').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().statusCounts.Maintenance) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().statusCounts.Maintenance)}}%
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= CONDITION ================= -->
+    <div>
+
+        <h4 class="text-xs tracking-widest text-gray-400 uppercase mb-6">
+            Condition Distribution
+        </h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+
+            <!-- New -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">New</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getConditionStyle('New').background"
+                        [style.color]="getConditionStyle('New').color">
+                        {{equipmentCounts().conditionCounts.New}}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getConditionStyle('New').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getConditionStyle('New').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().conditionCounts.New) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().conditionCounts.New)}}%
+                </span>
+
+            </div>
+
+
+            <!-- Good -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">Good</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getConditionStyle('Good').background"
+                        [style.color]="getConditionStyle('Good').color">
+                        {{equipmentCounts().conditionCounts.Good}}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getConditionStyle('Good').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getConditionStyle('Good').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().conditionCounts.Good) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().conditionCounts.Good)}}%
+                </span>
+
+            </div>
+
+
+            <!-- Damaged -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">Damaged</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getConditionStyle('Damaged').background"
+                        [style.color]="getConditionStyle('Damaged').color">
+                        {{equipmentCounts().conditionCounts.Damaged}}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getConditionStyle('Damaged').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getConditionStyle('Damaged').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().conditionCounts.Damaged) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().conditionCounts.Damaged)}}%
+                </span>
+
+            </div>
+
+
+            <!-- Retired -->
+            <div class="flex flex-col gap-3 border border-gray-600 p-5 rounded-lg">
+
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-300">Retired</span>
+
+                    <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                        [style.background]="getConditionStyle('Retired').background"
+                        [style.color]="getConditionStyle('Retired').color">
+                        {{equipmentCounts().conditionCounts.Retired}}
+                    </span>
+                </div>
+
+                <div class="h-4 w-full rounded-lg overflow-hidden"
+                    [style.background]="getConditionStyle('Retired').background">
+
+                    <div class="h-full transition-all duration-2000 rounded-lg"
+                        [style.background]="getConditionStyle('Retired').color"
+                        [style.width.%]="animateBars() ? getPercentage(equipmentCounts().conditionCounts.Retired) : 0">
+                    </div>
+
+                </div>
+
+                <span class="text-xs text-gray-500">
+                    {{getPercentage(equipmentCounts().conditionCounts.Retired)}}%
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

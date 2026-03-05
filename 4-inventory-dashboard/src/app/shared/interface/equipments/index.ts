@@ -8,6 +8,11 @@ export interface ICreateEquipmentsRequest {
     Count: number
 }
 
+export interface ICreateEquipmentItemsRequest {
+    EquipmentId: number,
+    Count: number
+}
+
 export interface IGetFilteredEquipmentsRequest {
     RowCount: number;
     PageNo: number;
@@ -31,8 +36,17 @@ export interface IGetEquipmentGroupItem {
     inUseCount: number;
     reservedCount: number;
     maintenanceCount: number;
-
 }
+
+export interface IGetEquipmentGroupItems {
+    RowCount: number,
+    PageNo: number,
+    Status: number,
+    Condition: number,
+    TotalCount: number,
+    EquipmentId: number
+}
+
 export interface IGetEquipmentGroupResponse {
     items: IGroupEquipmentItems[],
     totalCount: number;

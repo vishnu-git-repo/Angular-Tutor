@@ -1,0 +1,250 @@
+<div class="text-white rounded shadow-lg flex flex-col gap-5">
+
+    <!-- 🔹 HEADER -->
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i class="pi pi-cog text-2xl" style="font-size: 2rem"></i>
+            <h2 class="text-2xl">Equipments</h2>
+        </div>
+
+        <div class="flex gap-5 items-center">
+            <!-- Add Equipment -->
+            <div class="p-3 rounded-full border border-gray-300 hover:border-green-500 bg-white hover:bg-red-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group relative"
+                (click)="openAddEquipmentDialog()" pTooltip="Add items" tooltipPosition="bottom"
+                tooltipStyleClass="custom-tooltip">
+                <i
+                    class="pi pi-plus text-gray-600 group-hover:text-green-600 text-lg active:scale-90 transition-all duration-200">
+                </i>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div>
+            <p-tabs value="0">
+                <p-tablist>
+
+                    <p-tab value="0" (click)="onAllTab()">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            All
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold"
+                                [style]="getChipColor('primary')">
+                                {{ paginatorState().TotalCount ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="1" (click)="onStatusTab(1)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            Available
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold"
+                                [style]="getChipColor('success')">
+                                {{ Counts().Status.Available ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="2" (click)="onStatusTab(2)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            In Use
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('info')">
+                                {{ Counts().Status.InUse ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="3" (click)="onStatusTab(3)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            Reserved
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold"
+                                [style]="getChipColor('warning')">
+                                {{ Counts().Status.Reserved ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="4" (click)="onStatusTab(4)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            Maintenance
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold"
+                                [style]="getChipColor('orange')">
+                                {{ Counts().Status.UnderMaintenance||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="11" (click)="onConditionTab(1)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            New
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold"
+                                [style]="getChipColor('success')">
+                                {{ Counts().Condition.New ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="12" (click)="onConditionTab(2)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            Good
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('blue')">
+                                {{ Counts().Condition.Good ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="13" (click)="onConditionTab(3)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            Damaged
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold"
+                                [style]="getChipColor('danger')">
+                                {{ Counts().Condition.Damaged ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                    <p-tab value="14" (click)="onConditionTab(4)">
+                        <span class="flex items-center gap-2 text-lg font-medium">
+                            Retired
+                            <p-chip class="px-3 py-1 rounded-full text-sm font-semibold"
+                                [style]="getChipColor('muted')">
+                                {{ Counts().Condition.Retired ||0 }}
+                            </p-chip>
+                        </span>
+                    </p-tab>
+
+                </p-tablist>
+            </p-tabs>
+        </div>
+        <div>
+            @if(isDataLoading())
+            {
+            <!-- SKELETON ALL EQUIPMENT -->
+            <p-table>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>#</th>
+                        <th>Item ID</th>
+                        <th>Status</th>
+                        <th>Condition</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body">
+                    <tr>
+                        <td><p-skeleton></p-skeleton></td>
+                        <td><p-skeleton></p-skeleton></td>
+                        <td><p-skeleton></p-skeleton></td>
+                        <td><p-skeleton></p-skeleton></td>
+                        <td><p-skeleton></p-skeleton></td>
+                        <td><p-skeleton></p-skeleton></td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            }
+            @else if (equipmentList().length==0) {
+            <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
+                <span class="text-2xl">Oops! No equipments found</span>
+            </div>
+            }
+            @else {
+            <p-table [value]="equipmentList()">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>#</th>
+                        <th>Item ID</th>
+                        <th>Status</th>
+                        <th>Condition</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-item let-i="rowIndex">
+                    <tr>
+                        <td>{{ getIndex() + i + 1 }}</td>
+                        <td>{{ item.id }}</td>
+                        <td>
+                            <p-chip [label]="EquipmentStatus[item.status]" [style]="
+                                item.status == 1 ? getChipColor('success') :
+                                item.status == 2 ? getChipColor('info') :
+                                item.status == 3 ? getChipColor('warning') :
+                                getChipColor('orange')
+                            ">
+                            </p-chip>
+                        </td>
+                        <td>
+                            <p-chip [label]="EquipmentCondition[item.condition]" [style]="
+                                item.condition == 1 ? getChipColor('success') :
+                                item.condition == 2 ? getChipColor('blue') :
+                                item.condition == 3 ? getChipColor('danger') :
+                                getChipColor('muted')
+                            ">
+                            </p-chip>
+                        </td>
+                        <td>{{ item.createdAt | date }}</td>
+                        <td>{{ item.updatedAt | date}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            }
+            <!-- Pagination -->
+            @if (!isDataLoading()){
+            <div class="flex justify-center items-center gap-5 mt-5">
+                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                    pTooltip="First Page" tooltipPosition="left" tooltipStyleClass="custom-tooltip"
+                    (click)="goToFirstPage()">
+                    <i class="pi pi-angle-double-left"></i>
+                </div>
+                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                    (click)="goToPreviousPage()">
+                    <i class="pi pi-angle-left"></i>
+                </div>
+                <div class="px-5">
+                    {{paginatorState().PageNo}}
+                </div>
+                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                    (click)="goToNextPage()">
+                    <i class="pi pi-angle-right"></i>
+                </div>
+                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                    pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip"
+                    (click)="goToLastPage()">
+                    <i class="pi pi-angle-double-right"></i>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <p-select [options]="[5, 10, 25, 50]" [ngModel]="paginatorState().RowCount"
+                        (ngModelChange)="onRowChange($event)" class="w-full" /> Rows
+                </div>
+                <div>
+                    Showing :
+                    {{ (paginatorState().PageNo - 1) * paginatorState().RowCount + 1 }}
+                    -
+                    {{
+                    Math.min(
+                    paginatorState().PageNo * paginatorState().RowCount,
+                    paginatorState().TotalCount
+                    )
+                    }}
+                    of {{ paginatorState().TotalCount }}
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<p-dialog header="Add Equipment" [visible]="Dialog().add" modal="true" [style]="{ minWidth: '20rem' }">
+    <div>
+        <div class="flex flex-col justify-end gap-5 pt-10">
+            <p-iftalabel class="min-w-70">
+                <input class="w-full" pInputText id="Admin_view_Equipments_Group_Items_Add_Dialog"
+                    [(ngModel)]="AddPayload().Count" />
+                <label for="Admin_view_Equipments_Group_Items_Add_Dialog">Count</label>
+            </p-iftalabel>
+            <div class="flex justify-end">
+                <p-button label="ADD" icon="pi pi-plus" (onClick)="addItems()" [loading]="Buttons().add"
+                    [disabled]="Buttons().add" />
+            </div>
+        </div>
+    </div>
+</p-dialog>

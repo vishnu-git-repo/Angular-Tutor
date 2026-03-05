@@ -30,10 +30,10 @@ export interface IGetFilteredUserRequest {
     Status: number
     RowCount: number,
     PageNo: number,
-    TotalCount?: number,
-    BlockedCount?: number,
-    ActiveCount?: number,
-    SearchString?: string,
+    TotalCount: number,
+    BlockedCount: number,
+    ActiveCount: number,
+    SearchString: string,
 }
 
 export interface IGetFilteredUserResponse {
