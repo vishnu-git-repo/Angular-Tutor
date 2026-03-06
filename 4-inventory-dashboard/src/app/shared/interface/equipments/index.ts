@@ -13,6 +13,13 @@ export interface ICreateEquipmentItemsRequest {
     Count: number
 }
 
+export interface IUpdateEquipmentRequest {
+    Name: string,
+    Description: string,
+    Price: number,
+    Category: EquipmentCategory,
+}
+
 export interface IGetFilteredEquipmentsRequest {
     RowCount: number;
     PageNo: number;
@@ -105,7 +112,7 @@ export interface IGetEquipmentResponse {
 export interface IGetEquipment {
     id: number;
     equipmentId: number;
-    equipmentName: number;
+    equipmentName: string;
     description: string;
     price: number;
     condition: EquipmentCondition;
@@ -113,7 +120,6 @@ export interface IGetEquipment {
     status: EquipmentStatus;
     createdAt: string;
     updatedAt: string;
-
 }
 
 export interface EquipmentCategoryCounts {

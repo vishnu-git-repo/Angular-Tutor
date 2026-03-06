@@ -22,7 +22,7 @@ import { ChipModule } from "primeng/chip";
 import { SkeletonModule } from "primeng/skeleton";
 import { SelectModule } from "primeng/select";
 import { TextareaModule } from "primeng/textarea";
-import { EquipmentCondition, EquipmentStatus } from "../../../../../shared/Enums/EquipmentEnums";
+import { EquipmentCategory, EquipmentCondition, EquipmentStatus } from "../../../../../shared/Enums/EquipmentEnums";
 
 @Component({
     selector: "app-admin-equipment-group-view",
@@ -49,6 +49,7 @@ export class AdminEquipmentGroupViewComponent implements OnInit {
     Math = Math;
     EquipmentStatus = EquipmentStatus;
     EquipmentCondition = EquipmentCondition;
+    EquipmentCategory = EquipmentCategory;
 
     private route = inject(ActivatedRoute);
     private equipmentService = inject(EquipmentService);
@@ -211,6 +212,7 @@ export class AdminEquipmentGroupViewComponent implements OnInit {
                         summary: "Success",
                         detail: res?.message || "Items Added successfully"
                     })
+                    this.fetchEquipments();
                     this.Dialog.update(state => ({ ...state, add: false }));
                 },
                 error: err => {

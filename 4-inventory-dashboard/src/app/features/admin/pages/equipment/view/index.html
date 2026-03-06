@@ -18,8 +18,50 @@
             </div>
         </div>
     </div>
-    <div>
-        <div>
+    <div class="flex flex-col gap-5">
+        <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
+            <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
+                <span class="pi pi-info-circle pr-1"></span>Equipment Information
+            </h3>
+
+            <div class="grid grid-cols-3 gap-x-10 gap-y-4 text-sm">
+
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 w-20 shrink-0">Name</span>
+                    <span class="font-medium">{{ equipment().name || "" }}</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 w-20 shrink-0">Category</span>
+                    <p-chip [label]="EquipmentCategory[equipment().category]" [style]="getChipColor('indigo')">
+                    </p-chip>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 w-20 shrink-0">Description</span>
+                    <span class="font-medium">{{ equipment().description || "" }}</span>
+                </div>
+
+
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 w-20 shrink-0">Price</span>
+                    <span class="font-medium">{{ equipment().price | currency:'INR' }}</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 w-20 shrink-0">Count</span>
+                    <span class="font-medium">{{ equipment().count || "" }}</span>
+                </div>
+
+
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 w-20 shrink-0">Created On</span>
+                    <span class="font-medium">{{ equipment().createdAt | date }}</span>
+                </div>
+
+            </div>
+        </div>
+        <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
             <p-tabs value="0">
                 <p-tablist>
 
@@ -113,122 +155,122 @@
 
                 </p-tablist>
             </p-tabs>
-        </div>
-        <div>
-            @if(isDataLoading())
-            {
-            <!-- SKELETON ALL EQUIPMENT -->
-            <p-table>
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>#</th>
-                        <th>Item ID</th>
-                        <th>Status</th>
-                        <th>Condition</th>
-                        <th>Created</th>
-                        <th>Updated</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body">
-                    <tr>
-                        <td><p-skeleton></p-skeleton></td>
-                        <td><p-skeleton></p-skeleton></td>
-                        <td><p-skeleton></p-skeleton></td>
-                        <td><p-skeleton></p-skeleton></td>
-                        <td><p-skeleton></p-skeleton></td>
-                        <td><p-skeleton></p-skeleton></td>
-                    </tr>
-                </ng-template>
-            </p-table>
-            }
-            @else if (equipmentList().length==0) {
-            <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
-                <span class="text-2xl">Oops! No equipments found</span>
-            </div>
-            }
-            @else {
-            <p-table [value]="equipmentList()">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>#</th>
-                        <th>Item ID</th>
-                        <th>Status</th>
-                        <th>Condition</th>
-                        <th>Created</th>
-                        <th>Updated</th>
-                    </tr>
-                </ng-template>
+            <div>
+                @if(isDataLoading())
+                {
+                <!-- SKELETON ALL EQUIPMENT -->
+                <p-table>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>#</th>
+                            <th>Item ID</th>
+                            <th>Status</th>
+                            <th>Condition</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body">
+                        <tr>
+                            <td><p-skeleton></p-skeleton></td>
+                            <td><p-skeleton></p-skeleton></td>
+                            <td><p-skeleton></p-skeleton></td>
+                            <td><p-skeleton></p-skeleton></td>
+                            <td><p-skeleton></p-skeleton></td>
+                            <td><p-skeleton></p-skeleton></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                }
+                @else if (equipmentList().length==0) {
+                <div class="flex justify-center items-center min-h-[30dvh] bg-charcoal">
+                    <span class="text-2xl">Oops! No equipments found</span>
+                </div>
+                }
+                @else {
+                <p-table [value]="equipmentList()">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>#</th>
+                            <th>Item ID</th>
+                            <th>Status</th>
+                            <th>Condition</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                        </tr>
+                    </ng-template>
 
-                <ng-template pTemplate="body" let-item let-i="rowIndex">
-                    <tr>
-                        <td>{{ getIndex() + i + 1 }}</td>
-                        <td>{{ item.id }}</td>
-                        <td>
-                            <p-chip [label]="EquipmentStatus[item.status]" [style]="
+                    <ng-template pTemplate="body" let-item let-i="rowIndex">
+                        <tr>
+                            <td>{{ getIndex() + i + 1 }}</td>
+                            <td>{{ item.id }}</td>
+                            <td>
+                                <p-chip [label]="EquipmentStatus[item.status]" [style]="
                                 item.status == 1 ? getChipColor('success') :
                                 item.status == 2 ? getChipColor('info') :
                                 item.status == 3 ? getChipColor('warning') :
                                 getChipColor('orange')
                             ">
-                            </p-chip>
-                        </td>
-                        <td>
-                            <p-chip [label]="EquipmentCondition[item.condition]" [style]="
+                                </p-chip>
+                            </td>
+                            <td>
+                                <p-chip [label]="EquipmentCondition[item.condition]" [style]="
                                 item.condition == 1 ? getChipColor('success') :
                                 item.condition == 2 ? getChipColor('blue') :
                                 item.condition == 3 ? getChipColor('danger') :
                                 getChipColor('muted')
                             ">
-                            </p-chip>
-                        </td>
-                        <td>{{ item.createdAt | date }}</td>
-                        <td>{{ item.updatedAt | date}}</td>
-                    </tr>
-                </ng-template>
-            </p-table>
-            }
-            <!-- Pagination -->
-            @if (!isDataLoading()){
-            <div class="flex justify-center items-center gap-5 mt-5">
-                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-                    pTooltip="First Page" tooltipPosition="left" tooltipStyleClass="custom-tooltip"
-                    (click)="goToFirstPage()">
-                    <i class="pi pi-angle-double-left"></i>
+                                </p-chip>
+                            </td>
+                            <td>{{ item.createdAt | date }}</td>
+                            <td>{{ item.updatedAt | date}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                }
+                <!-- Pagination -->
+                @if (!isDataLoading()){
+                <div class="flex justify-center items-center gap-5 mt-5">
+                    <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                        pTooltip="First Page" tooltipPosition="left" tooltipStyleClass="custom-tooltip"
+                        (click)="goToFirstPage()">
+                        <i class="pi pi-angle-double-left"></i>
+                    </div>
+                    <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                        (click)="goToPreviousPage()">
+                        <i class="pi pi-angle-left"></i>
+                    </div>
+                    <div class="px-5">
+                        {{paginatorState().PageNo}}
+                    </div>
+                    <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                        (click)="goToNextPage()">
+                        <i class="pi pi-angle-right"></i>
+                    </div>
+                    <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
+                        pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip"
+                        (click)="goToLastPage()">
+                        <i class="pi pi-angle-double-right"></i>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <p-select [options]="[5, 10, 25, 50]" [ngModel]="paginatorState().RowCount"
+                            (ngModelChange)="onRowChange($event)" class="w-full" /> Rows
+                    </div>
+                    <div>
+                        Showing :
+                        {{ (paginatorState().PageNo - 1) * paginatorState().RowCount + 1 }}
+                        -
+                        {{
+                        Math.min(
+                        paginatorState().PageNo * paginatorState().RowCount,
+                        paginatorState().TotalCount
+                        )
+                        }}
+                        of {{ paginatorState().TotalCount }}
+                    </div>
                 </div>
-                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-                    (click)="goToPreviousPage()">
-                    <i class="pi pi-angle-left"></i>
-                </div>
-                <div class="px-5">
-                    {{paginatorState().PageNo}}
-                </div>
-                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-                    (click)="goToNextPage()">
-                    <i class="pi pi-angle-right"></i>
-                </div>
-                <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-                    pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip"
-                    (click)="goToLastPage()">
-                    <i class="pi pi-angle-double-right"></i>
-                </div>
-                <div class="flex gap-2 items-center">
-                    <p-select [options]="[5, 10, 25, 50]" [ngModel]="paginatorState().RowCount"
-                        (ngModelChange)="onRowChange($event)" class="w-full" /> Rows
-                </div>
-                <div>
-                    Showing :
-                    {{ (paginatorState().PageNo - 1) * paginatorState().RowCount + 1 }}
-                    -
-                    {{
-                    Math.min(
-                    paginatorState().PageNo * paginatorState().RowCount,
-                    paginatorState().TotalCount
-                    )
-                    }}
-                    of {{ paginatorState().TotalCount }}
-                </div>
+                }
             </div>
-            }
         </div>
     </div>
 </div>

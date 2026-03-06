@@ -249,7 +249,7 @@
 
                 <ng-template pTemplate="body" let-e let-i="rowIndex">
                     <tr>
-                        <td>{{ getIndex(1) + i + 1}}</td>
+                        <td>{{ getIndex() + i + 1}}</td>
                         <td>{{ e.name }}</td>
                         <td>
                             <p class="w-80">{{ e.description }}</p>
@@ -281,8 +281,8 @@
                                 </span>
                                 <span
                                     class="size-6 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
-                                    (click)="openGroupEditDialog(e.id)" pTooltip="Edit Equipment"
-                                    tooltipPosition="bottom" tooltipStyleClass="custom-tooltip">
+                                    (click)="openGroupEditDialog(e)" pTooltip="Edit Equipment" tooltipPosition="bottom"
+                                    tooltipStyleClass="custom-tooltip">
                                     <i class="pi pi-file-edit text-gray-600 group-hover:text-blue-600 transition-all duration-200"
                                         style="font-size: 0.75rem;">
                                     </i>
@@ -361,7 +361,7 @@
 
                 <ng-template pTemplate="body" let-item let-i="rowIndex">
                     <tr>
-                        <td>{{ getIndex(1) + i + 1 }}</td>
+                        <td>{{ getIndex() + i + 1 }}</td>
                         <td>{{ item.id }}</td>
                         <td>{{ item.equipmentName }}</td>
                         <td>{{ item.description }}</td>
@@ -398,28 +398,28 @@
             <div class="flex justify-center items-center gap-5 mt-5">
                 <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
                     pTooltip="First Page" tooltipPosition="left" tooltipStyleClass="custom-tooltip"
-                    (click)="goToFirstPage(1)">
+                    (click)="goToFirstPage()">
                     <i class="pi pi-angle-double-left"></i>
                 </div>
                 <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-                    (click)="goToPreviousPage(1)">
+                    (click)="goToPreviousPage()">
                     <i class="pi pi-angle-left"></i>
                 </div>
                 <div class="px-5">
                     {{paginatorState().PageNo}}
                 </div>
                 <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-                    (click)="goToNextPage(1)">
+                    (click)="goToNextPage()">
                     <i class="pi pi-angle-right"></i>
                 </div>
                 <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
                     pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip"
-                    (click)="goToLastPage(paginatorState().IsGroup?1:0)">
+                    (click)="goToLastPage()">
                     <i class="pi pi-angle-double-right"></i>
                 </div>
                 <div class="flex gap-2 items-center">
                     <p-select [options]="[5, 10, 25, 50]" [ngModel]="paginatorState().RowCount"
-                        (ngModelChange)="onRowChange(1,$event)" class="w-full" /> Rows
+                        (ngModelChange)="onRowChange($event)" class="w-full" /> Rows
                 </div>
                 <div>
                     Showing :
@@ -439,74 +439,13 @@
     </div>
 </div>
 
-
-<p-dialog [(visible)]="groupDialog().view" [modal]="true" [style]="{ width: '70vw' }" header="Equipment Items">
-    <p-table [value]="equipmentItemsList()">
-        <ng-template pTemplate="header">
-            <tr>
-                <th>#</th>
-                <th>Item ID</th>
-                <th>Status</th>
-                <th>Condition</th>
-                <th>Created</th>
-            </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-item let-i="rowIndex">
-            <tr>
-                <td>{{ getIndex(2) + i + 1 }}</td>
-                <td>{{ item.id }}</td>
-                <td>{{ EquipmentStatus[item.status] }}</td>
-                <td>{{ EquipmentCondition[item.condition] }}</td>
-                <td>{{ item.createdAt | date }}</td>
-            </tr>
-        </ng-template>
-    </p-table>
-    <div class="flex justify-center items-center gap-5 mt-5">
-        <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-            pTooltip="First Page" tooltipPosition="left" tooltipStyleClass="custom-tooltip" (click)="goToFirstPage(2)">
-            <i class="pi pi-angle-double-left"></i>
-        </div>
-        <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-            (click)="goToPreviousPage(2)">
-            <i class="pi pi-angle-left"></i>
-        </div>
-        <div class="px-5">
-            {{dPaginatorState().PageNo}}
-        </div>
-        <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-            (click)="goToNextPage(2)">
-            <i class="pi pi-angle-right"></i>
-        </div>
-        <div class=" flex justify-center items-center size-8 rounded-full cursor-pointer hover:border hover:border-zinc-400 active:scale-90 transition-all duration-200 ease-in-out"
-            pTooltip="Last Page" tooltipPosition="right" tooltipStyleClass="custom-tooltip" (click)="goToLastPage(2)">
-            <i class="pi pi-angle-double-right"></i>
-        </div>
-        <div class="flex gap-2 items-center">
-            <p-select [options]="[5, 10, 25, 50]" [ngModel]="dPaginatorState().RowCount"
-                (ngModelChange)="onRowChange(2,$event)" class="w-full" /> Rows
-        </div>
-        <div>
-            Showing :
-            {{ (dPaginatorState().PageNo - 1) * dPaginatorState().RowCount + 1 }}
-            -
-            {{
-            Math.min(
-            dPaginatorState().PageNo * dPaginatorState().RowCount,
-            dPaginatorState().TotalCount
-            )
-            }}
-            of {{ dPaginatorState().TotalCount }}
-        </div>
-    </div>
-
-</p-dialog>
-
 <p-dialog [(visible)]="groupDialog().add" [modal]="true" [style]="{ width: 'fit' }" header="Create Equipment">
     <div class="flex flex-col justify-center items-center gap-2 px-10">
         <p-iftalabel>
-            <p-select [options]="CategoryList" id="dialog_admin_equipment_create_category_label"
-                [(ngModel)]="createEquipmentForm().Category" class="w-full min-w-80" />
+            <p-select [options]="CategoryList" optionLabel="label" optionValue="value"
+                [(ngModel)]="updateEquipmentForm().Category" class="w-full min-w-80"
+                id="dialog_admin_equipment_create_category_label">
+            </p-select>
             <label for="dialog_admin_equipment_create_category_label">Category</label>
         </p-iftalabel>
         <p-iftalabel>
@@ -516,21 +455,54 @@
         </p-iftalabel>
         <p-iftalabel>
             <textarea rows="2" cols="30" pTextarea [autoResize]="true" [(ngModel)]="createEquipmentForm().Description"
-                autocomplete="off" class="w-full min-w-80"></textarea>
-            <label for="dialog_admin_equipment_description_name_label">Description</label>
+                autocomplete="off" class="w-full min-w-80"
+                id="dialog_admin_equipment_create_description_label"></textarea>
+            <label for="dialog_admin_equipment_create_description_label">Description</label>
         </p-iftalabel>
         <p-iftalabel>
-            <input pInputText id="dialog_admin_equipment_create_name_label" [(ngModel)]="createEquipmentForm().Price"
+            <input pInputText id="dialog_admin_equipment_create_price_label" [(ngModel)]="createEquipmentForm().Price"
                 autocomplete="off" class="w-full min-w-80" />
-            <label for="dialog_admin_equipment_create_name_label">Price</label>
+            <label for="dialog_admin_equipment_create_price_label">Price</label>
         </p-iftalabel>
         <p-iftalabel>
-            <input pInputText id="dialog_admin_equipment_create_name_label" [(ngModel)]="createEquipmentForm().Count"
+            <input pInputText id="dialog_admin_equipment_create_count_label" [(ngModel)]="createEquipmentForm().Count"
                 autocomplete="off" class="w-full min-w-80" />
-            <label for="dialog_admin_equipment_create_name_label">Count</label>
+            <label for="dialog_admin_equipment_create_count_label">Count</label>
         </p-iftalabel>
         <div class="flex justify-end w-full min-w-80">
-            <p-button label="Add Equipment" severity="success" (click)="handleAddEquipment()" />
+            <p-button label="Add Equipment" severity="success" (click)="handleAddEquipment()"
+                [disabled]="isCreatingEquipment()" [loading]="isCreatingEquipment()" />
+        </div>
+    </div>
+</p-dialog>
+<p-dialog [(visible)]="groupDialog().edit" [modal]="true" [style]="{ width: 'fit' }" header="Update Equipment">
+    <div class="flex flex-col justify-center items-center gap-2 px-10">
+        <p-iftalabel>
+            <p-select [options]="CategoryList" optionLabel="label" optionValue="value"
+                [(ngModel)]="updateEquipmentForm().Category" class="w-full min-w-80"
+                id="dialog_admin_equipment_update_category_label">
+            </p-select>
+            <label for="dialog_admin_equipment_update_category_label">Category</label>
+        </p-iftalabel>
+        <p-iftalabel>
+            <input pInputText id="dialog_admin_equipment_update_name_label" [(ngModel)]="updateEquipmentForm().Name"
+                autocomplete="off" class="w-full min-w-80" />
+            <label for="dialog_admin_equipment_update_name_label">Name</label>
+        </p-iftalabel>
+        <p-iftalabel>
+            <textarea rows="2" cols="30" pTextarea [autoResize]="true" [(ngModel)]="updateEquipmentForm().Description"
+                autocomplete="off" class="w-full min-w-80"
+                id="dialog_admin_equipment_update_description_label"></textarea>
+            <label for="dialog_admin_equipment_update_description_label">Description</label>
+        </p-iftalabel>
+        <p-iftalabel>
+            <input pInputText id="dialog_admin_equipment_update_price_label" [(ngModel)]="updateEquipmentForm().Price"
+                autocomplete="off" class="w-full min-w-80" />
+            <label for="dialog_admin_equipment_update_price_label">Price</label>
+        </p-iftalabel>
+        <div class="flex justify-end w-full min-w-80 mt-5">
+            <p-button label="Update Equipment" severity="success" (click)="handleUpdateEquipment()"
+                [loading]="isUpdatingEquipment()" [disabled]="isUpdatingEquipment()" />
         </div>
     </div>
 </p-dialog>

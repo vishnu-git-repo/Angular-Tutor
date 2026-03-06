@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable, signal } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../../../environment";
-import { ICreateEquipmentItemsRequest, ICreateEquipmentsRequest, IGetEquipmentGroupItems, IGetFilteredEquipmentsRequest } from "../../../shared/interface/equipments";
+import { ICreateEquipmentItemsRequest, ICreateEquipmentsRequest, IGetEquipmentGroupItems, IGetFilteredEquipmentsRequest, IUpdateEquipmentRequest } from "../../../shared/interface/equipments";
 
 
 
@@ -16,6 +16,13 @@ export class EquipmentService {
     createEquipment(payload: ICreateEquipmentsRequest):Observable<any>{
         const api_url = `${environment.api_url}equipments`;
         return this.http.post(api_url, payload, {
+            withCredentials: true
+        })
+    }
+
+    updateEquipment(id: number, payload: IUpdateEquipmentRequest):Observable<any>{
+        const api_url = `${environment.api_url}equipments/${id}`;
+        return this.http.put(api_url, payload, {
             withCredentials: true
         })
     }

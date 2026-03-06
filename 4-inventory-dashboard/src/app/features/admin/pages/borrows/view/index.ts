@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { BorrowService } from "../../../../../core/services/borrow";
 import { IGetBorrowByIDResponse } from "../../../../../shared/interface/borrows";
 import { CommonModule, Location } from "@angular/common";
@@ -38,6 +38,7 @@ export class AdminBorrowViewComponent implements OnInit {
     }
     private borrowService = inject(BorrowService);
     private location = inject(Location);
+    private router = inject(Router);
 
     public data = signal<IGetBorrowByIDResponse | null>(null);
     public isDataLoading = signal<boolean>(false);
@@ -62,7 +63,7 @@ export class AdminBorrowViewComponent implements OnInit {
     }
 
     handleViewEquipment(id: number){
-        
+       this.router.navigate([`/admin/equipments/view/group/${id}`]);
     }
 
     getChipColor(color: keyof typeof Colors) {

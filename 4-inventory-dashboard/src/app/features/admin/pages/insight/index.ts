@@ -6,7 +6,13 @@ import { getDateTimeFromUtc } from "../../../../shared/lib/DateHelper";
 import { EquipmentService } from "../../../../core/services/equipment";
 import { Colors, EquipmentColors } from "../../../../shared/colors";
 import { FormsModule } from "@angular/forms";
-
+import { AdminInsightEquipmentStatisticsComponent } from "./statistics/equipment";
+import { TabsModule } from "primeng/tabs";
+import { AdminInsightBorrowStatisticsComponent } from "./statistics/borrows";
+import { AdminInsightUserStatisticsComponent } from "./statistics/user";
+import { IAdminInsightCounts } from "../../../../shared/interface/insight/admin";
+import { InsightService } from "../../../../core/services/insight";
+import { MessageService } from "primeng/api";
 
 interface IEquipmentCountsRequest {
     totalCounts: number
@@ -42,88 +48,83 @@ interface IBorrowCountsRequest {
     imports: [
         CommonModule,
         ButtonModule,
-        FormsModule
+        FormsModule,
+        TabsModule,
+        AdminInsightEquipmentStatisticsComponent,
+        AdminInsightBorrowStatisticsComponent,
+        AdminInsightUserStatisticsComponent,
     ],
     templateUrl: "./index.html"
 })
 export class AdminInsightComponent implements OnInit {
-    id: number;
-    getDateTimeFromUtc = getDateTimeFromUtc;
-    constructor(private route: ActivatedRoute) {
-        this.id = this.route.snapshot.params['id'];
-    }
-    private equipmentService = inject(EquipmentService);
-    private location = inject(Location);
 
-    // Loading State
-    public isDataLoading = signal<boolean>(false);
-    public equipmentCounts = signal<IEquipmentCountsRequest>({
-        totalCounts: 10,
-        statusCounts: {
-            Available: 3,
-            InUse: 5,
-            Reserved: 0,
-            Maintenance: 0,
+    private insightService = inject(InsightService);
+    private messageService = inject(MessageService);
+    public isDataLoading = signal(false);
+    public InsightCounts = signal<IAdminInsightCounts>({
+        user: {
+            total: 0,
+            status: {
+                Active: 0,
+                Inactive: 0
+            }
         },
-        conditionCounts: {
-            New: 2,
-            Good: 8,
-            Damaged: 0,
-            Retired: 0
+        equipment: {
+            total: 0,
+            status: {
+                Available: 0,
+                Reserved: 0,
+                UnderMaintenance: 0,
+                InUse: 0
+            },
+            condition: {
+                New: 0,
+                Damaged: 0,
+                Retired: 0,
+                Good: 0
+            }
+        },
+        borrow: {
+            total: 0,
+            status: {
+                Accepted: 0,
+                Assigned: 0,
+                Requested: 0,
+                Pending: 0,
+                Paid: 0,
+                Approved: 0,
+                Waitlisted: 0,
+                Ack: 0,
+                Closed: 0
+            }
         }
     })
-    
-    public animateBars = signal(false);
-    ngAfterViewInit() {
-        setTimeout(() => {
-            this.animateBars.set(true);
-        }, 100);
-    }
 
     ngOnInit(): void {
-        this.fetchEquipments();
-    }
-    fetchEquipments() {
-
+        this.fetchAdminInsightCounts()
     }
 
-    handleBackButton() {
-        this.location.back();
+    fetchAdminInsightCounts() {
+        this.isDataLoading.set(true);
+        this.insightService.getAdminInsightCounts()
+            .subscribe({
+                next: res => {
+                    this.InsightCounts.set(res.data);
+                },
+                error: err => {
+                    this.messageService.add({
+                        severity: "error",
+                        summary: "Error",
+                        detail: err.error?.message
+                    })
+                }
+            })
+        this.isDataLoading.set(false);
     }
 
-    handleViewEquipment(id: number) {
+    activeTab = signal<number>(1);
 
-    }
-
-
-    getChipColor(color: keyof typeof EquipmentColors) {
-        return EquipmentColors[color] || EquipmentColors.neutral;
-    }
-
-    getPercentage(value: number): number {
-        const total = this.equipmentCounts()?.totalCounts || 1;
-        return Math.round((value / total) * 100);
-    }
-    getStatusStyle(status: string) {
-
-        const map: Record<string, keyof typeof Colors> = {
-            Available: "green",
-            InUse: "blue",
-            Reserved: "yellow",
-            Maintenance: "red"
-        };
-
-        return Colors[map[status] || "neutral"];
-    }
-    getConditionStyle(condition: string) {
-
-        const map: Record<string, keyof typeof Colors> = {
-            New: "green",
-            Good: "teal",
-            Damaged: "orange",
-            Retired: "slate"
-        };
-
-        return Colors[map[condition] || "neutral"];
+    setActiveTab(n: number) {
+        this.activeTab.set(n);
     }
 }
