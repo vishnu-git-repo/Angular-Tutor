@@ -25,6 +25,8 @@ import { GenderConstant } from "../../../../shared/constants";
 import { AdminStore } from "../../../../shared/interface/cart";
 import { UpdatePasswordSchema, UpdateUserSchema } from "../../../../shared/schemas/user";
 import { MessageService } from "primeng/api";
+import { getChip, getUserStatusChip } from "../../../../shared/colors";
+import { UserStatus } from "../../../../shared/Enums/UserEnums";
 
 interface IFilterOptions {
   row_count: number;
@@ -64,6 +66,9 @@ type DialogType =
 export class AdminUserComponent implements OnInit {
 
   Math = Math;
+  getChip = getChip;
+  getUserStatusChip = getUserStatusChip;
+  UserStatus = UserStatus;
 
   private messageService = inject(MessageService);
   private userService = inject(UserService);

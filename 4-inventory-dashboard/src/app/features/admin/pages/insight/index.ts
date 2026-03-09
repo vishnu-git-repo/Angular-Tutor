@@ -4,51 +4,20 @@ import { CommonModule, Location } from "@angular/common";
 import { ButtonModule } from "primeng/button";
 import { getDateTimeFromUtc } from "../../../../shared/lib/DateHelper";
 import { EquipmentService } from "../../../../core/services/equipment";
-import { Colors, EquipmentColors } from "../../../../shared/colors";
+import { Colors, EquipmentColors, getChip } from "../../../../shared/colors";
 import { FormsModule } from "@angular/forms";
 import { AdminInsightEquipmentStatisticsComponent } from "./statistics/equipment";
 import { TabsModule } from "primeng/tabs";
 import { AdminInsightBorrowStatisticsComponent } from "./statistics/borrows";
 import { AdminInsightUserStatisticsComponent } from "./statistics/user";
-import { IAdminInsightCounts } from "../../../../shared/interface/insight/admin";
+import { IAdminInsightCounts } from "../../../../shared/interface/insight";
 import { InsightService } from "../../../../core/services/insight";
 import { MessageService } from "primeng/api";
-
-interface IEquipmentCountsRequest {
-    totalCounts: number
-    statusCounts: {
-        Available: number,
-        InUse: number,
-        Reserved: number,
-        Maintenance: number,
-    },
-    conditionCounts: {
-        New: number,
-        Good: number,
-        Damaged: number,
-        Retired: number
-    }
-}
-
-interface IBorrowCountsRequest {
-    Requested: number;
-    Accepted: number;
-    Assigned: number;
-    Pending: number;
-    Paid: number;
-    Approved: number;
-    Waitlisted: number;
-    Ack: number;
-    Closed: number;
-}
 
 @Component({
     selector: "app-admin-insight",
     standalone: true,
     imports: [
-        CommonModule,
-        ButtonModule,
-        FormsModule,
         TabsModule,
         AdminInsightEquipmentStatisticsComponent,
         AdminInsightBorrowStatisticsComponent,
@@ -57,6 +26,8 @@ interface IBorrowCountsRequest {
     templateUrl: "./index.html"
 })
 export class AdminInsightComponent implements OnInit {
+
+    getChip = getChip;
 
     private insightService = inject(InsightService);
     private messageService = inject(MessageService);

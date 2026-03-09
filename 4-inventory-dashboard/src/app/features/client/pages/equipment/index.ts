@@ -15,11 +15,11 @@ import { TooltipModule } from "primeng/tooltip";
 import { SelectModule } from 'primeng/select';
 
 import { EquipmentCategoryCounts, IGroupEquipmentItems } from "../../../../shared/interface/equipments";
-import { EquipmentCategory } from "../../../../shared/Enums/EquipmentEnums";
-import { Colors } from "../../../../shared/colors";
+import { EquipmentCategory, EquipmentStatus } from "../../../../shared/Enums/EquipmentEnums";
+import { Colors, getChip, getEquipmentConditionChip, getEquipmentStatusChip } from "../../../../shared/colors";
 import { EquipmentService } from "../../../../core/services/equipment";
-import { IRequestBorrowItems } from "../../../../shared/interface/borrows";
 import { ClientCartItem } from "../../../../shared/interface/cart";
+import { MessageService } from "primeng/api";
 
 
 @Component({
@@ -46,22 +46,23 @@ export class ClientEquipmentComponent implements OnInit {
 
     Math = Math;
     EquipmentCategory = EquipmentCategory;
+    EquipmentStatus = EquipmentStatus;
+
+    getChip = getChip;
+    getEquipmentStatusChip = getEquipmentStatusChip;
+    getEquipmentConditionChip = getEquipmentConditionChip;
+
     private equipmentService = inject(EquipmentService);
+    private messageService = inject(MessageService);
     private searchSubject = new Subject<string>();
 
     public equipmentList = signal<IGroupEquipmentItems[]>([]);
     public isEquipmentLoad = signal<boolean>(false);
-    public selectedEquipment = signal<any>({});
     public CartItems = signal<ClientCartItem[] | null>(null)
     public CartItem = signal<ClientCartItem>({
         Equipment: null,
         Quantity: 1
     })
-    public Error = signal<{
-        addCart: string;
-    }>({
-        addCart: ""
-    });
 
     public Counts = signal<EquipmentCategoryCounts>({
         Tools: 0, Electronics: 0, Vehicles: 0, Furniture: 0, SafetyGear: 0, Other: 0
@@ -99,6 +100,7 @@ export class ClientEquipmentComponent implements OnInit {
             });
     }
     fetchEquipments() {
+        this.isEquipmentLoad.set(true);
         const payload = this.paginatorState();
         this.equipmentService.getFilteredEquipment(payload)
             .subscribe({
@@ -106,9 +108,18 @@ export class ClientEquipmentComponent implements OnInit {
                     console.log(res);
                     this.equipmentList.set(res.data.items);
                     this.Counts.set(res.data.categoryCounts);
-                    this.paginatorState.update(state => ({ ...state, TotalCount: res.data.totalCount }))
+                    this.paginatorState.update(state => ({ ...state, TotalCount: res.data.totalCount }));
+                    this.isEquipmentLoad.set(false);
                 },
-                error: err => console.log(err)
+                error: err => {
+                    console.log(err)
+                    this.messageService.add({
+                        severity: "error",
+                        summary: "Error",
+                        detail: err.error?.message || "Failed to Load Equipments"
+                    });
+                    this.isEquipmentLoad.set(false);
+                }
             })
     }
 
@@ -228,80 +239,60 @@ export class ClientEquipmentComponent implements OnInit {
     }
 
 
-    // Dialogs
-    openAddCartDialog(e: IGroupEquipmentItems) {
+    handleAddToCart(equipment: IGroupEquipmentItems) {
+        try {
+            if (!equipment) return;
+            const storedCart = localStorage.getItem("clientCart");
+            if (storedCart !== null) {
+                const cartData: ClientCartItem[] = JSON.parse(storedCart);
 
-        this.selectedEquipment.set(e);
+                const alreadyExists = cartData.some(
+                    item => item.Equipment?.id == equipment.id
+                )
 
-        const storedCart = localStorage.getItem("clientCart");
-        let existingQuantity = 1;
+                if (alreadyExists) {
+                    this.messageService.add({
+                        severity: "error",
+                        summary: "Error",
+                        detail: `${equipment.name}, Already placed in Cart`
+                    })
+                    return;
+                }
 
-        if (storedCart) {
-            const cartData: ClientCartItem[] = JSON.parse(storedCart);
-            const existing = cartData.find(item => item.Equipment?.id === e.id);
-            if (existing) {
-                existingQuantity = existing.Quantity;
+                if ((equipment.availableCount || 0) < 1) {
+                    alert("Equipment is not available");
+                    return;
+                }
+
+                cartData.push({
+                    Equipment: equipment,
+                    Quantity: 1
+                });
+
+                localStorage.setItem("clientCart", JSON.stringify(cartData));
+
+            } else {
+                const newCart: ClientCartItem[] = [{
+                    Equipment: equipment,
+                    Quantity: 1
+                }] 
+                localStorage.setItem("clientCart", JSON.stringify(newCart));
             }
+
+            this.messageService.add({
+                severity: "success",
+                summary: "Success",
+                detail: `${equipment.name}, Added to Cart successfully!`
+            })
+
+        } catch (error) {
+            console.error("Error loading cart from localStorage:", error);
+            this.messageService.add({
+                severity: "error",
+                summary: "Error",
+                detail: "Error loading store from localStorage"
+            })
         }
-
-        this.CartItem.set({
-            Equipment: e,
-            Quantity: existingQuantity
-        });
-
-        this.Dialog.update(state => ({
-            ...state,
-            AddCart: true
-        }));
     }
 
-    handleAddCartItems() {
-        this.Error.update(state => ({ ...state, addCart: "" }));
-
-        const quantity = Number(this.CartItem().Quantity);
-        const equipment = this.selectedEquipment();
-
-        if (!quantity || quantity <= 0) {
-            this.Error.update(state => ({ ...state, addCart: "Enter valid quantity" }));
-            return;
-        }
-
-        if (quantity > equipment.availableCount) {
-            this.Error.update(state => ({
-                ...state,
-                addCart: `Available only ${equipment.availableCount}`
-            }));
-            return;
-        }
-
-        let cartData: ClientCartItem[] = [];
-
-        const storedCart = localStorage.getItem("clientCart");
-
-        if (storedCart !== null) {
-            try {
-                cartData = JSON.parse(storedCart);
-            } catch {
-                cartData = [];
-            }
-        }
-
-        const existingIndex = cartData.findIndex(
-            item => item.Equipment?.id === equipment.id
-        );
-
-        if (existingIndex > -1) {
-            cartData[existingIndex].Quantity = quantity; // Replace (A)
-        } else {
-            cartData.push({
-                Equipment: equipment,
-                Quantity: quantity
-            });
-        }
-
-        localStorage.setItem("clientCart", JSON.stringify(cartData));
-
-        this.CartItem.set({ Equipment: null, Quantity: 1 });
-        this.Dialog.update(state => ({ ...state, AddCart: false }));
-    }
 } 

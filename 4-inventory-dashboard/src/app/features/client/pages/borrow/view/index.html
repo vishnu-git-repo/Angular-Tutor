@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex justify-between items-center pb-4">
         <div class="flex items-center gap-3">
-            <i class="pi pi-receipt text-2xl" style="font-size: 2rem"></i>
-            <h2 class="text-2xl font-semibold tracking-wide">Borrow Details</h2>
+            <i class="pi pi-receipt text-2xl" style="font-size: 1.5rem"></i>
+            <h2 class="text-xl font-semibold tracking-wide">Borrow Details</h2>
         </div>
 
         <p-button (click)="handleBackButton()" pTooltip="Back" tooltipPosition="bottom" severity="secondary"
@@ -14,195 +14,411 @@
         </p-button>
     </div>
 
-    @if(isDataLoading()){
-    <div class="flex justify-center items-center py-10">
-        <p class="text-gray-400 text-lg">Loading borrow details...</p>
-    </div>
-    }
-    @else if(data()==null){
-    <div class="flex justify-center py-10 text-gray-400">
-        <p>No data found</p>
-    </div>
-    }
-    @else{
 
-    <!-- Main Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <section>
+        <div class="border-b rounded-t-xl overflow-hidden border-zinc-800">
+            <p-tabs [value]="activeTab()">
+                <p-tablist class="flex gap-8 bg-transparent px-2">
+                    <p-tab [value]="1" (click)="setActiveTab(1)" class="pb-3 text-zinc-400 data-[p-active=true]:text-emerald-400
+                       data-[p-active=true]:border-b-2 data-[p-active=true]:border-emerald-400">
+                        Borrows
+                    </p-tab>
 
-        <!-- LEFT COLUMN -->
-        <div class="flex flex-col gap-6">
+                    <p-tab [value]="2" (click)="setActiveTab(2)" class="pb-3 text-zinc-400 data-[p-active=true]:text-emerald-400
+                       data-[p-active=true]:border-b-2 data-[p-active=true]:border-emerald-400">
+                        Equipments
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
+                            {{ data()?.equipments?.length }}
+                        </span>
+                    </p-tab>
 
-            <!-- Client Card -->
-            <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
-                <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
-                    Client Information
-                </h3>
-
-                <div class="grid grid-cols-2 gap-y-3 text-sm">
-                    <span class="text-gray-400">Name</span>
-                    <span class="font-medium">{{data()?.borrow?.userName}}</span>
-
-                    <span class="text-gray-400">Email</span>
-                    <span class="font-medium">{{data()?.borrow?.userEmail}}</span>
-                </div>
-            </div>
-
-            <!-- Borrow Card -->
-            <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
-                <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
-                    Borrow Information
-                </h3>
-
-                <div class="grid grid-cols-2 gap-y-3 text-sm">
-
-                    <span class="text-gray-400">Status</span>
-                    <p-chip [label]="BorrowStatus[data()?.borrow?.borrowStatus ?? 0]||'Unknown'"
-                        [style]="getChipColor('primary')" class="w-fit">
-                    </p-chip>
-
-                    <span class="text-gray-400">Equipment Count</span>
-                    <span class="font-medium">
-                        {{data()?.borrow?.equipmentCounts}}
-                    </span>
-
-                    <span class="text-gray-400">Start Date</span>
-                    <span>
-                        {{getDateTimeFromUtc(data()?.borrow?.startDate||"")}}
-                    </span>
-
-                    <span class="text-gray-400">Expected Return</span>
-                    <span>
-                        {{getDateTimeFromUtc(data()?.borrow?.expectedReturnDate||"")}}
-                    </span>
-
-                    <span class="text-gray-400">Actual Return</span>
-                    <span>
-                        {{ !data()?.borrow?.actualReturnDate
-                        ? 'Not Returned'
-                        : getDateTimeFromUtc(data()?.borrow?.actualReturnDate || '')
-                        }}
-                    </span>
-
-                </div>
-            </div>
-
-        </div>
-
-        <!-- RIGHT COLUMN -->
-        <div class="flex flex-col gap-6">
-
-            <!-- Payment Card -->
-            <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
-                <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
-                    Payment Summary
-                </h3>
-
-                <div class="grid grid-cols-2 gap-y-3 text-sm">
-
-                    <span class="text-gray-400">Total Price</span>
-                    <span class="font-medium">
-                        {{data()?.borrow?.totalPrice | currency:'INR'}}
-                    </span>
-
-                    <span class="text-gray-400">Paid Amount</span>
-                    <span>
-                        {{data()?.borrow?.paidAmount | currency:'INR'}}
-                    </span>
-
-                    <span class="text-gray-400 font-semibold">Due Amount</span>
-                    <span class="font-semibold text-red-400">
-                        {{data()?.borrow?.dueAmount | currency:'INR'}}
-                    </span>
-
-                    <span class="text-gray-400">Late Fee</span>
-                    <!-- <span>
-                        {{data()?.borrow?.lateFee | currency:'INR'}}
-                    </span> -->
-
-                    <span class="text-gray-400">Payment Status</span>
-                    <p-chip [label]="data()?.borrow?.isPaymentCompleted ? 'Paid' : 'Not Paid'" [style]="getChipColor(
-                                data()?.borrow?.isPaymentCompleted ? 'success' : 'danger'
-                            )" class="w-fit">
-                    </p-chip>
-
-                    @if(data()?.borrow?.isPaymentCompleted){
-                    <span class="text-gray-400">Payment Mode</span>
-                    <p-chip label="Paid"
-                        [style]="getChipColor('success')" class="w-fit">
-                    </p-chip>
+                    @if (data()?.payment?.length!=0) {
+                    <p-tab [value]="3" (click)="setActiveTab(3)" class="pb-3 text-zinc-400 data-[p-active=true]:text-emerald-400
+                       data-[p-active=true]:border-b-2 data-[p-active=true]:border-emerald-400">
+                        Payment
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
+                            {{ data()?.payment?.length }}
+                        </span>
+                    </p-tab>
                     }
 
-                </div>
-            </div>
+                    @if (data()?.borrowLogs?.length != 0) {
+                    <p-tab [value]="4" (click)="setActiveTab(4)" class="pb-3 text-zinc-400 data-[p-active=true]:text-emerald-400
+                       data-[p-active=true]:border-b-2 data-[p-active=true]:border-emerald-400">
+                        Logs
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
+                            {{ data()?.borrowLogs?.length}}
+                        </span>
+                    </p-tab>
+                    }
+
+                </p-tablist>
+
+            </p-tabs>
 
         </div>
 
-    </div>
+        @if(isDataLoading()){
+        <div class="flex justify-center items-center py-10">
+            <p class="text-gray-400 text-lg">Loading borrow details...</p>
+        </div>
+        }
+        @else if(data()==null){
+        <div class="flex justify-center py-10 text-gray-400">
+            <p>No data found</p>
+        </div>
+        } @else {
+        <!-- Panel -->
+        <div class="rounded-b-xl bg-zinc-900/40 backdrop-blur-sm">
+            <section>
 
-    <div class="bg-charcoal rounded-xl p-6 shadow-md border border-gray-700">
-        <h3 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">
-            Borrowed Equipments
-        </h3>
+                <!-- Borrow -->
+                @if (activeTab()==1) {
+                <div class="bg-charcoal rounded-b-lg p-6">
 
-        <p-table [value]="data()?.equipments || []" styleClass="p-datatable-sm" [tableStyle]="{'min-width':'100%'}">
+                    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-            <ng-template pTemplate="header">
-                <tr class="text-sm text-gray-400 uppercase tracking-wide">
-                    <th class="w-12">#</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th class="text-center">Return Status</th>
-                    <th>Actions</th>
-                </tr>
-            </ng-template>
+                        <!-- Status -->
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">Status</span>
 
-            <ng-template pTemplate="body" let-e let-i="rowIndex">
-                <tr class="text-sm">
-                    <td>{{i+1}}</td>
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                [style.background]="getBorrowStatusChip(BorrowStatus[data()?.borrow?.borrowStatus ?? 0]).background"
+                                [style.color]="getBorrowStatusChip(BorrowStatus[data()?.borrow?.borrowStatus ?? 0]).color">
 
-                    <td class="font-medium">
-                        {{e.equipmentName}}
-                    </td>
-                    <td class="font-medium">
-                        <p class="max-w-100">
-                            {{e.equipmentDescription}}
-                        </p>
-                    </td>
-                    <td>
-                        {{e.borrowedPrice | currency:'INR'}}
-                    </td>
+                                {{ BorrowStatus[data()?.borrow?.borrowStatus ?? 0] }}
 
-                    <td class="text-center">
-                        <p-chip [label]="e.isReturned ? 'Returned' : 'Not Returned'"
-                            [style]="getChipColor(e.isReturned ? 'success' : 'danger')" class="w-fit">
-                        </p-chip>
-                    </td>
-
-                    <td>
-                        <div class="flex justify-start gap-2">
-                            <span
-                                class="w-8 h-8 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
-                                pTooltip="View Borrow" tooltipPosition="bottom" tooltipStyleClass="custom-tooltip"
-                                (click)="handleViewEquipment(e.equipmentItemId)">
-                                <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 transition-all duration-200"
-                                    style="font-size: 0.85rem;">
-                                </i>
                             </span>
                         </div>
-                    </td>
-                </tr>
-            </ng-template>
 
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="4" class="text-center py-6 text-gray-400">
-                        No equipment records found.
-                    </td>
-                </tr>
-            </ng-template>
 
-        </p-table>
-    </div>
-    }
+                        <!-- Equipment Count -->
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Equipment Count
+                            </span>
+
+                            <span class="text-lg font-semibold">
+                                {{data()?.borrow?.equipmentCounts}}
+                            </span>
+                        </div>
+
+
+                        <!-- Start Date -->
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Start Date
+                            </span>
+
+                            <span>
+                                {{ data()?.borrow?.startDate | date }}
+                            </span>
+                        </div>
+
+
+                        <!-- Expected Return -->
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Expected Return
+                            </span>
+
+                            <span>
+                                {{ data()?.borrow?.expectedReturnDate | date }}
+                            </span>
+                        </div>
+
+
+                        <!-- Actual Return -->
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Actual Return
+                            </span>
+
+                            @if (!data()?.borrow?.actualReturnDate) {
+                            <span class="italic text-zinc-500">Not Returned</span>
+                            } @else {
+                            <span>
+                                {{ data()?.borrow?.actualReturnDate | date : "MMM dd, yyyy" }}
+                            </span>
+                            }
+                        </div>
+
+
+                        <!-- Payment Status -->
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Payment Status
+                            </span>
+
+                            @if(data()?.borrow?.isPaymentCompleted){
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                [style.background]="getChip('success').background"
+                                [style.color]="getChip('success').color">
+
+                                Paid
+
+                            </span>
+                            } @else {
+
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                [style.background]="getChip('danger').background"
+                                [style.color]="getChip('danger').color">
+
+                                Not Paid
+
+                            </span>
+
+                            }
+                        </div>
+
+                    </div>
+
+
+                    <!-- Divider -->
+                    <div class="border-t border-zinc-800 my-6"></div>
+
+
+                    <!-- Price Section -->
+                    <div class="grid md:grid-cols-3 gap-6">
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Total Price
+                            </span>
+
+                            <span class="text-lg font-semibold">
+                                {{data()?.borrow?.totalPrice | currency:'INR'}}
+                            </span>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Paid Amount
+                            </span>
+
+                            <span class="text-green-400 font-semibold">
+                                {{data()?.borrow?.paidAmount | currency:'INR'}}
+                            </span>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs uppercase tracking-wide text-zinc-400">
+                                Due Amount
+                            </span>
+
+                            <span class="text-red-400 font-semibold text-lg">
+                                {{data()?.borrow?.dueAmount | currency:'INR'}}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+                }
+
+                <!-- Equipments -->
+                @else if (activeTab()==2) {
+                <div class="bg-charcoal rounded-b-lg p-6">
+                    <p-table [value]="data()?.equipments || []" styleClass="p-datatable-sm"
+                        [tableStyle]="{'min-width':'100%'}">
+
+                        <ng-template pTemplate="header">
+                            <tr class="text-sm text-gray-400 uppercase tracking-wide">
+                                <th class="w-12">#</th>
+                                <th>Equipment Id</th>
+                                <th>Eqp Item ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th class="flex justify-center">Return Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-e let-i="rowIndex">
+                            <tr class="text-sm">
+                                <td>{{i+1}}</td>
+                                <td>{{ e.equipmentId }}</td>
+                                <td>{{ e.equipmentItemId }}</td>
+                                <td class="font-medium">
+                                    {{e.equipmentName}}
+                                </td>
+                                <td class="font-medium">
+                                    <p class="max-w-100">
+                                        {{e.equipmentDescription}}
+                                    </p>
+                                </td>
+                                <td>
+                                    {{e.borrowedPrice | currency:'INR'}}
+                                </td>
+
+                                <td>
+                                    <div class="flex items-center justify-center py-2">
+                                        @if (e.isReturned) {
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                            [style.background]="getChip('success').background"
+                                            [style.color]="getChip('success').color">
+                                            Returned
+                                        </span>
+                                        } @else {
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                            [style.background]="getChip('danger').background"
+                                            [style.color]="getChip('danger').color">
+                                            Not Returned
+                                        </span>
+                                        }
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="flex justify-start gap-2">
+                                        <span
+                                            class="size-5 rounded-full border border-gray-300 hover:border-blue-500 bg-white hover:bg-blue-50 flex items-center justify-center cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md group"
+                                            pTooltip="View equipment" tooltipPosition="bottom"
+                                            tooltipStyleClass="custom-tooltip"
+                                            (click)="handleViewEquipment(e.equipmentItemId)">
+                                            <i class="pi pi-eye text-gray-600 group-hover:text-blue-600 transition-all duration-200"
+                                                style="font-size: 0.85rem;">
+                                            </i>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+                }
+
+                <!-- Payment Card -->
+                @else if (activeTab()==3) {
+                <div class="bg-charcoal rounded-xl p-6">
+                    <div class="bg-charcoal rounded-b-lg p-6">
+                        <p-table [value]="data()?.payment || []" styleClass="p-datatable-sm"
+                            [tableStyle]="{'min-width':'100%'}">
+
+                            <ng-template pTemplate="header">
+                                <tr class="text-sm text-gray-400 uppercase tracking-wide">
+                                    <th class="w-12">#</th>
+                                    <th>Payment Id</th>
+                                    <th>Order Id</th>
+                                    <th><span class="flex justify-center">Payment Mode</span></th>
+                                    <th><span class="flex justify-center">Payment Status</span></th>
+                                    <th>Paid Amount</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-p let-i="rowIndex">
+                                <tr class="text-sm">
+                                    <td>{{i+1}}</td>
+                                    <td>{{ p.razorPayPaymentId }}</td>
+                                    <td>{{ p.razorPayOrderId }}</td>
+                                    <td class="font-medium">
+                                        <p class="max-w-100 flex items-center justify-center py-2">
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                                [style.background]="getChip('indigo').background"
+                                                [style.color]="getChip('indigo').color">
+                                                {{ PaymentMode[p.paymentMode] }}
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td class="font-medium">
+                                        <p class="max-w-100 flex items-center justify-center py-2">
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                                [style.background]="getChip('green').background"
+                                                [style.color]="getChip('green').color">
+                                                {{ PaymentStatus[p.status] }}
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        {{ p.price | currency:'INR'}}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+                }
+
+                <!-- Logs Card -->
+                @else {
+                <div class="bg-charcoal rounded-xl p-6">
+                    <div class="bg-charcoal rounded-b-lg p-6">
+                        <p-table [value]="data()?.borrowLogs || []" styleClass="p-datatable-sm"
+                            [tableStyle]="{'min-width':'100%'}">
+
+                            <ng-template pTemplate="header">
+                                <tr class="text-sm text-gray-400 uppercase tracking-wide">
+                                    <th class="w-12">#</th>
+                                    <th>#Log Id</th>
+                                    <th><span class="flex justify-center">Status From</span></th>
+                                    <th><span class="flex justify-center">Status To</span></th>
+                                    <th>Action</th>
+                                    <th>Description</th>
+                                    <th>Logged On</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-l let-i="rowIndex">
+                                <tr class="text-sm">
+                                    <td class="w-15">{{i+1}}</td>
+                                    <td class="w-20">{{ l.id }}</td>
+                                    <td class="w-40">
+                                        <p class="max-w-100 flex items-center justify-center py-2">
+                                            @if (l.statusFrom == null) {
+                                            <span class="italic text-zinc-500">Null</span>
+                                            } @else {
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                                [style.background]="getBorrowStatusChip(BorrowStatus[l.statusFrom]).background"
+                                                [style.color]="getBorrowStatusChip(BorrowStatus[l.statusFrom]).color">
+                                                {{ BorrowStatus[l.statusFrom] }}
+                                            </span>
+                                            }
+                                        </p>
+                                    </td>
+                                    <td class="w-40">
+                                        <p class="max-w-100 flex items-center justify-center py-2">
+                                            @if (l.statusTo == null) {
+                                            <span class="italic text-zinc-500">Null</span>
+                                            } @else {
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                                                [style.background]="getBorrowStatusChip(BorrowStatus[l.statusTo]).background"
+                                                [style.color]="getBorrowStatusChip(BorrowStatus[l.statusTo]).color">
+                                                {{ BorrowStatus[l.statusTo] }}
+                                            </span>
+                                            }
+                                        </p>
+                                    </td>
+                                    <td class="w-80">
+                                        <p class="max-w-60 font-medium">
+                                            @if(l.userRole == 1){
+                                            <span>
+                                                Admin
+                                            </span>, {{l.action}}
+                                            }@else{
+                                            <span>
+                                                <span class="hover:underline cursor-pointer"> {{l.user.name}} </span>
+                                            </span>, {{l.action}}
+                                            }
+                                        </p>
+                                    </td>
+                                    <td class="">
+                                        <p class="">
+                                            {{l.description}}
+                                        </p>
+                                    </td>
+                                    <td class="w-30">{{ l.createdAt | date }}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+                }
+            </section>
+        </div>
+        }
+    </section>
 </div>

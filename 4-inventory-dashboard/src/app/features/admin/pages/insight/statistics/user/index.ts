@@ -3,7 +3,7 @@ import { CommonModule} from "@angular/common";
 import { ButtonModule } from "primeng/button";
 import { FormsModule } from "@angular/forms";
 import { Colors,} from "../../../../../../shared/colors";
-import { IUserCounts } from "../../../../../../shared/interface/insight/admin";
+import { IUserCounts } from "../../../../../../shared/interface/insight";
 
 
 interface IUserCountsResponse {

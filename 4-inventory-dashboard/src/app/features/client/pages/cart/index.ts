@@ -6,10 +6,12 @@ import { ButtonModule } from "primeng/button";
 import { AuthService } from "../../../../core/services/auth";
 import { DialogModule } from "primeng/dialog";
 import { IftaLabelModule } from "primeng/iftalabel";
-import { DatePicker, DatePickerModule } from "primeng/datepicker";
+import { DatePickerModule } from "primeng/datepicker";
 import { IReqBorrowRequest } from "../../../../shared/interface/borrows";
 import { FormsModule } from "@angular/forms";
 import { BorrowService } from "../../../../core/services/borrow";
+import { MessageService } from "primeng/api";
+import { TextareaModule } from "primeng/textarea";
 
 @Component({
     selector: "app-client-cart",
@@ -22,20 +24,26 @@ import { BorrowService } from "../../../../core/services/borrow";
         DialogModule,
         IftaLabelModule,
         DatePickerModule,
+        TextareaModule
     ],
     templateUrl: "./index.html",
 })
 export class ClientCartComponent implements OnInit {
     private authservice = inject(AuthService);
     private borrowService = inject(BorrowService)
+    private messageService = inject(MessageService);
+
     public CartItems = signal<ClientCartItem[]>([]);
     public User = signal<any>(null);
+
     public Dialog = signal<{ checkOut: boolean }>({ checkOut: false });
+    isRequestingBorrow = signal(false);
 
     public requestPayload = signal<IReqBorrowRequest>({
         UserId: 0,
         StartDate: "",
         ExpectedReturnDate: "",
+        Description: "",
         Items: [],
     });
 
@@ -163,6 +171,14 @@ export class ClientCartComponent implements OnInit {
     }
 
     handleRequestBorrow() {
+        if (this.requestPayload().Description == "") {
+            this.messageService.add({
+                severity: "error",
+                summary: "Validation Error",
+                detail: "Description is required field"
+            });
+            return
+        }
         const items = this.CartItems().map(item => ({
             EquipmentId: item.Equipment?.id || 0,
             Quantity: item.Quantity
@@ -176,12 +192,25 @@ export class ClientCartComponent implements OnInit {
             Items: items
         }));
 
+        this.isRequestingBorrow.set(true);
         this.borrowService.postRequestBorrow(this.requestPayload()).subscribe({
             next: res => {
-                console.log(res);
-                this.Dialog.update(state => ({ ...state, checkOut: true }));
+                this.Dialog.update(state => ({ ...state, checkOut: false }));
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Success",
+                    detail: res.message
+                });
+                this.isRequestingBorrow.set(false);
             },
-            error: err => console.log(err)
-        })
+            error: err => {
+                this.messageService.add({
+                    severity: "error",
+                    summary: "Error",
+                    detail: err.error?.message
+                });
+                this.isRequestingBorrow.set(false);
+            }
+        });
     }
 }

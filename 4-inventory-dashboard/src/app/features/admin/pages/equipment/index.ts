@@ -19,7 +19,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { EquipmentCategory, EquipmentCondition, EquipmentStatus } from "../../../../shared/Enums/EquipmentEnums";
 import { EquipmentResponseCounts, ICreateEquipmentsRequest, IGetEquipment, IGetEquipmentGroupItem, IGroupEquipmentItems, IUpdateEquipmentRequest } from "../../../../shared/interface/equipments";
 import { EquipmentService } from "../../../../core/services/equipment";
-import { Colors } from "../../../../shared/colors";
+import { Colors, getChip, getEquipmentConditionChip, getEquipmentStatusChip } from "../../../../shared/colors";
 import { CreateEquipmentSchema, UpdateEquipmentSchema } from "../../../../shared/schemas/equipment";
 import { AdminStore } from "../../../../shared/interface/cart";
 import { Router } from "@angular/router";
@@ -51,6 +51,9 @@ export class AdminEquipmentComponent implements OnInit {
     EquipmentCategory = EquipmentCategory;
     EquipmentCondition = EquipmentCondition;
     EquipmentStatus = EquipmentStatus;
+    getEquipmentStatusChip = getEquipmentStatusChip;
+    getEquipmentConditionChip = getEquipmentConditionChip;
+    getChip = getChip;
     CategoryList = Object.keys(EquipmentCategory)
         .filter(k => isNaN(Number(k)))
         .map(key => ({

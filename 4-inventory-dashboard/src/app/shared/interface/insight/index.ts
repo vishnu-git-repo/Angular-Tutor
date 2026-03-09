@@ -4,6 +4,10 @@ export interface IAdminInsightCounts {
   borrow: IBorrowCounts;
 }
 
+export interface IClientInsightCounts {
+  borrow: IBorrowCounts;
+}
+
 export interface IUserCounts {
   total: number;
   status: UserStatusCounts;

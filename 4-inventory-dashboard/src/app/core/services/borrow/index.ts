@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../../../environment";
-import { IAcceptBorrowRequest, IGetAdminBorrowRequest, IGetClientBorrowRequest, IPaidBorrowRequest, IPendingBorrowRequest, IReqBorrowRequest } from "../../../shared/interface/borrows";
+import { IAcceptBorrowRequest, IAckBorrowRequest, IAdminPaymentRequest, IApproveBorrowRequest, IClosedBorrowRequest, IGetAdminBorrowRequest, IGetClientBorrowRequest, IPaidBorrowRequest, IPendingBorrowRequest, IReqBorrowRequest, IWaitlistBorrowRequest } from "../../../shared/interface/borrows";
 
 
 
@@ -56,7 +56,14 @@ export class BorrowService {
 
     putPendingBorrow(payload: IPendingBorrowRequest): Observable<any> {
         const api_url = `${environment.api_url}borrows/pending/${payload.BorrowId}`;
-        return this.http.put(api_url, {UserId: payload.UserId}, {
+        return this.http.put(api_url, payload, {
+            withCredentials: true
+        })
+    }
+
+    putCollectCashBorrow(payload: IAdminPaymentRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/admin/collect-cash/${payload.BorrowId}`;
+        return this.http.put(api_url, payload, {
             withCredentials: true
         })
     }
@@ -67,6 +74,35 @@ export class BorrowService {
             withCredentials: true
         })
     }
+
+    putApproveBorrow(payload: IApproveBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/approve/${payload.BorrowId}`;
+        return this.http.put(api_url, payload, {
+            withCredentials: true
+        })
+    }
+
+    putWaitlistBorrow(payload: IWaitlistBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/waitlist/${payload.BorrowId}`;
+        return this.http.put(api_url, payload, {
+            withCredentials: true
+        })
+    }
+
+    putAckBorrow(payload: IAckBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/ack/${payload.BorrowId}`;
+        return this.http.put(api_url, payload, {
+            withCredentials: true
+        })
+    }
+
+    putCloseBorrow(payload: IClosedBorrowRequest): Observable<any> {
+        const api_url = `${environment.api_url}borrows/close/${payload.BorrowId}`;
+        return this.http.put(api_url, payload, {
+            withCredentials: true
+        })
+    }
+
 
     createOrder(BorrowId: number): Observable<any> {
     const api_url = `${environment.api_url}borrows/create-order/${BorrowId}`;

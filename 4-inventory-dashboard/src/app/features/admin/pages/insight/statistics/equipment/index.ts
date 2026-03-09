@@ -2,9 +2,8 @@ import { Component, inject, Input, OnInit, signal } from "@angular/core";
 import { CommonModule, Location } from "@angular/common";
 import { ButtonModule } from "primeng/button";
 import { FormsModule } from "@angular/forms";
-import { EquipmentService } from "../../../../../../core/services/equipment";
-import { Colors, EquipmentColors } from "../../../../../../shared/colors";
-import { IEquipmentCounts } from "../../../../../../shared/interface/insight/admin";
+import { Colors } from "../../../../../../shared/colors";
+import { IEquipmentCounts } from "../../../../../../shared/interface/insight";
 
 interface IEquipmentCountsRequest {
     totalCounts: number
@@ -32,7 +31,7 @@ interface IEquipmentCountsRequest {
     ],
     templateUrl: "./index.html"
 })
-export class AdminInsightEquipmentStatisticsComponent implements OnInit {
+export class AdminInsightEquipmentStatisticsComponent{
 
     @Input() data!: IEquipmentCounts;
 
@@ -46,13 +45,6 @@ export class AdminInsightEquipmentStatisticsComponent implements OnInit {
         }, 100);
     }
 
-    ngOnInit(): void {
-        this.fetchEquipments();
-    }
-    fetchEquipments() {
-
-    }
-
     getPercentage(value: number): number {
         const total = this.data.total || 1;
         const percentage = (value / total) * 100;
@@ -60,48 +52,37 @@ export class AdminInsightEquipmentStatisticsComponent implements OnInit {
     }
 
     getStatusStyle(status: string) {
-
         const map: Record<string, keyof typeof Colors> = {
             Available: "green",
             InUse: "blue",
             Reserved: "yellow",
             Maintenance: "red"
         };
-
         return Colors[map[status] || "neutral"];
-
     }
 
     getConditionStyle(condition: string) {
-
         const map: Record<string, keyof typeof Colors> = {
             New: "green",
             Good: "teal",
             Damaged: "orange",
             Retired: "slate"
         };
-
         return Colors[map[condition] || "neutral"];
-
     }
 
     get statusList() {
-
         const counts = this.data.status;
-
         return [
             { key: "Available", value: counts.Available },
             { key: "InUse", value: counts.InUse },
             { key: "Reserved", value: counts.Reserved },
             { key: "Maintenance", value: counts.UnderMaintenance }
         ];
-
     }
 
     get conditionList() {
-
         const counts = this.data.condition;
-
         return [
             { key: "New", value: counts.New },
             { key: "Good", value: counts.Good },

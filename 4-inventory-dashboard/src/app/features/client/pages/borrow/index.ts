@@ -16,11 +16,13 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { BorrowService } from "../../../../core/services/borrow";
-import { IAcceptBorrowRequest, IGetClientBorrowRequest, IPendingBorrowRequest } from "../../../../shared/interface/borrows";
-import { Colors } from "../../../../shared/colors";
+import { IAcceptBorrowRequest, IAckBorrowRequest, IGetClientBorrowRequest, IPaidBorrowRequest, IPendingBorrowRequest } from "../../../../shared/interface/borrows";
+import { Colors, getBorrowStatusChip, getChip } from "../../../../shared/colors";
 import { Router, RouterModule } from "@angular/router";
 import { AuthService } from "../../../../core/services/auth";
-import { ICheckAuthResponse } from "../../../../shared/interface/auth";
+import { BorrowStatus } from "../../../../shared/Enums/BorrowEnum";
+import { MessageService } from "primeng/api";
+import { getDurationInDays } from "../../../../shared/lib/DateHelper";
 
 @Component({
     selector: "app-client-borrow",
@@ -45,21 +47,54 @@ import { ICheckAuthResponse } from "../../../../shared/interface/auth";
 })
 export class ClientBorrowComponent implements OnInit {
 
-    Math = Math
+    Math = Math;
+    BorrowStatus = BorrowStatus;
+    getBorrowStatusChip = getBorrowStatusChip;
+    getChip = getChip;
+    getDurationInDays = getDurationInDays;
 
     private searchSubject = new Subject<string>();
     private destroySubject = new Subject<void>();
     private borrowService = inject(BorrowService);
     private authService = inject(AuthService);
+    private messageService = inject(MessageService);
     private router = inject(Router);
 
-    public acceptPayload = signal<IAcceptBorrowRequest>({
-        BorrowId: 0,
-        UserId: 0,
-        PreRemarks: ""
+    Dialog = signal<{
+        pending: boolean,
+        paid: boolean,
+        ack: boolean
+    }>({
+        pending: false,
+        paid: false,
+        ack: false
     });
 
+    public pendingPayload = signal<IPendingBorrowRequest>({
+        UserId: 0,
+        BorrowId: 0,
+        Description: ""
+    });
+    public paymentPayload = signal<IPaidBorrowRequest>({
+        UserId: 0,
+        PaymentMode: 0,
+        Description: "",
+        RazorpayOrderId: "",
+        RazorpayPaymentId: "",
+        RazorpaySignature: ""
+    });
+    public ackPayload = signal<IAckBorrowRequest>({
+        UserId: 0,
+        BorrowId: 0,
+        Description: ""
+    })
+
     public isLoading = signal<boolean>(false);
+    public isPendingBorrow = signal<boolean>(false);
+    public isPaymentProcessing = signal<boolean>(false);
+    public isAcknowledingBorrow = signal<boolean>(false)
+
+
     public borrowList = signal<any>([]);
     public Counts = signal<{
         Requested: number;
@@ -84,6 +119,8 @@ export class ClientBorrowComponent implements OnInit {
         SearchString: "",
         TotalCount: 0
     };
+
+    public selectedBorrowId = signal<number>(0);
 
     public paginatorState = signal<IGetClientBorrowRequest>(this.initialPaginator);
 
@@ -248,14 +285,33 @@ export class ClientBorrowComponent implements OnInit {
             return this.paginatorState().PageNo == Math.ceil((this.paginatorState().TotalCount ?? 0) / (this.paginatorState().RowCount ?? 1));
     }
 
-    openDialog(type: string) { }
+    async handlePendingDialog(borrowId: number) {
+        let user = this.authService.User();
+
+        if (!user) {
+            await firstValueFrom(this.authService.checkAuth());
+            user = this.authService.User();
+        }
+
+        if (!user) {
+            console.error("User not authenticated");
+            return;
+        }
+        this.pendingPayload.update(state => ({ ...state, UserId: user.id, BorrowId: borrowId }));
+        this.Dialog.update(state => ({ ...state, pending: true }));
+    }
+
+    async handlePaymentDialog(id: number) {
+        this.Dialog.update(state => ({ ...state, paid: true }));
+        // this.paymentPayload.update(state => ({ ...state, }));
+        this.selectedBorrowId.set(id);
+    }
 
     handleViewBorrow(id: number) {
         this.router.navigate(['/client/borrows/view', id]);
     }
 
-    async handlePendingBorrow(id: number) {
-
+    async handleAckDialog(borrowId: number) {
         let user = this.authService.User();
 
         if (!user) {
@@ -268,19 +324,52 @@ export class ClientBorrowComponent implements OnInit {
             return;
         }
 
-        const payload: IPendingBorrowRequest = {
-            BorrowId: id,
-            UserId: user.id
-        };
+        this.ackPayload.update(state => ({ ...state, UserId: user.id, BorrowId: borrowId }));
+        this.Dialog.update(state => ({ ...state, ack: true }));
+    }
 
-        this.borrowService.putPendingBorrow(payload).subscribe({
-            next: () => this.fetchBorrows(),
-            error: err => console.log(err)
+    async handlePendingBorrow() {
+        if (this.pendingPayload().Description == "") {
+            this.messageService.add({
+                severity: "error",
+                summary: "Validation Error",
+                detail: "Description is required field"
+            });
+            return;
+        }
+        this.isPendingBorrow.set(true);
+        this.borrowService.putPendingBorrow(this.pendingPayload()).subscribe({
+            next: (res) => {
+                this.fetchBorrows();
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Success",
+                    detail: res.message || "Your Borrow is Marked as pending"
+                });
+                this.Dialog.update(state => ({ ...state, pending: false }));
+                this.isPendingBorrow.set(false);
+            },
+            error: err => {
+                console.log(err);
+                this.messageService.add({
+                    severity: "error",
+                    summary: "Error",
+                    detail: err.error?.message
+                });
+                this.isPendingBorrow.set(false);
+            }
         });
     }
 
-    async handlePaymentBorrow(id: number) {
-
+    async handlePaymentBorrow() {
+        if (this.paymentPayload().Description == "") {
+            this.messageService.add({
+                severity: "error",
+                summary: "Validation Error",
+                detail: "Description is required field"
+            });
+            return;
+        }
         let user = this.authService.User();
 
         if (!user) {
@@ -290,12 +379,19 @@ export class ClientBorrowComponent implements OnInit {
 
         if (!user) {
             console.error("User not authenticated");
+            this.messageService.add({
+                severity: "error",
+                summary: "Redirecting",
+                detail: "Your details not found, redirecting to login page"
+            });
+            this.router.navigate([]);
             return;
         }
 
+        this.isPaymentProcessing.set(true);
         try {
             const orderResponse = await firstValueFrom(
-                this.borrowService.createOrder(id)
+                this.borrowService.createOrder(this.selectedBorrowId())
             );
 
             const order = orderResponse.data;
@@ -303,7 +399,7 @@ export class ClientBorrowComponent implements OnInit {
             await this.loadRazorpayScript();
 
             const options: any = {
-                key: order.key, 
+                key: order.key,
                 amount: order.amount,
                 currency: "INR",
                 name: "Inventory System",
@@ -312,9 +408,10 @@ export class ClientBorrowComponent implements OnInit {
 
                 handler: async (response: any) => {
                     await firstValueFrom(
-                        this.borrowService.putPaidBorrow(id, {
+                        this.borrowService.putPaidBorrow(this.selectedBorrowId(), {
+                            Description: this.paymentPayload().Description,
                             UserId: user.id,
-                            PaymentMode: 2, // UPI or whatever enum value
+                            PaymentMode: 2,
                             RazorpayOrderId: response.razorpay_order_id,
                             RazorpayPaymentId: response.razorpay_payment_id,
                             RazorpaySignature: response.razorpay_signature
@@ -322,6 +419,8 @@ export class ClientBorrowComponent implements OnInit {
                     );
 
                     this.fetchBorrows();
+                    this.isPaymentProcessing.set(false);
+                    this.Dialog.update(state => ({ ...state, paid: false }));
                 },
 
                 prefill: {
@@ -339,7 +438,48 @@ export class ClientBorrowComponent implements OnInit {
 
         } catch (error) {
             console.error(error);
+            this.messageService.add({
+                severity: "error",
+                summary: "Payment Fails",
+                detail: "No Worries, if money was debited and Contact admin"
+            })
+            this.isPaymentProcessing.set(false);
+            this.Dialog.update(state => ({ ...state, paid: false }));
         }
+    }
+
+    async handleAckBorrow() {
+        if (this.ackPayload().Description == "") {
+            this.messageService.add({
+                severity: "error",
+                summary: "Validation Error",
+                detail: "Description is Required"
+            });
+            return;
+        }
+        this.isAcknowledingBorrow.set(true);
+
+        this.borrowService.putAckBorrow(this.ackPayload()).subscribe({
+            next: res => {
+                console.log(res);
+                this.Dialog.update(state => ({ ...state, ack: false }));
+                this.fetchBorrows();
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Success",
+                    detail: res.message
+                });
+                this.isAcknowledingBorrow.set(false);
+            },
+            error: err => {
+                this.messageService.add({
+                    severity: "error",
+                    summary: "Error",
+                    detail: err.error?.nessage
+                });
+                this.isAcknowledingBorrow.set(false);
+            }
+        });
     }
 
     private loadRazorpayScript(): Promise<void> {
@@ -348,7 +488,6 @@ export class ClientBorrowComponent implements OnInit {
                 resolve();
                 return;
             }
-
             const script = document.createElement('script');
             script.src = 'https://checkout.razorpay.com/v1/checkout.js';
             script.onload = () => resolve();

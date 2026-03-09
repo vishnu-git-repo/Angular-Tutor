@@ -2,10 +2,12 @@
 
     <!-- 🔹 HEADER -->
     <div class="flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <i class="pi pi-wallet" style="font-size: 2rem"></i>
-            <h2 class="text-2xl">Store</h2>
-        </div>
+        <header class="flex items-center gap-3">
+            <i class="pi pi-wallet text-xl text-primary"></i>
+            <h3 class="text-2xl font-semibold">
+                Store
+            </h3>
+        </header>
         <div class="flex gap-5 items-center">
             <p-button (click)="clearStore()" icon="pi pi-times" label="Clear" severity="warn"
                 variant="outlined"></p-button>
@@ -96,7 +98,7 @@
                         <!-- Icon -->
                         <div
                             class="flex items-center justify-center w-32 h-32 rounded-full bg-zinc-800 shadow-lg text-6xl text-gray-400">
-                            <i class="pi pi-user-minus" style="font-size: 3rem;"></i>
+                            <i class="pi pi-user" style="font-size: 3rem;"></i>
                         </div>
 
                         <!-- Message -->
@@ -120,7 +122,7 @@
         <div class="col-span-2">
             <div class="flex flex-col gap-5 bg-charcoal rounded-md border border-gray-600 min-h-[40dvh] p-5">
                 <div class="flex justify-between items-center">
-                    <p class="flex gap-2 items-center"><i class="pi pi-user" style="font-Size: 1.5rem"></i>Equipments
+                    <p class="flex gap-2 items-center"><i class="pi pi-cog" style="font-Size: 1.5rem"></i>Equipments
                     </p>
                     <p-iftaLabel class="w-60">
                         <p-autocomplete id="admin_store_search_equipment_input" class="w-full"
@@ -236,20 +238,27 @@
             <!-- Start Date -->
             <p-ifta-label>
                 <p-datepicker [(ngModel)]="datePickerValues().StartDate" class="w-full" [minDate]="minStartDate"
-                    (onSelect)="onStartDateChange($event)" id="client_cart_request_dialog_startdate"></p-datepicker>
-                <label for="client_cart_request_dialog_startdate">Start Date</label>
+                    (onSelect)="onStartDateChange($event)" id="admin_store_assign_dialog_startdate"></p-datepicker>
+                <label for="admin_store_assign_dialog_startdate">Start Date</label>
             </p-ifta-label>
 
             <!-- Return Date -->
             <p-ifta-label>
                 <p-datepicker [(ngModel)]="datePickerValues().ExpectedReturnDate" class="w-full"
                     [minDate]="minReturnDate" (onSelect)="onReturnDateChange($event)"
-                    id="client_cart_request_expectedreturndate"></p-datepicker>
-                <label for="client_cart_request_expectedreturndate">Return Date</label>
+                    id="admin_store_assign_dialog_expectedreturndate"></p-datepicker>
+                <label for="admin_store_assign_dialog+expectedreturndate">Return Date</label>
             </p-ifta-label>
 
+            <p-ifta-label>
+                <textarea pTextarea [(ngModel)]="assignPayload().Description" rows="3" autoResize="true" class="w-full"
+                    id="admin_store_assign_dialog_description"></textarea>
+                <label for="admin_store_assign_dialog_description">Description</label>
+            </p-ifta-label>
+
+
             <!-- Borrow Price -->
-            <p class="mt-20">Your calculated borrow price is:</p>
+            <p class="mt-5">Your calculated borrow price is:</p>
             <div class="inline-grid grid-cols-2 gap-x-5">
                 <i>For Per Day</i>
                 <span>{{ total | currency: "INR" }}</span>
@@ -259,7 +268,13 @@
 
             <!-- Request Button -->
             <div class="flex justify-end mt-4">
-                <p-button severity="success" (click)="handleAssignBorrow()" label="Assign"></p-button>
+                <p-button 
+                    label="Assign"
+                    severity="success" 
+                    [loading]="isAssigningBorrow()"
+                    [disabled]="isAssigningBorrow()" 
+                    (click)="handleAssignBorrow()" 
+                ></p-button>
             </div>
         </div>
     </p-dialog>

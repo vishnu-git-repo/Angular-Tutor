@@ -1,13 +1,16 @@
 <div class="text-white rounded shadow-lg flex flex-col gap-5">
     <!-- Title  -->
     <div class="flex justify-between items-center">
-        <div class="flex justify-between items-center gap-2">
-            <i class="pi pi-users" style="font-size: 2rem"></i>
-            <h2 class="text-2xl">Clients</h2>
-        </div>
+        <header class="flex justify-between items-center gap-3">
+            <i class="pi pi-users text-xl text-primary"></i>
+            <h3 class="text-2xl font-semibold">
+                Clients
+            </h3>
+        </header>
         <div class="flex gap-5 items-center">
             <p-iftalabel class="w-full min-w-62.5">
-                <input pInputText (input)="onSearch($event)" id="admin-user-search-topbar-box" placeholder="Search User" class="min-w-70">
+                <input pInputText (input)="onSearch($event)" id="admin-user-search-topbar-box" placeholder="Search User"
+                    class="min-w-70">
                 <label for="admin-user-search-topbar-box">Name | Email | Address(city) | Phone</label>
             </p-iftalabel>
             <!-- Add User -->
@@ -29,12 +32,11 @@
                 <p-tab value="0" (click)="onTabChange(0)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         All
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="{
-                    backgroundColor: '#E0F2FE',
-                    color: '#0369A1'
-                }">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                            [style.background]="getChip('indigo').background"
+                            [style.color]="getChip('indigo').color">
                             {{ paginatorState().TotalCount }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
@@ -42,12 +44,11 @@
                 <p-tab value="1" (click)="onTabChange(1)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Active
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="{
-                    backgroundColor: '#DCFCE7',
-                    color: '#15803D'
-                }">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                            [style.background]="getUserStatusChip(UserStatus[1]).background"
+                            [style.color]="getUserStatusChip(UserStatus[1]).color">
                             {{ paginatorState().ActiveCount }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
@@ -55,12 +56,11 @@
                 <p-tab value="2" (click)="onTabChange(2)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Blocked
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="{
-                    backgroundColor: '#FEE2E2',
-                    color: '#B91C1C'
-                }">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md w-fit"
+                            [style.background]="getUserStatusChip(UserStatus[2]).background"
+                            [style.color]="getUserStatusChip(UserStatus[2]).color">
                             {{ paginatorState().BlockedCount }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
@@ -328,14 +328,15 @@
                     </p-iftalabel>
 
                     <p-iftalabel class="w-full min-w-62.5">
-                        <textarea pTextarea id="dialog_user_update_address_label" [(ngModel)]="user.address" autocomplete="off"
-                            class="w-full">
+                        <textarea pTextarea id="dialog_user_update_address_label" [(ngModel)]="user.address"
+                            autocomplete="off" class="w-full">
                         </textarea>
                         <label for="dialog_user_update_address_label">Address</label>
                     </p-iftalabel>
 
                     <div class="flex justify-end w-full min-w-62.5 mt-2 gap-4">
-                        <p-button label="Update" severity="success" (click)="handleUpdateUser(user)" [loading]="Loading().update" [disabled]="Loading().update"  />
+                        <p-button label="Update" severity="success" (click)="handleUpdateUser(user)"
+                            [loading]="Loading().update" [disabled]="Loading().update" />
                     </div>
                 </div>
                 }
@@ -349,7 +350,8 @@
                     </p-iftalabel>
 
                     <div class="flex justify-end w-full min-w-62.5 mt-2 gap-4">
-                        <p-button label="Update" severity="success" (click)="handleUpdatePassword(user)" [loading]="Loading().password" [disabled]="Loading().password"/>
+                        <p-button label="Update" severity="success" (click)="handleUpdatePassword(user)"
+                            [loading]="Loading().password" [disabled]="Loading().password" />
                     </div>
                 </div>
                 }

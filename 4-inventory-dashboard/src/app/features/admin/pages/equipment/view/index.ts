@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from "@angular/core";
 import { getDateTimeFromUtc } from "../../../../../shared/lib/DateHelper";
 import { EquipmentService } from "../../../../../core/services/equipment";
 import { ActivatedRoute } from "@angular/router";
-import { Colors, EquipmentColors } from "../../../../../shared/colors";
+import { Colors, EquipmentColors, getChip, getEquipmentConditionChip, getEquipmentStatusChip } from "../../../../../shared/colors";
 import { CommonModule, Location } from "@angular/common";
 import { ButtonModule } from "primeng/button";
 import {
@@ -57,6 +57,9 @@ export class AdminEquipmentGroupViewComponent implements OnInit {
     private messageService = inject(MessageService);
 
     getDateTimeFromUtc = getDateTimeFromUtc;
+    getEquipmentStatusChip = getEquipmentStatusChip;
+    getEquipmentConditionChip = getEquipmentConditionChip;
+    getChip = getChip;
 
     // Equipment Id
     id: number = 0;
@@ -259,9 +262,6 @@ export class AdminEquipmentGroupViewComponent implements OnInit {
         this.fetchEquipments();
     }
 
-    getChipColor(color: keyof typeof Colors) {
-        return Colors[color] || Colors.neutral;
-    }
     getIndex() {
         return (this.paginatorState().PageNo - 1) * this.paginatorState().RowCount;
     }

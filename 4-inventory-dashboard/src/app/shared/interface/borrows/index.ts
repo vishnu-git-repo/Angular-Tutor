@@ -1,5 +1,6 @@
 import { BorrowStatus } from "../../Enums/BorrowEnum";
 import { PaymentMode, PaymentStatus } from "../../Enums/PaymentEnum";
+import { EUserRole } from "../../Enums/UserEnums";
 
 // PUBLIC
 export interface IGetAdminBorrowRequest {
@@ -28,6 +29,7 @@ export interface IReqBorrowRequest {
     StartDate: string;
     ExpectedReturnDate: string;
     Items: IRequestBorrowItems[];
+    Description: string;
 }
 
 export interface IAssignBorrowRequest {
@@ -35,6 +37,7 @@ export interface IAssignBorrowRequest {
     StartDate: string;
     ExpectedReturnDate: string;
     Items: IRequestBorrowItems[];
+    Description: string;
 }
 
 export interface IRequestBorrowItems {
@@ -46,24 +49,60 @@ export interface IRequestBorrowItems {
 export interface IAcceptBorrowRequest {
     BorrowId: number;
     UserId: number;
-    PreRemarks: string;
+    Description: string;
 }
 
 export interface IPendingBorrowRequest {
     BorrowId: number;
-    UserId: number
+    UserId: number;
+    Description: string;
 }
 
 export interface IPaidBorrowRequest {
-
+    UserId: number;
+    PaymentMode: number;
+    Description: string;
+    RazorpayOrderId: string;
+    RazorpayPaymentId: string;
+    RazorpaySignature: string;
 }
 
+export interface IAdminPaymentRequest {
+    BorrowId: number;
+    UserId: number;
+    PaidAmount: number;
+    Description: string;
+}
+
+export interface IApproveBorrowRequest {
+    BorrowId: number,
+    UserId: number,
+    Description: string
+}
+
+export interface IWaitlistBorrowRequest {
+    BorrowId: number,
+    UserId: number,
+    Description: string
+}
+
+export interface IAckBorrowRequest {
+    BorrowId: number,
+    UserId: number,
+    Description: string
+}
+
+export interface IClosedBorrowRequest {
+    BorrowId: number,
+    UserId: number,
+    Description: string
+}
 
 export interface IGetBorrowByIDResponse {
     borrow: IBorrowDetail;
     equipments: IEquipmentDetail[];
-    payments : IPaymentLog[];
-    borrowLogs : IBorrowLogs[]
+    payment: IPaymentLog[];
+    borrowLogs: IBorrowLogs[]
 }
 
 
@@ -97,20 +136,30 @@ interface IEquipmentDetail {
 }
 
 interface IBorrowLogs {
-    id : number;
-    status : BorrowStatus;
-    description : string;
-    createdAt : string;
+    id: number;
+    userRole: EUserRole;
+    statusFrom: BorrowStatus;
+    statusTo: BorrowStatus;
+    action: string;
+    description: string;
+    createdAt: string;
 }
 
 interface IPaymentLog {
-    id : number;
-    paymentMode : PaymentMode;
-    status : PaymentStatus;
-    razorPayOrderId : number;
-    razorPayPaymentId : number;
-    paymentInitiatedDate : string;
-    paymentCompletedDate : string;
+    id: number;
+    paymentMode: PaymentMode;
+    status: PaymentStatus;
+    price: number;
+    razorPayOrderId: number;
+    razorPayPaymentId: number;
+    paymentInitiatedDate: string;
+    paymentCompletedDate: string;
+    user: {
+        id: number,
+        name: string,
+        email: string,
+        phone: string
+    }
 }
 
 

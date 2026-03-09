@@ -1,17 +1,14 @@
-import { Component, inject, Input, OnInit, signal } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { CommonModule, Location } from "@angular/common";
+import { Component,  Input, signal } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { ButtonModule } from "primeng/button";
 import { FormsModule } from "@angular/forms";
-import { getDateTimeFromUtc } from "../../../../../../shared/lib/DateHelper";
-import { EquipmentService } from "../../../../../../core/services/equipment";
-import { Colors, EquipmentColors } from "../../../../../../shared/colors";
-import { IBorrowCounts, IUserCounts } from "../../../../../../shared/interface/insight";
+import { Colors, getChip } from "../../../../../../shared/colors";
+import { IBorrowCounts } from "../../../../../../shared/interface/insight";
 
 
 
 @Component({
-    selector: "app-admin-insight-borrow-statistics",
+    selector: "app-client-insight-borrow-statistics",
     standalone: true,
     imports: [
         CommonModule,
@@ -20,9 +17,11 @@ import { IBorrowCounts, IUserCounts } from "../../../../../../shared/interface/i
     ],
     templateUrl: "./index.html"
 })
-export class AdminInsightBorrowStatisticsComponent {
+export class ClientInsightBorrowStatisticsComponent {
 
     @Input() data!: IBorrowCounts;
+
+    getChip = getChip;
 
     // isDataLoading = signal(false);
     animateBars = signal(false);

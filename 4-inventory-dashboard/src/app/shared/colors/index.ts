@@ -118,3 +118,50 @@ export const EquipmentColors = {
 
     neutral: "#6b7280"
 };
+
+export const getChip = (color: keyof typeof Colors) => {
+    return Colors[color] || Colors.neutral;
+}
+
+export const getBorrowStatusChip = (status: string) => {
+    const map: Record<string, keyof typeof Colors> = {
+        Requested: "blue",
+        Accepted: "indigo",
+        Assigned: "purple",
+        Pending: "yellow",
+        Paid: "success",
+        Approved: "green",
+        Waitlisted: "orange",
+        Ack: "purple",
+        Closed: "red"
+    }
+    return Colors[map[status] || "neutral"];
+}
+
+export const getEquipmentStatusChip = (status: string) => {
+    const map: Record<string, keyof typeof Colors> = {
+        Available: "green",
+        InUse: "blue",
+        Reserved: "yellow",
+        Maintenance: "red"
+    };
+    return Colors[map[status] || "neutral"];
+}
+
+export const getEquipmentConditionChip = (condition: string) => {
+    const map: Record<string, keyof typeof Colors> = {
+        New: "green",
+        Good: "teal",
+        Damaged: "orange",
+        Retired: "slate"
+    };
+    return Colors[map[condition] || "neutral"];
+}
+
+export const getUserStatusChip = (status: string) => {
+    const map: Record<string, keyof typeof Colors> = {
+        Active: "success",
+        Inactive: "danger"
+    };
+    return Colors[map[status] || "green"];
+}

@@ -17,6 +17,8 @@ import { DialogModule } from "primeng/dialog";
 import { AdminStore, AdminStoreItem } from "../../../../shared/interface/cart";
 import { BorrowService } from "../../../../core/services/borrow";
 import { MessageService } from "primeng/api";
+import { getChip } from "../../../../shared/colors";
+import { TextareaModule } from "primeng/textarea";
 
 
 
@@ -33,11 +35,14 @@ import { MessageService } from "primeng/api";
         AutoCompleteModule,
         AvatarModule,
         DatePickerModule,
-        DialogModule
+        DialogModule,
+        TextareaModule
     ],
     templateUrl: "./index.html"
 })
 export class AdminStoreComponent implements OnInit {
+
+    getChip = getChip;
 
     private userSubject = new Subject<string>();
     private equipmentSubject = new Subject<string>();
@@ -57,12 +62,14 @@ export class AdminStoreComponent implements OnInit {
 
     public isUserLoad = signal<boolean>(false);
     public isEquipmentLoad = signal<boolean>(false);
+    public isAssigningBorrow = signal<boolean>(false);
 
     public assignPayload = signal<IAssignBorrowRequest>({
         UserId: 0,
         StartDate: "",
         ExpectedReturnDate: "",
         Items: [],
+        Description: ""
     });
 
     public StoreItems = signal<AdminStore>({
@@ -373,6 +380,15 @@ export class AdminStoreComponent implements OnInit {
     }
 
     handleAssignBorrow() {
+
+        if(this.assignPayload().Description==""){
+            this.messageService.add({
+                    severity: "error",
+                    summary: "Validation Error",
+                    detail: "Description is required field"
+                })
+        }
+
         const items = this.StoreItems().Equipments.map(item => ({
             EquipmentId: item.Equipment?.id || 0,
             Quantity: item.Quantity
@@ -386,12 +402,25 @@ export class AdminStoreComponent implements OnInit {
             Items: items
         }));
 
+        this.isAssigningBorrow.set(true);
         this.borrowService.postAssignBorrow(this.assignPayload()).subscribe({
             next: res => {
-                console.log(res);
                 this.Dialog.update(state => ({ ...state, checkOut: false }));
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Success",
+                    detail: res.message
+                })
+                this.isAssigningBorrow.set(false);
             },
-            error: err => console.log(err)
+            error: err => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Success",
+                    detail: err.error?.message
+                })
+                this.isAssigningBorrow.set(false);
+            }
         });
     }
 }

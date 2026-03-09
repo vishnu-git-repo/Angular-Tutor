@@ -5,40 +5,44 @@
         <!-- Header -->
         <header class="flex items-center gap-3">
             <i class="pi pi-chart-bar text-xl text-primary"></i>
-            <h3 class="text-xl font-semibold">
+            <h3 class="text-2xl font-semibold">
                 Statistics
             </h3>
         </header>
 
-
         <!-- Tabs -->
         <section>
-
-            <div class="border-b border-zinc-800">
-
+            <div class="border-b rounded-t-xl overflow-hidden border-zinc-800">
                 <p-tabs [value]="activeTab()">
-
                     <p-tablist class="flex gap-8 bg-transparent px-2">
-
                         <p-tab [value]="1" (click)="setActiveTab(1)" class="pb-3 text-zinc-400 data-[p-active=true]:text-emerald-400
                        data-[p-active=true]:border-b-2 data-[p-active=true]:border-emerald-400">
-
                             Borrows
-
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                                [style.background]="getChip('indigo').background"
+                                [style.color]="getChip('indigo').color">
+                                {{ InsightCounts().borrow.total || 0 }}
+                            </span>
                         </p-tab>
 
                         <p-tab [value]="2" (click)="setActiveTab(2)" class="pb-3 text-zinc-400 data-[p-active=true]:text-emerald-400
                        data-[p-active=true]:border-b-2 data-[p-active=true]:border-emerald-400">
-
                             Equipments
-
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                                [style.background]="getChip('indigo').background"
+                                [style.color]="getChip('indigo').color">
+                                {{ InsightCounts().equipment.total }}
+                            </span>
                         </p-tab>
 
                         <p-tab [value]="3" (click)="setActiveTab(3)" class="pb-3 text-zinc-400 data-[p-active=true]:text-emerald-400
                        data-[p-active=true]:border-b-2 data-[p-active=true]:border-emerald-400">
-
                             Users
-
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                                [style.background]="getChip('indigo').background"
+                                [style.color]="getChip('indigo').color">
+                                {{ InsightCounts().user.total }}
+                            </span>
                         </p-tab>
 
                     </p-tablist>
@@ -48,15 +52,15 @@
             </div>
 
             <!-- Panel -->
-            <div class="border border-zinc-700 rounded-b-xl rounded-r-xl bg-zinc-900/40 backdrop-blur-sm">
+            <div class="rounded-b-xl bg-zinc-900/40 backdrop-blur-sm">
                 <section>
                     @if (activeTab()==1) {
-                    <app-admin-insight-borrow-statistics [data]="InsightCounts().borrow"/>
+                    <app-admin-insight-borrow-statistics [data]="InsightCounts().borrow" />
                     } @else if (activeTab()==2) {
-                    <app-admin-insight-equipment-statistics [data]="InsightCounts().equipment"/>
+                    <app-admin-insight-equipment-statistics [data]="InsightCounts().equipment" />
                     } @else {
                     <!-- <app-admin-insight-user-statistics [data]="InsightCounts().user" [load]="isDataLoading()"/> -->
-                     <app-admin-insight-user-statistics [data]="InsightCounts().user" />
+                    <app-admin-insight-user-statistics [data]="InsightCounts().user" />
                     }
                 </section>
             </div>

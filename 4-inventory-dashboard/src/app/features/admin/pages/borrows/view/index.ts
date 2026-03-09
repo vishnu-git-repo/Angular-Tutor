@@ -9,10 +9,11 @@ import { ButtonModule } from "primeng/button";
 import { getDateTimeFromUtc } from "../../../../../shared/lib/DateHelper";
 import { BorrowStatus } from "../../../../../shared/Enums/BorrowEnum";
 import { ChipModule } from "primeng/chip";
-import { Colors } from "../../../../../shared/colors";
+import { getBorrowStatusChip, getChip } from "../../../../../shared/colors";
 import { TableModule } from "primeng/table";
 import { TooltipModule } from "primeng/tooltip";
-import { PaymentMode } from "../../../../../shared/Enums/PaymentEnum";
+import { PaymentMode, PaymentStatus } from "../../../../../shared/Enums/PaymentEnum";
+import { TabsModule } from "primeng/tabs";
 
 
 @Component({
@@ -23,7 +24,8 @@ import { PaymentMode } from "../../../../../shared/Enums/PaymentEnum";
         ButtonModule,
         ChipModule,
         TableModule,
-        TooltipModule
+        TooltipModule,
+        TabsModule
     ],
     templateUrl: "./index.html"
 })
@@ -32,16 +34,26 @@ export class AdminBorrowViewComponent implements OnInit {
     id: number;
     PaymentMode = PaymentMode;
     BorrowStatus = BorrowStatus;
+    PaymentStatus = PaymentStatus;
+    getChip = getChip;
+    getBorrowStatusChip = getBorrowStatusChip;
     getDateTimeFromUtc = getDateTimeFromUtc;
     constructor(private route: ActivatedRoute) {
         this.id = this.route.snapshot.params['id'];
     }
+
     private borrowService = inject(BorrowService);
     private location = inject(Location);
     private router = inject(Router);
 
+
     public data = signal<IGetBorrowByIDResponse | null>(null);
     public isDataLoading = signal<boolean>(false);
+
+    public activeTab = signal<number>(1)
+    setActiveTab = (num: number) => {
+        this.activeTab.set(num);
+    }
 
     ngOnInit(): void {
         this.fetchBorrow();
@@ -64,9 +76,5 @@ export class AdminBorrowViewComponent implements OnInit {
 
     handleViewEquipment(id: number){
        this.router.navigate([`/admin/equipments/view/group/${id}`]);
-    }
-
-    getChipColor(color: keyof typeof Colors) {
-        return Colors[color] || Colors.neutral;
     }
 }

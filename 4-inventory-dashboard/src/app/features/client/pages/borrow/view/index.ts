@@ -9,10 +9,11 @@ import { ButtonModule } from "primeng/button";
 import { getDateTimeFromUtc } from "../../../../../shared/lib/DateHelper";
 import { BorrowStatus } from "../../../../../shared/Enums/BorrowEnum";
 import { ChipModule } from "primeng/chip";
-import { Colors } from "../../../../../shared/colors";
+import { Colors, getBorrowStatusChip, getChip } from "../../../../../shared/colors";
 import { TableModule } from "primeng/table";
 import { TooltipModule } from "primeng/tooltip";
-import { PaymentMode } from "../../../../../shared/Enums/PaymentEnum";
+import { PaymentMode, PaymentStatus } from "../../../../../shared/Enums/PaymentEnum";
+import { TabsModule } from "primeng/tabs";
 
 
 @Component({
@@ -23,7 +24,8 @@ import { PaymentMode } from "../../../../../shared/Enums/PaymentEnum";
         ButtonModule,
         ChipModule,
         TableModule,
-        TooltipModule
+        TooltipModule,
+        TabsModule
     ],
     templateUrl: "./index.html"
 })
@@ -31,10 +33,17 @@ import { PaymentMode } from "../../../../../shared/Enums/PaymentEnum";
 export class ClientBorrowViewComponent implements OnInit {
     id: number;
     PaymentMode = PaymentMode;
+    PaymentStatus = PaymentStatus;
     BorrowStatus = BorrowStatus;
     getDateTimeFromUtc = getDateTimeFromUtc;
+    getChip = getChip;
+    getBorrowStatusChip = getBorrowStatusChip;
     constructor(private route: ActivatedRoute) {
         this.id = this.route.snapshot.params['id'];
+    }
+    activeTab = signal(1)
+    setActiveTab(i: number){
+        this.activeTab.set(i);
     }
     private borrowService = inject(BorrowService);
     private location = inject(Location);

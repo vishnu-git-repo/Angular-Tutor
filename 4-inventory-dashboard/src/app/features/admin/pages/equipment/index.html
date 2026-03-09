@@ -1,11 +1,14 @@
 <div class="text-white rounded shadow-lg flex flex-col gap-5">
 
-    <!-- 🔹 HEADER -->
+    <!-- HEADER -->
     <div class="flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <i class="pi pi-cog text-2xl" style="font-size: 2rem"></i>
-            <h2 class="text-2xl">Equipments</h2>
-        </div>
+
+        <header class="flex items-center gap-3">
+            <i class="pi pi-cog text-xl text-primary"></i>
+            <h3 class="text-2xl font-semibold">
+                Equipments
+            </h3>
+        </header>
 
         <div class="flex gap-5 items-center">
 
@@ -26,7 +29,7 @@
         </div>
     </div>
 
-    <!-- 🔹 CATEGORY TABS (ONLY GROUP MODE) -->
+    <!-- CATEGORY TABS (ONLY GROUP MODE) -->
     <div class="card rounded-lg">
         <p-button [label]="paginatorState().IsGroup ? 'View All Items' : 'View Groups'"
             [icon]="paginatorState().IsGroup ? 'pi pi-list' : 'pi pi-th-large'" severity="secondary" variant="outlined"
@@ -40,63 +43,70 @@
                 <p-tab value="0" (click)="onCategoryTab(0)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         All
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('primary')">
-                            {{ paginatorState().TotalCount ||0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
+                            {{ paginatorState().TotalCount || 0 }}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="1" (click)="onCategoryTab(1)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Tools
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('blue')">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
                             {{ Counts().Category.Tools || 0 }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="2" (click)="onCategoryTab(2)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Electronics
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('indigo')">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
                             {{ Counts().Category.Electronics || 0 }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="3" (click)="onCategoryTab(3)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Vehicles
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('orange')">
-                            {{ Counts().Category.Vehicles || 0}}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
+                            {{ Counts().Category.Vehicles || 0 }}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="4" (click)="onCategoryTab(4)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Furniture
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('purple')">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
                             {{ Counts().Category.Furniture || 0}}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="5" (click)="onCategoryTab(5)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Safety Gear
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('warning')">
-                            {{ Counts().Category.SafetyGear || 0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
+                            {{ Counts().Category.SafetyGear || 0}}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="6" (click)="onCategoryTab(6)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Others
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('neutral')">
-                            {{ Counts().Category.Other || 0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('indigo').background" [style.color]="getChip('indigo').color">
+                            {{ Counts().Category.Other || 0}}
+                        </span>
                     </span>
                 </p-tab>
 
@@ -111,81 +121,98 @@
                 <p-tab value="0" (click)="onAllTab()">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         All
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('primary')">
-                            {{ paginatorState().TotalCount ||0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getChip('slate').background" [style.color]="getChip('slate').color">
+                            {{ paginatorState().TotalCount || 0}}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="1" (click)="onStatusTab(1)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Available
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('success')">
-                            {{ Counts().Status.Available ||0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentStatusChip(EquipmentStatus[1]).background"
+                            [style.color]="getEquipmentStatusChip(EquipmentStatus[1]).color">
+                            {{ Counts().Status.Available || 0 }}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="2" (click)="onStatusTab(2)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         In Use
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('info')">
-                            {{ Counts().Status.InUse ||0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentStatusChip(EquipmentStatus[2]).background"
+                            [style.color]="getEquipmentStatusChip(EquipmentStatus[2]).color">
+                            {{ Counts().Status.InUse || 0 }}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="3" (click)="onStatusTab(3)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Reserved
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('warning')">
-                            {{ Counts().Status.Reserved ||0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentStatusChip(EquipmentStatus[3]).background"
+                            [style.color]="getEquipmentStatusChip(EquipmentStatus[3]).color">
+                            {{ Counts().Status.Reserved || 0 }}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="4" (click)="onStatusTab(4)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Maintenance
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('orange')">
-                            {{ Counts().Status.UnderMaintenance||0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentStatusChip(EquipmentStatus[4]).background"
+                            [style.color]="getEquipmentStatusChip(EquipmentStatus[4]).color">
+                            {{ Counts().Status.UnderMaintenance || 0 }}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="11" (click)="onConditionTab(1)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         New
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('success')">
-                            {{ Counts().Condition.New ||0 }}
-                        </p-chip>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentConditionChip(EquipmentCondition[1]).background"
+                            [style.color]="getEquipmentConditionChip(EquipmentCondition[1]).color">
+                            {{ Counts().Condition.New || 0 }}
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="12" (click)="onConditionTab(2)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Good
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('blue')">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentConditionChip(EquipmentCondition[2]).background"
+                            [style.color]="getEquipmentConditionChip(EquipmentCondition[2]).color">
                             {{ Counts().Condition.Good ||0 }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="13" (click)="onConditionTab(3)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Damaged
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('danger')">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentConditionChip(EquipmentCondition[3]).background"
+                            [style.color]="getEquipmentConditionChip(EquipmentCondition[3]).color">
                             {{ Counts().Condition.Damaged ||0 }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
                 <p-tab value="14" (click)="onConditionTab(4)">
                     <span class="flex items-center gap-2 text-lg font-medium">
                         Retired
-                        <p-chip class="px-3 py-1 rounded-full text-sm font-semibold" [style]="getChipColor('muted')">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                            [style.background]="getEquipmentConditionChip(EquipmentCondition[4]).background"
+                            [style.color]="getEquipmentConditionChip(EquipmentCondition[4]).color">
                             {{ Counts().Condition.Retired ||0 }}
-                        </p-chip>
+                        </span>
                     </span>
                 </p-tab>
 
@@ -240,7 +267,9 @@
                         <th>#</th>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Category</th>
+                        @if (paginatorState().Category == 0){
+                        <th class="flex justify-center">Category</th>
+                        }
                         <th>Price</th>
                         <th>Available/Total</th>
                         <th>Actions</th>
@@ -252,12 +281,19 @@
                         <td>{{ getIndex() + i + 1}}</td>
                         <td>{{ e.name }}</td>
                         <td>
-                            <p class="w-80">{{ e.description }}</p>
+                            <p class="max-w-80">{{ e.description }}</p>
                         </td>
+                        @if (paginatorState().Category == 0){
                         <td>
-                            <p-chip [label]="EquipmentCategory[e.category]" [style]="getChipColor('secondary')">
-                            </p-chip>
+                            <span class="flex justify-center">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                                    [style.background]="getChip('indigo').background"
+                                    [style.color]="getChip('indigo').color">
+                                    {{ EquipmentCategory[e.category] }}
+                                </span>
+                            </span>
                         </td>
+                        }
                         <td>{{ e.price | currency: 'INR' }}</td>
 
                         @if(e.availableCount==0){
@@ -352,9 +388,9 @@
                         <th>Item ID</th>
                         <th>Equipment</th>
                         <th>Description</th>
-                        <th>Status</th>
+                        <th class="flex justify-center">Status</th>
                         <th>Price</th>
-                        <th>Condition</th>
+                        <th class="flex justify-center">Condition</th>
                         <th>Created</th>
                     </tr>
                 </ng-template>
@@ -365,24 +401,20 @@
                         <td>{{ item.id }}</td>
                         <td>{{ item.equipmentName }}</td>
                         <td>{{ item.description }}</td>
-                        <td>
-                            <p-chip [label]="EquipmentStatus[item.status]" [style]="
-                                item.status == 1 ? getChipColor('success') :
-                                item.status == 2 ? getChipColor('info') :
-                                item.status == 3 ? getChipColor('warning') :
-                                getChipColor('orange')
-                            ">
-                            </p-chip>
+                        <td class="flex justify-center">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                                [style.background]="getEquipmentStatusChip(EquipmentStatus[item.status]).background"
+                                [style.color]="getEquipmentStatusChip(EquipmentStatus[item.status]).color">
+                                {{EquipmentStatus[item.status]}}
+                            </span>
                         </td>
                         <td>{{ item.price | currency: 'INR' }}</td>
-                        <td>
-                            <p-chip [label]="EquipmentCondition[item.condition]" [style]="
-                                item.condition == 1 ? getChipColor('success') :
-                                item.condition == 2 ? getChipColor('blue') :
-                                item.condition == 3 ? getChipColor('danger') :
-                                getChipColor('muted')
-                            ">
-                            </p-chip>
+                        <td class="flex justify-center">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-md"
+                                [style.background]="getEquipmentConditionChip(EquipmentStatus[item.condition]).background"
+                                [style.color]="getEquipmentConditionChip(EquipmentStatus[item.condition]).color">
+                                {{EquipmentCondition[item.condition]}}
+                            </span>
                         </td>
                         <td>{{ item.createdAt | date }}</td>
                     </tr>

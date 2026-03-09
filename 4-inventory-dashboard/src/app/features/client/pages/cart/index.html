@@ -3,8 +3,10 @@
     <!-- HEADER -->
     <div class="flex justify-between items-center mb-5">
         <div class="flex items-center gap-2">
-            <i class="pi pi-shopping-cart text-2xl" style="font-size: 2rem"></i>
-            <h2 class="text-2xl">My Cart</h2>
+            <i class="pi pi-shopping-cart text-2xl" style="font-size: 1.5rem"></i>
+            <h3 class="text-xl">
+                My Cart
+            </h3>
         </div>
         <p-button label="Clear Cart" class="p-button-danger p-button-text" [disabled]="CartItems().length === 0"
             (click)="clearCart()">
@@ -14,7 +16,7 @@
     <!-- EMPTY CART -->
     <ng-container *ngIf="CartItems().length === 0">
         <div
-            class="min-h-[50vh] flex flex-col justify-center items-center rounded-lg border border-zinc-700 bg-charcoal shadow-inner p-10 gap-6">
+            class="min-h-[50vh] flex flex-col justify-center items-center rounded-lg border border-zinc-700 bg-charcoal shadow-inner gap-6">
 
             <!-- Icon -->
             <div
@@ -39,21 +41,26 @@
 
     <!-- CART ITEMS GRID -->
     <ng-container *ngIf="CartItems().length > 0">
-        <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
             <div *ngFor="let item of CartItems()"
                 class="bg-zinc-800 p-4 rounded-lg shadow-lg flex flex-col justify-between">
 
                 <!-- ITEM INFO -->
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex flex-col max-w-xs">
-                        <span class="font-semibold truncate" [title]="item.Equipment?.name">{{ item.Equipment?.name
-                            }}</span>
-                        <span class="text-gray-400">{{ item.Equipment?.price | currency: "INR" }}</span>
+                <div class="flex flex-col mb-5">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col max-w-xs">
+                            <span class="font-semibold truncate" [title]="item.Equipment?.name">{{ item.Equipment?.name
+                                }}</span>
+                            <span class="text-gray-400">{{ item.Equipment?.price | currency: "INR" }}</span>
+                        </div>
+                        <button pButton type="button" icon="pi pi-trash"
+                            class="p-button-rounded p-button-text p-button-danger" pTooltip="Remove Item"
+                            (click)="removeItem(item)">
+                        </button>
                     </div>
-                    <button pButton type="button" icon="pi pi-trash"
-                        class="p-button-rounded p-button-text p-button-danger" pTooltip="Remove Item"
-                        (click)="removeItem(item)">
-                    </button>
+                    <div class="inline text-sm text-gray-400">
+                        AVL - {{item.Equipment?.availableCount}}
+                    </div>
                 </div>
 
                 <!-- QUANTITY CONTROLS -->
@@ -75,13 +82,13 @@
         <!-- STICKY FOOTER -->
         <div class="sticky bottom-0 bg-zinc-900 p-4 flex justify-between items-center shadow-lg mt-4 rounded-t-lg z-10">
             <span class="text-xl font-bold">Total: {{ total | currency: "INR" }}</span>
-            <a (click)="handleCheckout()"
-                class="px-6 py-2 bg-blue-600 rounded hover:bg-blue-700 font-semibold">Checkout</a>
+            <p-button label="Checkout" severity="success" (click)="handleCheckout()"></p-button>
         </div>
     </ng-container>
 
     <!-- CHECKOUT DIALOG -->
-    <p-dialog [(visible)]="Dialog().checkOut" [modal]="true" [style]="{ minWidth: '30rem' }" header="Make Request">
+    <p-dialog [(visible)]="Dialog().checkOut" [modal]="true" [style]="{ minWidth: '30rem' }" header="Make Request"
+        [focusOnShow]="false" [focusTrap]="false">
         <div class="min-w-80 flex flex-col p-5 gap-5">
 
             <!-- Start Date -->
@@ -99,8 +106,14 @@
                 <label for="client_cart_request_expectedreturndate">Return Date</label>
             </p-ifta-label>
 
+            <p-ifta-label>
+                <textarea pTextarea rows="3" autoResize="true" class="w-full" [(ngModel)]="requestPayload().Description"
+                    id="client_cart_request_Description"></textarea>
+                <label for="client_cart_request_Description">Description</label>
+            </p-ifta-label>
+
             <!-- Borrow Price -->
-            <p class="mt-20">Hi {{User().name}}! Your calculated borrow price is:</p>
+            <p class="mt-5">Hi {{User().name}}! Your calculated borrow price is:</p>
             <div class="inline-grid grid-cols-2 gap-x-5">
                 <i>For Per Day</i>
                 <span>{{ total | currency: "INR" }}</span>
@@ -110,7 +123,9 @@
 
             <!-- Request Button -->
             <div class="flex justify-end mt-4">
-                <button pButton type="button" severity="success" (click)="handleRequestBorrow()">Request</button>
+                <p-button label="Request" severity="success" (click)="handleRequestBorrow()"
+                    [loading]="isRequestingBorrow()" [disabled]="isRequestingBorrow()">
+                </p-button>
             </div>
         </div>
     </p-dialog>

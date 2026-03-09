@@ -17,4 +17,11 @@ export class InsightService {
             withCredentials: true
         })
     }
+
+    getClientInsightCounts(id: number): Observable<any> {
+        const api_url = `${environment.api_url}insight/client/${id}`;
+        return this.http.get(api_url,{
+            withCredentials: true
+        })
+    }
 }
