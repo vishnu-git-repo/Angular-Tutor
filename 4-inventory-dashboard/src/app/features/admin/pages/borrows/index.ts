@@ -368,7 +368,7 @@ export class AdminBorrowComponent {
                 this.messageService.add({
                     severity: "error",
                     summary: "Error",
-                    detail: err.error?.nessage
+                    detail: err.error?.message
                 });
                 this.isAcceptingBorrow.set(false);
             }
@@ -409,7 +409,7 @@ export class AdminBorrowComponent {
                 this.messageService.add({
                     severity: "error",
                     summary: "Error",
-                    detail: err.error?.nessage
+                    detail: err.error?.message
                 });
                 this.isPaymentProcessing.set(false);
             }
@@ -443,7 +443,7 @@ export class AdminBorrowComponent {
                 this.messageService.add({
                     severity: "error",
                     summary: "Error",
-                    detail: err.error?.nessage
+                    detail: err.error?.message
                 });
                 this.isApprrovingBorrow.set(false);
             }
@@ -476,7 +476,7 @@ export class AdminBorrowComponent {
                 this.messageService.add({
                     severity: "error",
                     summary: "Error",
-                    detail: err.error?.nessage
+                    detail: err.error?.message
                 });
                 this.isWaitlistingBorrow.set(false);
             }
@@ -509,7 +509,7 @@ export class AdminBorrowComponent {
                 this.messageService.add({
                     severity: "error",
                     summary: "Error",
-                    detail: err.error?.nessage
+                    detail: err.error?.message
                 });
                 this.isClosingBorrow.set(false);
             }

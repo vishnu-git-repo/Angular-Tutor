@@ -475,7 +475,7 @@ export class ClientBorrowComponent implements OnInit {
                 this.messageService.add({
                     severity: "error",
                     summary: "Error",
-                    detail: err.error?.nessage
+                    detail: err.error?.message
                 });
                 this.isAcknowledingBorrow.set(false);
             }
